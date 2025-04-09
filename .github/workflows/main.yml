@@ -20,4 +20,7 @@ jobs:
 
       - name: Execute Shell Script
         # working-directory: 02.Executing_Shell_Script
-        run: ./ascii-script.sh
+        
+        run: |
+          chmod +x ascii-script.sh
+          ./ascii-script.sh
