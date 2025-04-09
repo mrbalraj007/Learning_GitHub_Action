@@ -2,7 +2,11 @@ name:  Generate ASCI workflow.
 
 on: 
   push
-
+  paths:
+    - ''
+pull_request:
+  paths:
+    
 jobs:
     ascii_job:
         runs-on: ubuntu-latest
