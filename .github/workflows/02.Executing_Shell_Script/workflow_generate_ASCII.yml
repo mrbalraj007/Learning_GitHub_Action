@@ -2,11 +2,11 @@ name: Generate ASCII workflow
 
 on:
   push:
-    paths:
-      - '02.Executing_Shell_Script/**'
-  pull_request:
-    paths:
-      - '02.Executing_Shell_Script/**'
+  #   paths:
+  #     - '02.Executing_Shell_Script/**'
+  # pull_request:
+  #   paths:
+  #     - '02.Executing_Shell_Script/**'
 
 jobs:
   ascii_job:
@@ -19,5 +19,8 @@ jobs:
         run: ls -ltra
 
       - name: Execute Shell Script
-        working-directory: 02.Executing_Shell_Script
-        run: ./ascii-script.sh
+        # working-directory: 02.Executing_Shell_Script
+        
+        run: |
+          chmod +x ascii-script.sh
+          ./ascii-script.sh
