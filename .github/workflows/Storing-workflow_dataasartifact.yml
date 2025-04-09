@@ -1,0 +1,48 @@
+name: Generate ASCII Artwork
+
+on:
+  push
+
+jobs:
+  build_job_1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Cowsay Program
+        run: sudo apt-get install cowsay -y
+
+      - name: Execute Cowsay CMD
+        run: |
+          mkdir -p 03.workflow_Multiple-in-Sequence-Jobs/artifact
+          cowsay -f dragon "Run for cover, I am a DRAGON....RAWR" > 03.workflow_Multiple-in-Sequence-Jobs/artifact/dragon.txt
+
+      - name: Upload dragon text file
+        uses: actions/upload-artifact@v4
+        with:
+          name: dragon-text-file
+          path: 03.workflow_Multiple-in-Sequence-Jobs/artifact/dragon.txt
+
+  test_job_2:
+    needs: build_job_1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Dragon Text file
+        uses: actions/download-artifact@v4
+        with:
+          name: dragon-text-file
+          path: 03.workflow_Multiple-in-Sequence-Jobs/artifact/
+
+      - name: Test File Exists
+        run: grep -i "dragon" 03.workflow_Multiple-in-Sequence-Jobs/artifact/dragon.txt
+
+  test_job_3:
+    needs: [test_job_2]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Dragon Text file
+        uses: actions/download-artifact@v4
+        with:
+          name: dragon-text-file
+          path: 03.workflow_Multiple-in-Sequence-Jobs/artifact/
+
+      - name: Read File
+        run: cat 03.workflow_Multiple-in-Sequence-Jobs/artifact/dragon.txt
