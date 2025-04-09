@@ -1,7 +1,7 @@
 name:  Generate ASCI workflow.
 
 on: 
-    push
+  push
 
 jobs:
     ascii_job:
@@ -11,7 +11,7 @@ jobs:
           uses: actions/checkout@v4
         - name: List Repo Files
           run: ls -ltra
-          
+
         - name: Executing Shell Script
           run: ./ASCII.sh
 
