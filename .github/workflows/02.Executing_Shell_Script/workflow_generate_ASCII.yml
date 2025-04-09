@@ -3,16 +3,17 @@ name:  Generate ASCI workflow.
 on: 
   push
   paths:
-    - ''
+    - '02.Executing_Shell_Script/**'
 pull_request:
   paths:
-    
+    - '02.Executing_Shell_Script/**'
 jobs:
     ascii_job:
         runs-on: ubuntu-latest
         steps:
         - name: checkout Repo
           uses: actions/checkout@v4
+          
         - name: List Repo Files
           run: ls -ltra
 
