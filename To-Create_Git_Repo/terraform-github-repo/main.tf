@@ -61,6 +61,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write  # Grant write access to the repository
+
 jobs:
   copy_content:
     runs-on: ubuntu-latest
