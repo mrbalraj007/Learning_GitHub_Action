@@ -3,11 +3,11 @@ resource "github_repository" "new_repo" {
   description   = var.repository_description
   visibility    = var.repository_private ? "private" : "public"
   has_issues    = true
-  has_projects  = true  // Enable Projects tab
+  has_projects  = true // Enable Projects tab
   has_wiki      = true
   has_downloads = true
   auto_init     = true # This creates a README.md
-  
+
   # Give GitHub some time to fully initialize the repo
   # This helps prevent the 404 errors when creating files
   lifecycle {

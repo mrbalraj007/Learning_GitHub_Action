@@ -1,6 +1,6 @@
 repository_name        = "GithubAction_DevOps_Projects"
 repository_description = "An example GitHub repository created with Terraform"
-repository_private     = false #true, you have to set as true if you want to create private repo.
+repository_private     = false         #true, you have to set as true if you want to create private repo.
 github_owner           = "mrbalraj007" # Replace with your GitHub username or organization
 
 # DO NOT include github_token here - use environment variables instead
