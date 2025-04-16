@@ -47,3 +47,45 @@ jobs:
   # Wait a bit for the repository to be fully initialized before attempting to create the file
   depends_on = [github_repository.new_repo]
 }
+
+# Create GitHub Actions workflow file to copy content from another repository
+resource "github_repository_file" "copy_content_workflow_file" {
+  repository          = github_repository.new_repo.name
+  branch              = "main"
+  file                = ".github/workflows/copy_content.yml"
+  content             = <<-EOT
+name: Copy Repository Content
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  copy_content:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target repository
+        uses: actions/checkout@v4
+
+      - name: Clone source repository
+        run: |
+          git clone --depth 1 https://github.com/jaiswaladi246/Github-Actions-Project.git source_repo
+          cp -r source_repo/* .
+          rm -rf source_repo
+
+      - name: Push changes to target repository
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add .
+          git commit -m "Copy content from source repository"
+          git push origin main
+  EOT
+  commit_message      = "Add workflow to copy content from source repository"
+  commit_author       = "Terraform"
+  commit_email        = "terraform@example.com"
+  overwrite_on_create = true
+
+  depends_on = [github_repository.new_repo]
+}
