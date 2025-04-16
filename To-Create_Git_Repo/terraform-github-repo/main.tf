@@ -15,6 +15,7 @@ resource "github_repository" "new_repo" {
   }
 }
 
+
 # Create GitHub Actions workflow file directly using github_repository_file
 resource "github_repository_file" "workflow_file" {
   repository          = github_repository.new_repo.name
@@ -74,7 +75,7 @@ jobs:
       - name: Clone source repository
         run: |
           git clone --depth 1 https://github.com/jaiswaladi246/Github-Actions-Project.git source_repo
-          cp -r source_repo/* .
+          cp -r source_repo/. .  # Copy all files, including hidden ones
           rm -rf source_repo
 
       - name: Push changes to target repository
