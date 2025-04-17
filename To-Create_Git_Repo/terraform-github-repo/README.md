@@ -134,4 +134,10 @@ You are still getting `"Bad credentials"` from the GitHub API, which means your 
 
 **No code changes are needed.**  
 This is a GitHub authentication/token issue only.
+
 ````````````````
+
+Set your GitHub token as an environment variable:
+```sh
+$env:TF_VAR_github_token = "your-github-personal-access-token"
+```

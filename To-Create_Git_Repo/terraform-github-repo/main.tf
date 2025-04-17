@@ -8,15 +8,12 @@ resource "github_repository" "new_repo" {
   has_downloads = true
   auto_init     = true # Create initial commit
 
+  # Important: Wait for GitHub to fully initialize the repository
+  # before attempting to push content to it
   lifecycle {
     ignore_changes = [auto_init]
   }
 }
-
-# Remove the workflow file resource as we'll clone the entire repository instead
-# resource "github_repository_file" "workflow_file" {
-#   ...
-# }
 
 # Add a resource to clone and push the content from the source repository
 resource "null_resource" "clone_and_push_repo" {
@@ -25,18 +22,22 @@ resource "null_resource" "clone_and_push_repo" {
   # This trigger ensures that the resource is recreated if the repository changes
   triggers = {
     repo_name = github_repository.new_repo.name
+    # Adding a timestamp ensures this runs every time we apply
+    timestamp = timestamp()
   }
 
+  # Use PowerShell for Windows compatibility
   provisioner "local-exec" {
     command = <<-EOT
-      # Create a temporary directory
-      mkdir -p temp_clone_dir
-      cd temp_clone_dir
+      # Create a unique temporary directory
+      $tempDir = "temp_clone_$([System.Guid]::NewGuid().ToString())"
+      New-Item -ItemType Directory -Path $tempDir -Force | Out-Null
+      Set-Location -Path $tempDir
       
-      # Initialize git
-      git init
+      # Sleep to ensure GitHub repo is ready
+      Start-Sleep -Seconds 10
       
-      # Clone the source repository with all content including hidden files
+      # Clone the source repository with all content (including hidden files)
       git clone --mirror https://github.com/jaiswaladi246/Github-Actions-Project.git .
       
       # Set the new repository as the remote
@@ -46,10 +47,10 @@ resource "null_resource" "clone_and_push_repo" {
       git push --mirror
       
       # Clean up
-      cd ..
-      rm -rf temp_clone_dir
+      Set-Location ..
+      Remove-Item -Path $tempDir -Recurse -Force
     EOT
 
-    interpreter = ["bash", "-c"]
+    interpreter = ["PowerShell", "-Command"]
   }
 }
