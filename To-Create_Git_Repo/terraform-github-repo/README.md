@@ -136,7 +136,7 @@ You are still getting `"Bad credentials"` from the GitHub API, which means your 
 This is a GitHub authentication/token issue only.
 
 ````````````````
-
+We have to run this code in windows powershell terminal to make it working.
 Set your GitHub token as an environment variable:
 ```sh
 $env:TF_VAR_github_token = "your-github-personal-access-token"
