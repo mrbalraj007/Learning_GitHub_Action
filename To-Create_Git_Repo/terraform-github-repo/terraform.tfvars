@@ -7,13 +7,14 @@ github_owner           = "mrbalraj007" # Replace with your GitHub username or or
 # Use: export GITHUB_TOKEN="your-token" (Linux/macOS) or $env:GITHUB_TOKEN="your-token" (PowerShell)
 
 actions_secrets = {
-  MY_SECRET  = "super_secret_value"
-  MY_SECRET1 = "another_secret_value"
-  MY_SECRET2 = "yet_another_secret"
+  SONAR_TOKEN  = "super_secret_value"
+  DOCKERHUB_TOKEN = "another_secret_value"
+  AWS_ACCESS_KEY_ID = "AWS_ACCESS_KEY_ID_values"
+  AWS_SECRET_ACCESS_KEY = "AWS_SECRET_ACCESS_KEY_values"
 }
 
 actions_variables = {
-  MY_VARIABLE  = "some_value"
-  MY_VARIABLE1 = "another_value"
+  SONAR_HOST_URL  = "some_value"
+  DOCKERHUB_USERNAME = "another_value"
   MY_VARIABLE2 = "yet_another_value"
 }
