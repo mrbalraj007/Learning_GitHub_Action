@@ -14,11 +14,11 @@ variable "repository_private" {
   default     = false
 }
 
-# variable "github_token" {
-#   description = "GitHub personal access token"
-#   type        = string
-#   sensitive   = true
-# }
+variable "github_token" {
+  description = "GitHub personal access token"
+  type        = string
+  sensitive   = true
+}
 
 variable "github_owner" {
   description = "The GitHub owner (username or organization)"

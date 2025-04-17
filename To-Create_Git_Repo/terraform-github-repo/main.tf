@@ -3,47 +3,53 @@ resource "github_repository" "new_repo" {
   description   = var.repository_description
   visibility    = var.repository_private ? "private" : "public"
   has_issues    = true
-  has_projects  = true // Enable Projects tab
+  has_projects  = true
   has_wiki      = true
   has_downloads = true
-  auto_init     = true # This creates a README.md
+  auto_init     = true # Create initial commit
 
-  # Give GitHub some time to fully initialize the repo
-  # This helps prevent the 404 errors when creating files
   lifecycle {
     ignore_changes = [auto_init]
   }
 }
 
-# Create GitHub Actions workflow file directly using github_repository_file
-resource "github_repository_file" "workflow_file" {
-  repository          = github_repository.new_repo.name
-  branch              = "main"
-  file                = ".github/workflows/example.yml"
-  content             = <<-EOT
-name: Example Workflow
+# Remove the workflow file resource as we'll clone the entire repository instead
+# resource "github_repository_file" "workflow_file" {
+#   ...
+# }
 
-on:
-  push:
-    branches:
-      - main
-      - master
-
-jobs:
-  hello_world:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Say Hello
-        run: echo "Hello, GitHub Actions!"
-  EOT
-  commit_message      = "Add example GitHub Actions workflow"
-  commit_author       = "Terraform"
-  commit_email        = "terraform@example.com"
-  overwrite_on_create = true
-
-  # Wait a bit for the repository to be fully initialized before attempting to create the file
+# Add a resource to clone and push the content from the source repository
+resource "null_resource" "clone_and_push_repo" {
   depends_on = [github_repository.new_repo]
+
+  # This trigger ensures that the resource is recreated if the repository changes
+  triggers = {
+    repo_name = github_repository.new_repo.name
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      # Create a temporary directory
+      mkdir -p temp_clone_dir
+      cd temp_clone_dir
+      
+      # Initialize git
+      git init
+      
+      # Clone the source repository with all content including hidden files
+      git clone --mirror https://github.com/jaiswaladi246/Github-Actions-Project.git .
+      
+      # Set the new repository as the remote
+      git remote set-url origin https://${var.github_token}@github.com/${var.github_owner}/${var.repository_name}.git
+      
+      # Push all content, including hidden files and all branches
+      git push --mirror
+      
+      # Clean up
+      cd ..
+      rm -rf temp_clone_dir
+    EOT
+
+    interpreter = ["bash", "-c"]
+  }
 }
