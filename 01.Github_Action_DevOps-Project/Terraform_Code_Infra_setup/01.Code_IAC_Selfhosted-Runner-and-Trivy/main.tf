@@ -37,7 +37,7 @@ resource "aws_instance" "runner-svr" {
   instance_market_options {
     market_type = "spot"
     spot_options {
-      max_price = "0.0251" # Set your maximum price for the spot instance
+      max_price = "0.0109" # Set your maximum price for the spot instance
     }
   }
 
@@ -57,7 +57,11 @@ resource "aws_instance" "runner-svr" {
   # Set appropriate ownership for the copied folder
   provisioner "remote-exec" {
     inline = [
-      "sudo chown -R ubuntu:ubuntu /home/ubuntu/actions-runner && sudo chmod -x /home/ubuntu/actions-runner/selfhost-runner.sh"      
+      "ls -la /home/ubuntu/actions-runner",
+      "sudo chown -R ubuntu:ubuntu /home/ubuntu/actions-runner",
+      "ls -la /home/ubuntu/actions-runner/selfhost-runner.sh",
+      "sudo chmod -x /home/ubuntu/actions-runner/selfhost-runner.sh",
+      "ls -la /home/ubuntu/actions-runner/selfhost-runner.sh"
     ]
 
     connection {

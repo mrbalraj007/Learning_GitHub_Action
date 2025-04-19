@@ -18,7 +18,7 @@ variable "github_token" {
   description = "GitHub personal access token"
   type        = string
   sensitive   = true
-  default     = "xxxxxxxxxxxxxxxxxxxxxxx"  # Define here Github Token value
+  default     = "" # "xxxxxxxxxxxxxxxxxxxxxxx"  # Define here Github Token value
 }
 
 variable "github_owner" {
