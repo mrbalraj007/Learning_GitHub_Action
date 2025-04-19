@@ -61,4 +61,4 @@ terraform init
 terraform fmt
 terraform validate
 terraform plan -out=plan.out
-terraform apply -auto-approve
+# terraform apply -auto-approve 
