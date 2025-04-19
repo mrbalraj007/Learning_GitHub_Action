@@ -38,8 +38,8 @@ resource "null_resource" "clone_and_push_repo" {
       Start-Sleep -Seconds 10
       
       # Clone the source repository with all content (including hidden files)
-       git clone --mirror https://github.com/jaiswaladi246/Github-Actions-Project.git .
-      # git clone --mirror https://github.com/mrbalraj007/Github-Actions-Project.git .
+      # git clone --mirror https://github.com/jaiswaladi246/Github-Actions-Project.git .
+       git clone --mirror https://github.com/mrbalraj007/Github-Actions-Project.git .
       
       # Set the new repository as the remote
       git remote set-url origin https://${var.github_token}@github.com/${var.github_owner}/${var.repository_name}.git
