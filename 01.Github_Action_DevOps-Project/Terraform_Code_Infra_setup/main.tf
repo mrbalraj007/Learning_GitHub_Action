@@ -1,7 +1,7 @@
-resource "null_resource" "Code_IAC_Jenkins_Trivy" {
+resource "null_resource" "01.Code_IAC_Self-Runner_Trivy" {
   provisioner "local-exec" {
     #command = "cd ../Code_IAC_Jenkins_Trivy_Docker && terraform init && terraform apply -auto-approve"
-    command = "cd 01.Code_IAC_Jenkins_Trivy && terraform init && terraform apply -auto-approve"
+    command = "cd 01.Code_IAC_Self-Runner_Trivy && terraform init && terraform apply -auto-approve"
   }
 }
 
@@ -10,7 +10,7 @@ resource "null_resource" "Code_IAC_Nexus" {
     #command = "cd ../Code_IAC_Splunk && terraform init && terraform apply -auto-approve"
     command = "cd 02.Code_IAC_Nexus && terraform init && terraform apply -auto-approve"
   }
-  depends_on = [null_resource.Code_IAC_Jenkins_Trivy]
+  depends_on = [null_resource.01.Code_IAC_Self-Runner_Trivy]
 }
 
 resource "null_resource" "Code_IAC_SonarQube" {

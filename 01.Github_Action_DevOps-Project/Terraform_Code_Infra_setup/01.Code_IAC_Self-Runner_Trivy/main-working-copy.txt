@@ -18,25 +18,25 @@ data "aws_ami" "ubuntu" {
 }
 
 
-resource "aws_instance" "jenkins-svr" {
+resource "aws_instance" "runner-svr" {
   # ami                    = "ami-0287a05f0ef0e9d9a"      #change ami id for different region
   ami                    = data.aws_ami.ubuntu.id
-  instance_type          = "t2.large"
+  instance_type          =  "t2.medium" #"t2.large"
   key_name               = "MYLABKEY" #change key name as per your setup
-  vpc_security_group_ids = [aws_security_group.Jenkins-VM-SG.id]
-  user_data              = templatefile("./jenkins_install.sh", {})
+  vpc_security_group_ids = [aws_security_group.runner-VM-SG.id]
+  user_data              = templatefile("./runner_install.sh", {})
 
   tags = {
-    Name = "Jenkins-Trivy"
+    Name = "runner-Trivy"
   }
 
   root_block_device {
-    volume_size = 40
+    volume_size = 25
   }
 }
 
-resource "aws_security_group" "Jenkins-VM-SG" {
-  name        = "Jenkins-SG"
+resource "aws_security_group" "runner-VM-SG" {
+  name        = "runner-SG"
   description = "Allow inbound traffic"
 
   dynamic "ingress" {
@@ -66,10 +66,10 @@ resource "aws_security_group" "Jenkins-VM-SG" {
   }
 
   tags = {
-    Name = "Jenkins-VM-SG"
+    Name = "runner-VM-SG"
   }
 }
 
 output "instance_ip" {
-  value = aws_instance.jenkins-svr.public_ip
+  value = aws_instance.runner-svr.public_ip
 }

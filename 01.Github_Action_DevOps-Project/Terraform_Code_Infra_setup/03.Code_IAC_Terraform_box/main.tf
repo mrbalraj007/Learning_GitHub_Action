@@ -19,7 +19,7 @@ data "aws_ami" "ubuntu" {
 resource "aws_iam_policy" "eks_custom_policy" {
   name        = "eks_custom_policy"
   description = "Custom policy for EKS operations"
-  policy      = jsonencode({
+  policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
@@ -158,6 +158,13 @@ resource "aws_instance" "terrabox" {
 
   root_block_device {
     volume_size = 25
+  }
+
+  instance_market_options {
+    market_type = "spot"
+    spot_options {
+      max_price = "0.025" # Set your maximum price for the spot instance
+    }
   }
 
   # Copy the folder after the instance is created and SSH is available

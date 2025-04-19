@@ -31,7 +31,13 @@ resource "aws_instance" "sonar" {
   }
 
   root_block_device {
-    volume_size = 15
+    volume_size = 25
+  }
+  instance_market_options {
+    market_type = "spot"
+    spot_options {
+      max_price = "0.0151" # Set your maximum price for the spot instance
+    }
   }
 }
 
