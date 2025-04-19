@@ -52,3 +52,9 @@ bash
 Copy
 Edit
 sudo rm /etc/apt/sources.list.d/trivy.list
+
+
+
+# Note: 
+# a. First create a pem-key manually from the AWS console
+# b. Copy it in the same directory as your terraform code
