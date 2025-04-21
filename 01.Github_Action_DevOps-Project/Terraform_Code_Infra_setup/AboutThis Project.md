@@ -127,15 +127,14 @@ dar--l          21/04/25  12:34 PM                03.Code_IAC_Terraform_box
 ## <span style="color: Yellow;">Setting Up the Infrastructure </span>
 
 I have created a Terraform code to set up the entire infrastructure, including the installation of required applications, tools, and the EKS cluster automatically created.
-
-> 💡 **Note:**  &rArr;<span style="color: Green;"> ```EKS cluster``` creation will take approx. 10 to 15 minutes.
-
 - &rArr;<span style="color: brown;"> Docker Install
 - &rArr;<span style="color: brown;"> Trivy Install
 - &rArr;<span style="color: brown;"> AWS Cli Install
 - &rArr;<span style="color: brown;"> Terraform Install
 - &rArr;<span style="color: brown;"> EKS Cluster Setup
 
+> 💡 **Note:**  &rArr;<span style="color: Green;"> ```EKS cluster``` creation will take approx. 10 to 15 minutes.
+> 
 ### <span style="color: Yellow;"> EC2 Instances creation
 
 First, we'll create the necessary virtual machines using ```terraform``` code. 
