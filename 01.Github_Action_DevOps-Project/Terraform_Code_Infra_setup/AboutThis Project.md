@@ -198,9 +198,6 @@ sudo cat /var/log/cloud-init-output.log | more
 
 Outcome of "```cloud-init-output.log```"
 
-- From Terraform:
-![image-2](https://github.com/user-attachments/assets/a1082c77-1607-4093-b8a7-41c94e358473)
-
 ### <span style="color: cyan;"> Verify the Installation 
 
 - [x] <span style="color: brown;"> Docker version
@@ -217,11 +214,6 @@ ubuntu@ip-172-31-94-25:~$ docker ps
 ```bash
 ubuntu@ip-172-31-89-97:~$ trivy version
 Version: 0.55.2
-```
-- [x] <span style="color: brown;"> Helm version
-```bash
-ubuntu@ip-172-31-89-97:~$ helm version
-version.BuildInfo{Version:"v3.16.1", GitCommit:"5a5449dc42be07001fd5771d56429132984ab3ab", GitTreeState:"clean", GoVersion:"go1.22.7"}
 ```
 - [x] <span style="color: brown;"> Terraform version
 ```bash
@@ -252,7 +244,7 @@ To see help text, you can run:
 
 - [x] <span style="color: brown;"> Verify the EKS cluster
 
-On the ```jenkins``` virtual machine, Go to directory ```k8s_setup_file``` and open the file ```cat apply.log``` to verify the cluster is created or not.
+On the ```terraform``` virtual machine, Go to directory ```k8s_setup_file``` and open the file ```cat apply.log``` to verify the cluster is created or not.
 ```sh
 ubuntu@ip-172-31-90-126:~/k8s_setup_file$ pwd
 /home/ubuntu/k8s_setup_file
@@ -282,12 +274,12 @@ kubectl get nodes
 kubectl cluster-info
 kubectl config get-contexts
 ```
-![image-3](https://github.com/user-attachments/assets/4818cf2e-c970-4309-96e3-84d3a7ccd7a7)
 ---
-## <span style="color: yellow;"> Setup the Jenkins </span>
-Go to Jenkins EC2 and run the following command 
-Access Jenkins via ```http://<your-server-ip>:8080```.
----
+## <span style="color: yellow;"> Setup SonarQube </span>
+- Go to SonarQube EC2 and run the following command 
+- Access SonarQube via ```http://<your-server-ip>:9000```.
+
+> 💡 **Note:** When you access the above URl then it will be promot for login. Use the "admin/admin" for first time login and will prompt for change the password Once you change the password, make sure to create a strong and secure one that you can remember. Afterward, you will have full access to the system's features and settings. 
 
 ####  <span style="color: cyan;"> Create a token in SonarQube
   - Administration>Security>Users>Create a new token

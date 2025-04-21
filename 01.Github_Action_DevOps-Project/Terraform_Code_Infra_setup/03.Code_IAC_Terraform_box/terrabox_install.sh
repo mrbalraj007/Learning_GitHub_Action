@@ -58,7 +58,10 @@ ls -latrs /home/ubuntu/k8s_setup_file/*
 # Create EKS Cluster
 cd /home/ubuntu/k8s_setup_file
 terraform init
+echo "alignment of tf file if required..."
 terraform fmt
 terraform validate
-terraform plan -out=plan.out
-# terraform apply -auto-approve 
+#terraform plan -out=plan.out
+terraform plan | tee plan.log
+echo "Applying the Terraform plan with auto-approve..."
+terraform apply -auto-approve | tee apply.log
