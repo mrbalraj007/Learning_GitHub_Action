@@ -69,8 +69,31 @@ This project outlines the step-by-step process of setting up a CI/CD pipeline us
 
 Before diving into this project, here are some skills and tools you should be familiar with:
 
-> ⚠️ **Important:** Make sure the EC2 instance has the correct IAM role attached before running Terraform.
-> ⚠️ **Important:**
+> ⚠️ **Important:** 
+
+> 01. Make sure First you will create a **`pem-key`** manually from the AWS console. i.e "MYLABKEY.pem" because it will be used for creating `EC2` VMs and `EKS cluster`.
+> 02. Copy `MYLABKEY.pem` in the terraform directory (`01.Code_IAC_Selfhosted-Runner-and-Trivy` and `03.Code_IAC_Terraform_box` ) as below your terraform code
+```sh
+ls 
+\Learning_GitHub_Action\01.Github_Action_DevOps-Project\Terraform_Code_Infra_setup
+
+
+Mode                 LastWriteTime         Length Name                                                                                                                                                                                              
+----                 -------------         ------ ----                                                                                                                                                                                              
+dar--l          17/04/25  12:48 PM                .terraform                                                                                                                                                                                        
+dar--l          21/04/25  12:34 PM                00.Code_IAC-github-repo                                                                                                                                                                           
+dar--l          21/04/25  12:34 PM                01.Code_IAC_Selfhosted-Runner-and-Trivy                                                                                                                                                           
+dar--l          21/04/25   1:38 PM                02.Code_IAC_SonarQube                                                                                                                                                                             
+dar--l          21/04/25  12:34 PM                03.Code_IAC_Terraform_box                                                                                                                                                                         
+-a---l          20/08/24   1:45 PM            493 .gitignore                                                                                                                                                                                        
+-a---l          19/04/25   9:01 PM           1207 .terraform.lock.hcl                                                                                                                                                                               
+-a---l          21/04/25   1:59 PM          18225 AboutThis Project.md                                                                                                                                                                              
+-a---l          19/04/25   8:48 PM           1309 main.tf                                                                                                                                                                                           
+-a---l          19/04/25   9:07 PM            182 terraform.tfstate                                                                                                                                                                                 
+-a---l          19/04/25   9:07 PM           2281 terraform.tfstate.backup 
+````
+
+Make sure the you will create a EC2 instance has the correct IAM role attached before running Terraform.
 > 
 > 01. Make sure the EC2 instance has the correct IAM role attached before running Terraform.
 > 02. Ensure the security groups allow SSH access from your IP.
@@ -80,7 +103,7 @@ Before diving into this project, here are some skills and tools you should be fa
 
 Important: 
 + First create a **`pem-key`** manually from the AWS console. i.e "MYLABKEY.pem" because it is being used for creating `EC2` VMs and `EKS cluster`.
-+ b. Copy `MYLABKEY.pem` in the terraform directory as below your terraform code
++ b. 
 
 > 💡 **Note:** This EC2 instance is not used for workloads, only for EKS bootstrapping.
 > ⚠️ **Important:** Make sure the EC2 instance has the correct IAM role attached before running Terraform.
@@ -424,3 +447,21 @@ Terraform destroy --auto-approve
 
 ### **Conclusion**
 This project provides a comprehensive guide to setting up a CI/CD pipeline using GitHub Actions. By integrating tools like Docker, Trivy, SonarQube, and Terraform, it ensures a secure and efficient software delivery process. The use of AWS CLI and Kubernetes further demonstrates the deployment of applications to cloud-native environments. This project is a valuable resource for DevOps engineers looking to implement modern CI/CD pipelines.
+
+
+__Ref Link:__
+
+- [Youtube VideoLink](https://www.youtube.com/watch?v=Gd9Aofx-iLI&t=7808s)
+
+- [Install Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
+
+- [Install AWS Cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+
+- [EKS Create-repository](https://docs.aws.amazon.com/cli/latest/reference/ecr/create-repository.html)
+
+- [EKS describe-repositories](https://docs.aws.amazon.com/cli/latest/reference/ecr/describe-repositories.html)
+
+- [AWS configure](https://docs.aws.amazon.com/cli/latest/reference/configure/set.html)
+
+- [Jenkins-environment-variables-1](https://phoenixnap.com/kb/jenkins-environment-variables)
+- [Jenkins-environment-variables-2](https://devopsqa.wordpress.com/2019/11/19/list-of-available-jenkins-environment-variables/)
