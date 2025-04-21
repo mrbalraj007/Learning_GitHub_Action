@@ -108,7 +108,7 @@ resource "aws_eks_node_group" "balraj" {
     min_size     = 2
   }
 
-  instance_types = ["t2.medium"]
+  instance_types = ["t3.small"]
 
   remote_access {
     ec2_ssh_key = var.ssh_key_name

@@ -21,7 +21,7 @@ data "aws_ami" "ubuntu" {
 resource "aws_instance" "sonar" {
   # ami                    = "ami-0287a05f0ef0e9d9a"      #change ami id for different region
   ami                    = data.aws_ami.ubuntu.id
-  instance_type          = "t2.medium"
+  instance_type          = "t3.small"
   key_name               = "MYLABKEY" #change key name as per your setup
   vpc_security_group_ids = [aws_security_group.sonar-VM-SG.id]
   user_data              = templatefile("./sonar_install.sh", {})
