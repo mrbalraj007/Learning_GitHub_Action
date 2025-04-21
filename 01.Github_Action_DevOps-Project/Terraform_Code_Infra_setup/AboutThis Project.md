@@ -93,8 +93,9 @@ dar--l          21/04/25  12:34 PM                03.Code_IAC_Terraform_box
 
 - [x] [Clone repository for terraform code](https://github.com/mrbalraj007/Learning_GitHub_Action/tree/main/01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup)<br>
   > 💡 **Note:** Replace resource names and variables as per your requirement in terraform code
-  > - from k8s_setup_file/main.tf (i.e ```balraj```*).
-  > - from Virtual machine main.tf (i.e keyname- ```MYLABKEY```*)
+  > - from 03.Code_IAC_Terraform_box/k8s_setup_file/main.tf (i.e ```balraj```*).
+  > - from Virtual machine 01.Code_IAC_Selfhosted-Runner-and-Trivy/main.tf (i.e keyname- ```MYLABKEY```*)
+  > - from Virtual machine 03.Code_IAC_Terraform_box/main.tf (i.e keyname- ```MYLABKEY```*)
 
 ---
 ## <span style="color: Yellow;">Setting Up the Infrastructure </span>
