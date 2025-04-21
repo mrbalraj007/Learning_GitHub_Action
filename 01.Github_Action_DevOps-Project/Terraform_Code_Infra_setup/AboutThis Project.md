@@ -419,11 +419,10 @@ This should now execute correctly because the problematic carriage return charac
    ![alt text](image-15.png)
    - Click on update IAM Role.
 
-
-
 ### **5. Setting Up Terraform**
    - Write Terraform scripts to provision the EKS cluster.
    - Use `terraform apply` to create the infrastructure.
+
 
 
 ### <span style="color: orange;">  **Writing the CI/CD Pipeline**
@@ -459,13 +458,19 @@ Run the pipeline; the first time it would fail, and rerun it with parameters.
    - Use `kubectl` to apply Kubernetes manifests.
    - Verify the deployment by checking the status of pods and services.
 
-Verify the Docker Image
-
-Verify code couverage
-
+- Verify the Docker Image
+-![alt text](image-25.png)
+Verify code couverage in SonarQube
+- ![alt text](image-26.png)
+- ![alt text](image-28.png)
 Verify the pipeline Status
+![alt text](image-27.png)
 
 
+- Verify the pods in runner VM
+- ![alt text](image-29.png)
+- ![alt text](image-30.png)
+- ![alt text](image-31.png)
 ---
 
 ## <span style="color: Yellow;"> Environment Cleanup:
@@ -473,13 +478,12 @@ Verify the pipeline Status
 
 ### <span style="color: cyan;"> To delete deployment:
 - I've created a Github Action to destroy the Kubernetes `deployment` and `services`.
+- ![alt text](image-32.png)
 
-  - __Delete all deployment/Service__ first
-    - ```sh
-        kubectl delete deployment.apps/singh-app
-        kubectl delete service singh-app
-        kubectl delete service/singh-service
-        ```
+  - __Delete all deployment/Service__ In github action, and click on the second pipeline to delete the deployment and service.
+   ![alt text](image-33.png)
+   ![alt text](image-34.png)
+
 ### <span style="color: cyan;"> To delete ```AWS EKS cluster```
    -   Login into the `Terraform EC2 `instance and change the directory to /`k8s_setup_file`, and run the following command to delete the cluster.
        - ```sh
@@ -487,6 +491,23 @@ Verify the pipeline Status
          cd /k8s_setup_file
          sudo terraform destroy --auto-approve
          ```
+- ![alt text](image-35.png)
+
+I noticed that permission is set to root for terraform. we have to take ownership first and then try to delete it.
+![alt text](image-36.png)
+
+```sh
+sudo chown -R ubuntu:ubuntu /home/ubuntu/k8s_setup_file/.terraform*
+```
+I was still getting error message while runing the desrtoy
+![alt text](image-37.png)
+```sh
+sudo chown -R ubuntu:ubuntu /home/ubuntu/k8s_setup_file/terraform*
+```
+it works :-)
+
+![alt text](image-38.png)
+
 ###  <span style="color: cyan;"> To delete the ```Virtual machine```.
 Go to folder *<span style="color: cyan;">"01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup"</span>* and run the terraform command.
    - ```sh
