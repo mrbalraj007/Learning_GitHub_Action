@@ -73,6 +73,7 @@ Before diving into this project, here are some skills and tools you should be fa
 
 > 01. Make sure First you will create a **`.pem`** manually from the AWS console. i.e "MYLABKEY.pem" because it will be used for creating `EC2` VMs and `EKS cluster`.
 > 02. Copy `MYLABKEY.pem` in the terraform directory (`01.Code_IAC_Selfhosted-Runner-and-Trivy` and `03.Code_IAC_Terraform_box` ) as below your terraform code
+> [Generate the Github Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
 ```sh
 ls 
 \Learning_GitHub_Action\01.Github_Action_DevOps-Project\Terraform_Code_Infra_setup
@@ -92,10 +93,12 @@ dar--l          21/04/25  12:34 PM                03.Code_IAC_Terraform_box
 ````
 
 - [x] [Clone repository for terraform code](https://github.com/mrbalraj007/Learning_GitHub_Action/tree/main/01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup)<br>
-  > 💡 **Note:** Replace resource names and variables as per your requirement in terraform code
-  > - from 03.Code_IAC_Terraform_box/k8s_setup_file/main.tf (i.e ```balraj```*).
-  > - from Virtual machine 01.Code_IAC_Selfhosted-Runner-and-Trivy/main.tf (i.e keyname- ```MYLABKEY```*)
-  > - from Virtual machine 03.Code_IAC_Terraform_box/main.tf (i.e keyname- ```MYLABKEY```*)
+  > 💡 **Note:** Replace GitHub Toekn, resource names and variables as per your requirement in terraform code
+  > - For github Repo Token to be updated in file 00.Code_IAC-github-repo/variables.tf (i.e default- ```xxxxxx```*)
+  > - For Virtual machine 01.Code_IAC_Selfhosted-Runner-and-Trivy/main.tf (i.e keyname- ```MYLABKEY```*)
+  > - For 03.Code_IAC_Terraform_box/k8s_setup_file/main.tf (i.e ```balraj```*).
+  > - For Virtual machine 03.Code_IAC_Terraform_box/main.tf (i.e keyname- ```MYLABKEY```*)
+
 
 ---
 ## <span style="color: Yellow;">Setting Up the Infrastructure </span>
@@ -451,3 +454,4 @@ __Ref Link:__
 
 
 https://stackoverflow.com/questions/45216264/clear-file-content-cache-in-visual-studio-code
+https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
