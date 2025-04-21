@@ -107,7 +107,7 @@ dar--l          21/04/25  12:34 PM                03.Code_IAC_Terraform_box
       - `03.Code_IAC_Terraform_box/k8s_setup_file/variable.tf` (i.e ```MYLABKEY```*)
   
       
-**Set up your GitHub token**:
+- [x] **Set up your GitHub token**:
    Create a new GitHub personal access token with the `repo` scope at https://github.com/settings/tokens.
    
    Then set it as an environment variable (DO NOT commit your token to version control):
