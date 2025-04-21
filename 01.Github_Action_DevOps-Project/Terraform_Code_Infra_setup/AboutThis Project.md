@@ -73,7 +73,7 @@ Before diving into this project, here are some skills and tools you should be fa
 
 > 01. Make sure First you will create a **`.pem`** manually from the AWS console. i.e "MYLABKEY.pem" because it will be used for creating `EC2` VMs and `EKS cluster`.
 > 02. Copy `MYLABKEY.pem` in the terraform directory (`01.Code_IAC_Selfhosted-Runner-and-Trivy` and `03.Code_IAC_Terraform_box` ) as below your terraform code
-> [Generate the Github Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+> 03. [Generate the Github Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
 ```sh
 ls 
 \Learning_GitHub_Action\01.Github_Action_DevOps-Project\Terraform_Code_Infra_setup
@@ -88,16 +88,16 @@ dar--l          21/04/25   1:38 PM                02.Code_IAC_SonarQube
 dar--l          21/04/25  12:34 PM                03.Code_IAC_Terraform_box                                                                                                                                                                         
 -a---l          20/08/24   1:45 PM            493 .gitignore                                                                                                                                                                                                                                                                                                                                    
 -a---l          21/04/25   1:59 PM          18225 AboutThis Project.md                                                                                                                                                                              
--a---l          19/04/25   8:48 PM           1309 main.tf                                                                                                                                                                                        
-
+-a---l          19/04/25   8:48 PM           1309 main.tf                                                                                  
 ````
 
 - [x] [Clone repository for terraform code](https://github.com/mrbalraj007/Learning_GitHub_Action/tree/main/01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup)<br>
-  > 💡 **Note:** Replace GitHub Toekn, resource names and variables as per your requirement in terraform code
-  > - For github Repo Token to be updated in file 00.Code_IAC-github-repo/variables.tf (i.e default- ```xxxxxx```*)
+  > 💡 **Note:** Replace GitHub Token, resource names and variables as per your requirement in terraform code
+  > - For **`github Repo**` Token value to be updated in file `00.Code_IAC-github-repo/variables.tf` (i.e default- ```xxxxxx```*)
   > - For Virtual machine 01.Code_IAC_Selfhosted-Runner-and-Trivy/main.tf (i.e keyname- ```MYLABKEY```*)
-  > - For 03.Code_IAC_Terraform_box/k8s_setup_file/main.tf (i.e ```balraj```*).
-  > - For Virtual machine 03.Code_IAC_Terraform_box/main.tf (i.e keyname- ```MYLABKEY```*)
+  > - For `03.Code_IAC_Terraform_box/k8s_setup_file/main.tf` (i.e ```balraj```*).
+  > - For `03.Code_IAC_Terraform_box/k8s_setup_file/variable.tf` (i.e ```MYLABKEY```*)
+  > - For Virtual machine `03.Code_IAC_Terraform_box/main.tf` (i.e keyname- ```MYLABKEY```*)
 
 
 ---
