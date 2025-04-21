@@ -71,7 +71,7 @@ Before diving into this project, here are some skills and tools you should be fa
 
 > ⚠️ **Important:** 
 
-> 01. Make sure First you will create a **`pem-key`** manually from the AWS console. i.e "MYLABKEY.pem" because it will be used for creating `EC2` VMs and `EKS cluster`.
+> 01. Make sure First you will create a **`.pem`** manually from the AWS console. i.e "MYLABKEY.pem" because it will be used for creating `EC2` VMs and `EKS cluster`.
 > 02. Copy `MYLABKEY.pem` in the terraform directory (`01.Code_IAC_Selfhosted-Runner-and-Trivy` and `03.Code_IAC_Terraform_box` ) as below your terraform code
 ```sh
 ls 
@@ -85,35 +85,17 @@ dar--l          21/04/25  12:34 PM                00.Code_IAC-github-repo
 dar--l          21/04/25  12:34 PM                01.Code_IAC_Selfhosted-Runner-and-Trivy                                                                                                                                                           
 dar--l          21/04/25   1:38 PM                02.Code_IAC_SonarQube                                                                                                                                                                             
 dar--l          21/04/25  12:34 PM                03.Code_IAC_Terraform_box                                                                                                                                                                         
--a---l          20/08/24   1:45 PM            493 .gitignore                                                                                                                                                                                        
--a---l          19/04/25   9:01 PM           1207 .terraform.lock.hcl                                                                                                                                                                               
+-a---l          20/08/24   1:45 PM            493 .gitignore                                                                                                                                                                                                                                                                                                                                    
 -a---l          21/04/25   1:59 PM          18225 AboutThis Project.md                                                                                                                                                                              
--a---l          19/04/25   8:48 PM           1309 main.tf                                                                                                                                                                                           
--a---l          19/04/25   9:07 PM            182 terraform.tfstate                                                                                                                                                                                 
--a---l          19/04/25   9:07 PM           2281 terraform.tfstate.backup 
+-a---l          19/04/25   8:48 PM           1309 main.tf                                                                                                                                                                                        
+
 ````
 
-Make sure the you will create a EC2 instance has the correct IAM role attached before running Terraform.
-> 
-> 01. Make sure the EC2 instance has the correct IAM role attached before running Terraform.
-> 02. Ensure the security groups allow SSH access from your IP.
-> 03. Confirm that the instance has the required AWS CLI and tools installed.
-> 04. Do not store AWS credentials in plaintext on the instance.
-
-
-Important: 
-+ First create a **`pem-key`** manually from the AWS console. i.e "MYLABKEY.pem" because it is being used for creating `EC2` VMs and `EKS cluster`.
-+ b. 
-
-> 💡 **Note:** This EC2 instance is not used for workloads, only for EKS bootstrapping.
-> ⚠️ **Important:** Make sure the EC2 instance has the correct IAM role attached before running Terraform.
-
-- [x] [Clone repository for terraform code](https://github.com/mrbalraj007/DevOps_free_Bootcamp/tree/main/19.Real-Time-DevOps-Project/Terraform_Code/Code_IAC_Terraform_box)<br>
+- [x] [Clone repository for terraform code](https://github.com/mrbalraj007/Learning_GitHub_Action/tree/main/01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup)<br>
   __Note__: Replace resource names and variables as per your requirement in terraform code
   - from k8s_setup_file/main.tf (i.e ```balraj```*).
   - from Virtual machine main.tf (i.e keyname- ```MYLABKEY```*)
 
-- [x] [App Repo (Simple-DevOps-Project)](https://github.com/mrbalraj007/Amazon-Prime-Clone-Project.git)
 ---
 ## <span style="color: Yellow;">Setting Up the Infrastructure </span>
 
@@ -465,3 +447,6 @@ __Ref Link:__
 
 - [Jenkins-environment-variables-1](https://phoenixnap.com/kb/jenkins-environment-variables)
 - [Jenkins-environment-variables-2](https://devopsqa.wordpress.com/2019/11/19/list-of-available-jenkins-environment-variables/)
+
+
+https://stackoverflow.com/questions/45216264/clear-file-content-cache-in-visual-studio-code
