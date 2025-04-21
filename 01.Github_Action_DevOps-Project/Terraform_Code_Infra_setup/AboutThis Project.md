@@ -221,6 +221,8 @@ terraform apply
 ```
 -------
 
+![alt text](image-4.png)
+
 Once you run the terraform command, then we will verify the following things to make sure everything is setup via a terraform.
 
 ### <span style="color: Orange;"> Inspect the ```Cloud-Init``` logs</span>: 
@@ -280,6 +282,9 @@ To see help text, you can run:
   aws <command> <subcommand> help
 ```
 
+# Terraform cluster verify
+![alt text](image-12.png)
+
 - [x] <span style="color: brown;"> Verify the EKS cluster
 
 On the ```terraform``` virtual machine, Go to directory ```k8s_setup_file``` and open the file ```cat apply.log``` to verify the cluster is created or not.
@@ -300,6 +305,8 @@ Once EKS cluster is setup then need to run the following command to make it intr
 ```sh
 aws eks update-kubeconfig --name balraj-cluster --region us-east-1
 ```
+![alt text](image-13.png)
+
 > > ⚠️ **Important:** <br>
 *The ```aws eks update-kubeconfig``` command is used to configure your local kubectl tool to interact with an Amazon EKS (Elastic Kubernetes Service) cluster. It updates or creates a kubeconfig file that contains the necessary authentication information to allow kubectl to communicate with your specified EKS cluster.*
 
@@ -313,30 +320,72 @@ kubectl get nodes
 kubectl cluster-info
 kubectl config get-contexts
 ```
+![alt text](image-17.png)
+![alt text](image-18.png)
+
 ---
 ### <span style="color: yellow;"> **Verify GitHub Repo and GitHub Actions**
    - GitHub repository created and initialize it because we are using terraform.
+   - ![alt text](image-2.png)
    - Verify a `.github/workflows` directory and created a two YAML file for the pipeline.
+   ![alt text](image-3.png)
 
-### **Adding a Virtual Machine as a Runner**
+###   <span style="color: cyan;">**Adding a Virtual Machine as a Runner**
    - I'll be using self-hosted runner to execute all the pipeline.
    - Configure the runner by following the commands provided in GitHub's settings.
-
-##  <span style="color: cyan;"> Configure Selfhosted runner in Github Repo</span>
-```
-<GithubAction_DevOps_Projects>/settings/actions/runners
-```
-![alt text](image.png)
-![alt text](image-1.png)
+   - ```
+      <GithubAction_DevOps_Projects>/settings/actions/runners
+      ```
+    ![alt text](image-5.png)
+   - Click on new `self-hosted runner` and select `Linux`
+   - Notedown the token value
+   ![alt text](image-6.png)
+   - Take putty session of `runner` EC2
+   - Go to `actions-runner` folder
+   - ![alt text](image-7.png)
+   - Update the token value here
+   - ![alt text](image-8.png)
+   - change the execution mode for script and run it.
+   - `chmod +x selfhost-runner.sh`
 
 > 💡 **Note:** 
 > >*Take note of the token value from here and paste it into the script in runner at the following spot. This ensures that the script executes successfully with the necessary permissions. Once you've finished, save your modifications and run the script to test whether it works as planned.*
+
+I am getting this error message.
+![alt text](image-9.png)
+
+**Solution:**
+try explicitly invoking the bash interpreter:
+Bash
+
+bash ./selfhost-runner.sh
+
+
+The solution is to remove these carriage return characters using the dos2unix command:
+   1. Install dos2unix if you haven't already:
+Bash
+
+sudo apt-get update
+sudo apt-get install dos2unix
+   2. Run dos2unix on your selfhost-runner.sh script:
+Bash
+
+dos2unix selfhost-runner.sh
+   3. Try running the script again:
+Bash
+
+./selfhost-runner.sh
+This should now execute correctly because the problematic carriage return characters will have been removed
+
+![alt text](image-10.png)
+![alt text](image-11.png)
 
 
 ### <span style="color: yellow;"> Setup SonarQube </span>
 - Go to SonarQube EC2 and run the following command 
 - Access SonarQube via ```http://<your-server-ip>:9000```.
-
+![alt text](image-19.png)
+![alt text](image-20.png)
 > 💡 **Note:** *When you access the above URl then it will be promot for login. Use the "`admin/admin`" for first time login and will prompt for change the password Once you change the password, make sure to create a strong and secure one that you can remember. Afterward, you will have full access to the system's features and settings. *
 
 ####  <span style="color: cyan;"> Create a token in SonarQube
@@ -344,13 +393,36 @@ kubectl config get-contexts
   
 ![image-1](https://github.com/user-attachments/assets/84265e50-bc10-4959-aee9-36179c2b99ab)
 
+![alt text](image-21.png)
 
 ###  <span style="color: yellow;"> Configure Secrets and Variables in GitHub Repo</span>.
 ```
 <GithubAction_DevOps_Projects>/settings/Secrets and Variables/Actions.
 ```
+![alt text](image.png)
+![alt text](image-1.png)
 > 💡 **Note:** 
 > >*You have to update all the required tokens and secrets value here. Part of Terraform code, I have already created a dummy values, which needs to be replaced. Once you have replaced the dummy values with the actual tokens and secrets, ensure that you test the configuration thoroughly to confirm that everything functions as expected. This will help prevent any issues during deployment and maintain the integrity of your infrastructure.*
+To Update Sonar URL
+![alt text](image-22.png)
+
+- To update the `EKS_KUBECONFIG` secret
+- Take putty session of Terraform EC2 instnace
+- run the command `cat ~/.kube/config`
+- copy the whole content and paste into the secret.
+
+### **Attach Role to Runner EC2**
+   - Select the EC2 VM and click on the actions > security> Mofify IAM Roles on the runner.
+   ![alt text](image-14.png)
+   - Select the role `Role_k8_Cluster_profile` 
+   ![alt text](image-15.png)
+   - Click on update IAM Role.
+
+
+
+### **5. Setting Up Terraform**
+   - Write Terraform scripts to provision the EKS cluster.
+   - Use `terraform apply` to create the infrastructure.
 
 
 ### <span style="color: orange;">  **Writing the CI/CD Pipeline**
@@ -376,27 +448,28 @@ Run the pipeline; the first time it would fail, and rerun it with parameters.
      - Use Terraform to provision an EKS cluster.
      - Deploy the application using Kubernetes manifests.
 
+![alt text](image-23.png)
+![alt text](image-24.png)
+
+
 - Here is the complete [Pipeline Script](https://github.com/mrbalraj007/DevOps_free_Bootcamp/blob/main/19.Real-Time-DevOps-Project/Terraform_Code/Code_IAC_Terraform_box/All_Pipelines/Pipeline_CI.md)
-
-- Build deployment pipeline.
-
-
-### **Attach Role to Runner EC2**
-   - Select the EC2 VM and click on the security on the runner.
-   - Run `aws configure` to set up access keys and region.
-   - Use AWS CLI to interact with the EKS cluster.
-
-### **5. Setting Up Terraform**
-   - Write Terraform scripts to provision the EKS cluster.
-   - Use `terraform apply` to create the infrastructure.
 
 ### **6. Deploying to Kubernetes**
    - Use `kubectl` to apply Kubernetes manifests.
    - Verify the deployment by checking the status of pods and services.
 
+Verify the Docker Image
+
+Verify code couverage
+
+Verify the pipeline Status
+
+
 ---
 
 ## <span style="color: Yellow;"> Environment Cleanup:
+![alt text](image-16.png)
+
 ### <span style="color: cyan;"> To delete deployment:
 - I've created a Github Action to destroy the Kubernetes `deployment` and `services`.
 
