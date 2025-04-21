@@ -100,7 +100,7 @@ dar--l          21/04/25  12:34 PM                03.Code_IAC_Terraform_box
       - `03.Code_IAC_Terraform_box/main.tf` (i.e keyname- ```MYLABKEY```*)
   > - For **Cluster name** 
       - `03.Code_IAC_Terraform_box/k8s_setup_file/main.tf` (i.e ```balraj```*).
-  > - For **Node Pod **
+  > - For **Node Pod**
       - `03.Code_IAC_Terraform_box/k8s_setup_file/variable.tf` (i.e ```MYLABKEY```*)
   
       
