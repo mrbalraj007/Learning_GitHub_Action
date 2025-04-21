@@ -61,7 +61,7 @@ sudo rm /etc/apt/sources.list.d/trivy.list
 
 <<<<<<< HEAD
 =======
-New project file created.
+New project file created. I'll start from here.
 ====
 # Technical Document: GitHub Actions CI/CD Pipeline with Live Project
 
