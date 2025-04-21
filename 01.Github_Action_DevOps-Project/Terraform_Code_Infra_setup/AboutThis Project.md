@@ -55,9 +55,6 @@ sudo rm /etc/apt/sources.list.d/trivy.list
 
 
 
-# Note: 
-# a. First create a pem-key manually from the AWS console
-# b. Copy it in the same directory as your terraform code
 
 =================================\\
 # Technical Project project: GitHub Actions CI/CD Pipeline with Live Project
@@ -71,6 +68,12 @@ This project outlines the step-by-step process of setting up a CI/CD pipeline us
 ## <span style="color: Yellow;"> Prerequisites </span>
 
 Before diving into this project, here are some skills and tools you should be familiar with:
+
+
+Important: 
++ First create a **`pem-key`** manually from the AWS console. i.e "MYLABKEY.pem" because it is being used for creating `EC2` VMs and `EKS cluster`.
++ b. Copy `MYLABKEY.pem` in the terraform directory as below your terraform code
+
 
 - [x] [Clone repository for terraform code](https://github.com/mrbalraj007/DevOps_free_Bootcamp/tree/main/19.Real-Time-DevOps-Project/Terraform_Code/Code_IAC_Terraform_box)<br>
   __Note__: Replace resource names and variables as per your requirement in terraform code
