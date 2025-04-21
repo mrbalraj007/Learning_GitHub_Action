@@ -59,230 +59,231 @@ sudo rm /etc/apt/sources.list.d/trivy.list
 # a. First create a pem-key manually from the AWS console
 # b. Copy it in the same directory as your terraform code
 
-<<<<<<< HEAD
-=======
-New project file created. I'll start from here.
-====
-# Technical Document: GitHub Actions CI/CD Pipeline with Live Project
-
-## **Introduction**
-This document provides a step-by-step guide to setting up a CI/CD pipeline using GitHub Actions. The project demonstrates the integration of various tools and technologies to automate the build, test, and deployment processes. The pipeline is designed to deploy an application to a Kubernetes cluster using Docker and Terraform.
+=================================\\
+# Technical Project project: GitHub Actions CI/CD Pipeline with Live Project
 
 ---
 
+## **Project Overview**
+This project outlines the step-by-step process of setting up a CI/CD pipeline using GitHub Actions. The project demonstrates how to automate the build, test, and deployment of an application to Kubernetes using tools like Docker, Trivy, SonarQube, and Terraform. The project also highlights the integration of AWS role for managing cloud resources and Kubernetes clusters.
+
+---
+## <span style="color: Yellow;"> Prerequisites </span>
+
+Before diving into this project, here are some skills and tools you should be familiar with:
+
+- [x] [Clone repository for terraform code](https://github.com/mrbalraj007/DevOps_free_Bootcamp/tree/main/19.Real-Time-DevOps-Project/Terraform_Code/Code_IAC_Terraform_box)<br>
+  __Note__: Replace resource names and variables as per your requirement in terraform code
+  - from k8s_setup_file/main.tf (i.e ```balraj```*).
+  - from Virtual machine main.tf (i.e keyname- ```MYLABKEY```*)
+
+- [x] [App Repo (Simple-DevOps-Project)](https://github.com/mrbalraj007/Amazon-Prime-Clone-Project.git)
+---
+## <span style="color: Yellow;">Setting Up the Infrastructure </span>
+
+I have created a Terraform code to set up the entire infrastructure, including the installation of required applications, tools, and the EKS cluster automatically created.
+
+**Note** &rArr;<span style="color: Green;"> ```EKS cluster``` creation will take approx. 10 to 15 minutes.
+
+- &rArr; <span style="color: brown;">EC2 machines will be created named as ```"Jenkins-svr"```
+- &rArr;<span style="color: brown;"> Jenkins Install
+- &rArr;<span style="color: brown;"> Docker Install
+- &rArr;<span style="color: brown;"> Trivy Install
+- &rArr;<span style="color: brown;"> helm Install
+- &rArr;<span style="color: brown;"> Grafan Install using Helm
+- &rArr;<span style="color: brown;"> Prometheus Install using Helm
+- &rArr;<span style="color: brown;"> AWS Cli Install
+- &rArr;<span style="color: brown;"> Terraform Install
+- &rArr;<span style="color: brown;"> EKS Cluster Setup
+
+### <span style="color: Yellow;"> EC2 Instances creation
+
+First, we'll create the necessary virtual machines using ```terraform``` code. 
+
+Below is a terraform Code:
+
+Once you [clone repo](https://github.com/mrbalraj007/DevOps_free_Bootcamp.git) then go to folder *<span style="color: cyan;">"19.Real-Time-DevOps-Project/Terraform_Code/Code_IAC_Terraform_box"</span>* and run the terraform command.
+```bash
+cd Terraform_Code/Code_IAC_Terraform_box
+
+$ ls -l
+dar--l          13/12/24  11:23 AM                All_Pipelines
+dar--l          12/12/24   4:38 PM                k8s_setup_file
+dar--l          11/12/24   2:48 PM                scripts
+-a---l          11/12/24   2:47 PM            507 .gitignore
+-a---l          13/12/24   9:00 AM           7238 main.tf
+-a---l          11/12/24   2:47 PM           8828 main.txt
+-a---l          11/12/24   2:47 PM           1674 MYLABKEY.pem
+-a---l          11/12/24   2:47 PM            438 variables.tf
+```
+
+__<span style="color: Red;">Note__</span> &rArr; Make sure to run ```main.tf``` from inside the folders.
+
+```bash
+19.Real-Time-DevOps-Project/Terraform_Code/Code_IAC_Terraform_box/
+
+dar--l          13/12/24  11:23 AM                All_Pipelines
+dar--l          12/12/24   4:38 PM                k8s_setup_file
+dar--l          11/12/24   2:48 PM                scripts
+-a---l          11/12/24   2:47 PM            507 .gitignore
+-a---l          13/12/24   9:00 AM           7238 main.tf
+-a---l          11/12/24   2:47 PM           8828 main.txt
+-a---l          11/12/24   2:47 PM           1674 MYLABKEY.pem
+-a---l          11/12/24   2:47 PM            438 variables.tf
+```
+You need to run ```main.tf``` file using following terraform command.
+
+Now, run the following command.
+```bash
+terraform init
+terraform fmt
+terraform validate
+terraform plan
+terraform apply 
+# Optional <terraform apply --auto-approve>
+```
+-------
+
+Once you run the terraform command, then we will verify the following things to make sure everything is setup via a terraform.
+
+### <span style="color: Orange;"> Inspect the ```Cloud-Init``` logs</span>: 
+Once connected to EC2 instance then you can check the status of the ```user_data``` script by inspecting the [log files](https://github.com/mrbalraj007/DevOps_free_Bootcamp/blob/main/19.Real-Time-DevOps-Project/cloud-init-output.log).
+```bash
+# Primary log file for cloud-init
+sudo tail -f /var/log/cloud-init-output.log
+                    or 
+sudo cat /var/log/cloud-init-output.log | more
+```
+- *If the user_data script runs successfully, you will see output logs and any errors encountered during execution.*
+- *If there’s an error, this log will provide clues about what failed.*
+
+Outcome of "```cloud-init-output.log```"
+
+- From Terraform:
+![image-2](https://github.com/user-attachments/assets/a1082c77-1607-4093-b8a7-41c94e358473)
+
+### <span style="color: cyan;"> Verify the Installation 
+
+- [x] <span style="color: brown;"> Docker version
+```bash
+ubuntu@ip-172-31-95-197:~$ docker --version
+Docker version 24.0.7, build 24.0.7-0ubuntu4.1
+
+
+docker ps -a
+ubuntu@ip-172-31-94-25:~$ docker ps
+```
+
+- [x] <span style="color: brown;"> trivy version
+```bash
+ubuntu@ip-172-31-89-97:~$ trivy version
+Version: 0.55.2
+```
+- [x] <span style="color: brown;"> Helm version
+```bash
+ubuntu@ip-172-31-89-97:~$ helm version
+version.BuildInfo{Version:"v3.16.1", GitCommit:"5a5449dc42be07001fd5771d56429132984ab3ab", GitTreeState:"clean", GoVersion:"go1.22.7"}
+```
+- [x] <span style="color: brown;"> Terraform version
+```bash
+ubuntu@ip-172-31-89-97:~$ terraform version
+Terraform v1.9.6
+on linux_amd64
+```
+- [x] <span style="color: brown;"> eksctl version
+```bash
+ubuntu@ip-172-31-89-97:~$ eksctl version
+0.191.0
+```
+- [x] <span style="color: brown;"> kubectl version
+```bash
+ubuntu@ip-172-31-89-97:~$ kubectl version
+Client Version: v1.31.1
+Kustomize Version: v5.4.2
+```
+- [x] <span style="color: brown;"> aws cli version
+```bash
+ubuntu@ip-172-31-89-97:~$ aws version
+usage: aws [options] <command> <subcommand> [<subcommand> ...] [parameters]
+To see help text, you can run:
+  aws help
+  aws <command> help
+  aws <command> <subcommand> help
+```
+
+- [x] <span style="color: brown;"> Verify the EKS cluster
+
+On the ```jenkins``` virtual machine, Go to directory ```k8s_setup_file``` and open the file ```cat apply.log``` to verify the cluster is created or not.
+```sh
+ubuntu@ip-172-31-90-126:~/k8s_setup_file$ pwd
+/home/ubuntu/k8s_setup_file
+ubuntu@ip-172-31-90-126:~/k8s_setup_file$ cd ..
+```
+
+After Terraform deploys on the instance, now it's time to setup the cluster. You can SSH into the instance and run:
+
+```bash
+aws eks update-kubeconfig --name <cluster-name> --region 
+<region>
+```
+Once EKS cluster is setup then need to run the following command to make it intract with EKS.
+
+```sh
+aws eks update-kubeconfig --name balraj-cluster --region us-east-1
+```
+*The ```aws eks update-kubeconfig``` command is used to configure your local kubectl tool to interact with an Amazon EKS (Elastic Kubernetes Service) cluster. It updates or creates a kubeconfig file that contains the necessary authentication information to allow kubectl to communicate with your specified EKS cluster.*
+
+<span style="color: Orange;"> What happens when you run this command:</span><br>
+The AWS CLI retrieves the required connection information for the EKS cluster (such as the API server endpoint and certificate) and updates the kubeconfig file located at ```~/.kube/config (by default)```.
+It configures the authentication details needed to connect kubectl to your EKS cluster using IAM roles.
+After running this command, you will be able to interact with your EKS cluster using kubectl commands, such as ```kubectl get nodes``` or ```kubectl get pods```.
+
+```sh
+kubectl get nodes
+kubectl cluster-info
+kubectl config get-contexts
+```
+![image-3](https://github.com/user-attachments/assets/4818cf2e-c970-4309-96e3-84d3a7ccd7a7)
+---
+## <span style="color: yellow;"> Setup the Jenkins </span>
+Go to Jenkins EC2 and run the following command 
+Access Jenkins via ```http://<your-server-ip>:8080```.
+---
+
+####  <span style="color: cyan;"> Create a token in SonarQube
+  - Administration>Security>Users>Create a new token
+  
+![image-1](https://github.com/user-attachments/assets/84265e50-bc10-4959-aee9-36179c2b99ab)
+
+
+####  <span style="color: yellow;"> Configure Sonarqube credential in Jenkins</span>.
+```
+Dashboard> Manage Jenkins> Credentials> System> Global credentials (unrestricted)
+```
+![image-2](https://github.com/user-attachments/assets/8006669a-95c0-4d4c-b7cc-1a9cac571b8f)
+
+####  <span style="color: cyan;"> Configure/Integrate SonarQube in Jenkins</span>
+```
+Dashboard > Manage Jenkins > System
+```
+![image-4](https://github.com/user-attachments/assets/16476494-db0c-4874-a2d7-0842194c69de)
+![image-5](https://github.com/user-attachments/assets/95aedde7-ac31-46c3-a216-f47d6c3c38a6)
+
+#### <span style="color: orange;">  Build a pipeline.</span>
+
+  - Here is the [Pipeline Script](https://github.com/mrbalraj007/DevOps_free_Bootcamp/blob/main/19.Real-Time-DevOps-Project/Terraform_Code/Code_IAC_Terraform_box/All_Pipelines/Pipeline_CI.md)
+
+- Build deployment pipeline.
+![image-23](https://github.com/user-attachments/assets/03539b39-05cc-4dea-9b7b-55efb973aaed)
+
+Run the pipeline; the first time it would fail, and rerun it with parameters.
+
+- I ran the pipeline but it failed with below error message.
+
+![image-13](https://github.com/user-attachments/assets/3fba5e83-e1e7-4ac3-b34f-673a1993cf29)
+
+---
 ## **Key Points**
-1. **GitHub Actions Overview**:
-   - GitHub Actions is used to automate CI/CD workflows.
-   - It eliminates the need for setting up and maintaining Jenkins servers.
-
-2. **Project Phases**:
-   - **Phase 1**: Set up a GitHub repository.
-   - **Phase 2**: Add a virtual machine as a self-hosted runner.
-   - **Phase 3**: Write a CI/CD pipeline from scratch using YAML.
-   - **Phase 4**: Integrate tools like Trivy, SonarQube, Docker, and Kubernetes.
-
-3. **Pipeline Stages**:
-   - **Compile**: Build the application.
-   - **Security Checks**: Scan for vulnerabilities and hardcoded secrets.
-   - **Unit Testing**: Run automated test cases.
-   - **Build and Publish**: Create Docker images and upload artifacts.
-   - **Deploy to Kubernetes**: Deploy the application to an EKS cluster.
-
-4. **Tools and Technologies Used**:
-   - **GitHub Actions**: CI/CD automation.
-   - **Trivy**: Security scanning for vulnerabilities.
-   - **SonarQube**: Code quality and security analysis.
-   - **Docker**: Containerization of the application.
-   - **Kubernetes (EKS)**: Orchestration of containerized applications.
-   - **Terraform**: Infrastructure as Code (IaC) for setting up EKS clusters.
-   - **AWS CLI**: Manage AWS services and configure Kubernetes clusters.
-
----
-
-### **Step-by-Step Guide**
-
-#### **1. Setting Up the GitHub Repository**
-- Create a new GitHub repository.
-- Clone the repository locally and add the project files.
-- Commit and push the changes to the repository.
-
-#### **2. Adding a Self-Hosted Runner**
-- Set up a virtual machine (Linux-based) as a self-hosted runner.
-- Install required dependencies like `sudo`, `unzip`, and `docker`.
-- Connect the runner to GitHub Actions by following the commands provided in the GitHub Actions settings.
-
-#### **3. Writing the CI/CD Pipeline**
-- Create a `.github/workflows` directory in the repository.
-- Add a YAML file for the pipeline configuration.
-- Define the following jobs:
-  - **Compile**: Use Maven to build the application.
-  - **Security Checks**: Install and run Trivy and GitLeaks to scan for vulnerabilities.
-  - **Unit Testing**: Execute test cases using a testing framework.
-  - **Build and Publish**: Build Docker images and upload artifacts using `actions/upload-artifact`.
-
-#### **4. Integrating SonarQube**
-- Add a SonarQube stage to analyze code quality.
-- Configure secrets for SonarQube token and host URL in GitHub Actions.
-- Install required dependencies like `unzip` to run the SonarQube scanner.
-
-#### **5. Deploying to Kubernetes**
-- Use Terraform to set up an EKS cluster.
-- Install AWS CLI and configure access keys and region.
-- Use `kubectl` to connect to the Kubernetes cluster and deploy the application using YAML manifests.
-
----
-
-### **Why Use This Project?**
-- **Automation**: Reduces manual effort by automating the CI/CD process.
-- **Scalability**: Easily integrates with Kubernetes for scalable deployments.
-- **Security**: Ensures secure code and container images with tools like Trivy and SonarQube.
-- **Flexibility**: Supports multiple stages and tools, making it adaptable to various project requirements.
-- **Cost-Effective**: Eliminates the need for maintaining Jenkins servers by leveraging GitHub-hosted or self-hosted runners.
-
----
-
-### **Conclusion**
-This project demonstrates the power of GitHub Actions in automating CI/CD workflows. By integrating tools like Trivy, SonarQube, Docker, and Kubernetes, it ensures a secure and efficient deployment process. The use of Terraform and AWS CLI further simplifies infrastructure management. This pipeline is ideal for teams looking to streamline their development and deployment processes while maintaining high standards of security and quality.
-
----------------------------------------will test it if required
->>>>>>> 2390b735d79421667cd689feab31c8dbd0f42927
-# Technical Document: GitHub Actions CI/CD Pipeline for Kubernetes Deployment
-
-This document outlines the implementation of a Continuous Integration and Continuous Delivery (CI/CD) pipeline using GitHub Actions to build, test, containerize, and deploy a Java application to a Kubernetes cluster.
-
-<<<<<<< HEAD
-1. Introduction
-This project demonstrates a comprehensive CI/CD workflow leveraging the capabilities of GitHub Actions. It automates the process of building a Java application, performing security and quality checks, running unit tests, containerizing it with Docker, and finally deploying it to a Kubernetes environment.
-
-2. Key Technologies and Tools Used
-GitHub Actions: The workflow automation platform provided by GitHub. It enables the creation of custom workflows directly within the GitHub repository.
-Git: A distributed version control system used for managing the source code.
-Maven: A build automation tool primarily used for Java projects.
-JDK (Java Development Kit): The development environment used to compile and run Java applications.
-Trivy: A comprehensive security scanner for vulnerabilities in container images, file systems, and Git repositories.
-GitLeaks: A tool for scanning Git repositories for secrets and sensitive data.
-SonarQube: A platform for continuous inspection of code quality to perform static code analysis.
-Docker: A platform for building, shipping, and running applications in containers.
-Kubernetes: A container orchestration platform for automating deployment, scaling, and1 management of containerized applications.2   
-1.
-thectoclub.com
-thectoclub.com
-2.
-github.com
-github.com
-AWS CLI (Amazon Web Services Command Line Interface): A command-line tool to interact with AWS services, used here to configure kubectl for the EKS cluster.
-kubectl: The command-line tool for interacting with Kubernetes clusters.
-Terraform (Mentioned): While not explicitly shown in the pipeline steps, Terraform is mentioned as the tool used to set up the EKS cluster.
-=======
-## 1. Introduction
-This project demonstrates a comprehensive CI/CD workflow leveraging the capabilities of GitHub Actions. It automates the process of building a Java application, performing security and quality checks, running unit tests, containerizing it with Docker, and finally deploying it to a Kubernetes environment.
-
-## 2. Key Technologies and Tools Used
-- **GitHub Actions**: The workflow automation platform provided by GitHub. It enables the creation of custom workflows directly within the GitHub repository.
-- **Git**: A distributed version control system used for managing the source code.
-- **Maven**: A build automation tool primarily used for Java projects.
-- **JDK (Java Development Kit)**: The development environment used to compile and run Java applications.
-- **Trivy**: A comprehensive security scanner for vulnerabilities in container images, file systems, and Git repositories.
-- **GitLeaks**: A tool for scanning Git repositories for secrets and sensitive data.
-- **SonarQube**: A platform for continuous inspection of code quality to perform static code analysis.
-- **Docker**: A platform for building, shipping, and running applications in containers.
-- **Kubernetes**: A container orchestration platform for automating deployment, scaling, and1 management of containerized applications.
-- **AWS CLI** (Amazon Web Services Command Line Interface): A command-line tool to interact with AWS services, used here to configure kubectl for the EKS cluster.
-- **kubectl**: The command-line tool for interacting with Kubernetes clusters.
-- **Terraform** (Mentioned): While not explicitly shown in the pipeline steps, Terraform is mentioned as the tool used to set up the EKS cluster.
-
->>>>>>> 2390b735d79421667cd689feab31c8dbd0f42927
-3. Step-by-Step Description of the CI/CD Pipeline
-The GitHub Actions workflow is defined in a YAML file (cicd.yml) and consists of several jobs that run sequentially or in parallel based on dependencies.
-
-Step 1: Set up Git Repository (Manual)
-
-The project code is assumed to be hosted in a GitHub repository.
-Step 2: Set up GitHub Actions (Configuration)
-
-A .github/workflows directory is created in the repository.
-A cicd.yml file is defined within this directory to configure the CI/CD pipeline.
-Step 3: Add a Virtual Machine as a Runner (Self-Hosted Runner)
-
-A Linux virtual machine is set up to act as a self-hosted runner for GitHub Actions, providing more control over the execution environment.
-The runner is configured in the GitHub repository settings under "Actions" -> "Runners".
-Specific commands provided by GitHub are executed on the VM to connect it to the repository.
-The runs-on directive in the workflow jobs is set to the label of the self-hosted runner.
-Step 4: Write the CI/CD YAML Pipeline from Scratch (cicd.yml)
-
-The cicd.yml file defines the following jobs:
-
-compile:
-
-Runs on the self-hosted runner.
-Checks out the project code.
-Sets up JDK 17.
-Uses Maven to clean and compile the Java application.
-security-checks:
-
-Runs after the compile job (needs: compile).
-Runs on the self-hosted runner.
-Checks out the project code.
-Installs Trivy and performs a file system scan for vulnerabilities.
-Installs GitLeaks and scans the repository for hardcoded secrets.
-unit-tests (Conceptual):
-
-Intended for running unit tests, although the specific commands are not detailed in the transcript. This job would likely depend on the compile job.
-sonar-analysis:
-
-Depends on the compile job.
-Runs on the self-hosted runner.
-Checks out the code.
-Sets up JDK 17.
-Configures and executes SonarQube analysis using a SonarScanner action, utilizing GitHub Secrets for the SonarQube token and host URL.
-upload-artifact:
-
-Depends on the compile job.
-Runs on the self-hosted runner.
-Uploads the generated JAR file as an artifact using the actions/upload-artifact action.
-build-docker-image:
-
-Depends on the sonar-analysis job.
-Runs on the self-hosted runner.
-Logs in to Docker Hub using credentials stored as GitHub Secrets.
-Sets up buildx for building multi-architecture Docker images.
-Builds the Docker image and pushes it to Docker Hub.
-deploy-to-kubernetes:
-
-Depends on the build-docker-image job.
-Runs on the self-hosted runner.
-Checks out the project code (to access Kubernetes manifests).
-Sets up AWS CLI and configures it using AWS access key and secret key stored as GitHub Secrets.
-Configures kubectl to interact with the EKS cluster using the AWS CLI.
-Deploys the application to the Kubernetes cluster by applying the YAML manifests.
-4. Why Use This Project/Approach?
-Automation: Automates the entire software delivery lifecycle from code commit to deployment, reducing manual effort and the risk of human errors.
-Efficiency: Speeds up the development and deployment process, allowing for faster release cycles.
-Improved Code Quality: Integrates security and code quality checks early in the development process, leading to more robust and secure applications.
-Consistency: Ensures consistent build, test, and deployment processes across different environments.
-Scalability: GitHub Actions and Kubernetes are highly scalable, allowing the pipeline to handle projects of varying sizes and complexities.
-Version Control Integration: Being tightly integrated with GitHub, the workflow is directly associated with the codebase, providing better traceability and management.
-Infrastructure as Code (Implicit): While not the primary focus, the deployment to Kubernetes using YAML manifests aligns with the principles of Infrastructure as Code.
-Learning Opportunity: Provides a practical example of implementing a modern CI/CD pipeline using popular DevOps tools.
-5. Conclusion
-<<<<<<< HEAD
-This project demonstrates a robust and automated CI/CD pipeline using GitHub Actions. By integrating security scanning, code quality analysis, containerization, and Kubernetes deployment, it showcases best practices for modern software development and delivery. The step-by-step approach and the use of industry-standard tools make this a valuable example for anyone looking to automate their deployment workflows. The use of a self-hosted runner provides flexibility and control over the execution environment, while the integration with GitHub Secrets ensures the secure management of sensitive credentials.
-=======
-This project demonstrates a robust and automated CI/CD pipeline using GitHub Actions. By integrating security scanning, code quality analysis, containerization, and Kubernetes deployment, it showcases best practices for modern software development and delivery. The step-by-step approach and the use of industry-standard tools make this a valuable example for anyone looking to automate their deployment workflows. The use of a self-hosted runner provides flexibility and control over the execution environment, while the integration with GitHub Secrets ensures the secure management of sensitive credentials.
-
->>>>>>> 2390b735d79421667cd689feab31c8dbd0f42927
-
-
-### Technical Project Document: GitHub Actions CI/CD Pipeline with Live Project
-
----
-
-#### **Project Overview**
-This document outlines the step-by-step process of setting up a CI/CD pipeline using GitHub Actions. The project demonstrates how to automate the build, test, and deployment of an application to Kubernetes using tools like Docker, Trivy, SonarQube, and Terraform. The project also highlights the integration of AWS CLI for managing cloud resources and Kubernetes clusters.
-
----
-
-### **Key Points**
 1. **GitHub Actions Overview**:
    - GitHub Actions is used as the CI/CD tool for this project.
    - It eliminates the need for setting up and maintaining Jenkins servers by providing managed runners.
@@ -318,17 +319,17 @@ This document outlines the step-by-step process of setting up a CI/CD pipeline u
 
 ---
 
-### **Step-by-Step Process**
+## **Step-by-Step Process**
 
-#### **1. Setting Up GitHub Actions**
+### **1. Setting Up GitHub Actions**
    - Create a GitHub repository and initialize it.
    - Add a `.github/workflows` directory and create a YAML file for the pipeline.
 
-#### **2. Adding a Virtual Machine as a Runner**
+### **2. Adding a Virtual Machine as a Runner**
    - Use GitHub's shared runners or set up a self-hosted runner.
    - Configure the runner by following the commands provided in GitHub's settings.
 
-#### **3. Writing the CI/CD Pipeline**
+### **3. Writing the CI/CD Pipeline**
    - **Compile Stage**:
      - Use `actions/checkout` to clone the repository.
      - Set up the required environment (e.g., JDK 17 for Java projects).
@@ -345,30 +346,58 @@ This document outlines the step-by-step process of setting up a CI/CD pipeline u
      - Use Terraform to provision an EKS cluster.
      - Deploy the application using Kubernetes manifests.
 
-#### **4. Configuring AWS CLI**
+### **4. Configuring AWS CLI**
    - Install AWS CLI on the runner.
    - Run `aws configure` to set up access keys and region.
    - Use AWS CLI to interact with the EKS cluster.
 
-#### **5. Setting Up Terraform**
+### **5. Setting Up Terraform**
    - Write Terraform scripts to provision the EKS cluster.
    - Use `terraform apply` to create the infrastructure.
 
-#### **6. Deploying to Kubernetes**
+### **6. Deploying to Kubernetes**
    - Use `kubectl` to apply Kubernetes manifests.
    - Verify the deployment by checking the status of pods and services.
 
 ---
 
-### **Tools and Technologies Used**
-- **GitHub Actions**: Automates the CI/CD pipeline.
-- **Docker**: Builds and runs containerized applications.
-- **Trivy**: Scans for vulnerabilities in Docker images.
-- **GitLeaks**: Detects hardcoded secrets in the source code.
-- **SonarQube**: Performs static code analysis.
-- **AWS CLI**: Manages AWS resources.
-- **Terraform**: Provisions infrastructure as code.
-- **Kubernetes**: Deploys and manages containerized applications.
+## <span style="color: Yellow;"> Environment Cleanup:
+- As we are using Terraform, we will use the following command to delete 
+
+- __Delete all deployment/Service__ first
+    - ```sh
+        kubectl delete deployment.apps/singh-app
+        kubectl delete service singh-app
+        kubectl delete service/singh-service
+        ```
+   - __```EKS cluster```__ second
+   - then delete the __```virtual machine```__.
+
+
+
+
+#### To delete ```AWS EKS cluster```
+   -   Login into the bootstrap EC2 instance and change the directory to /k8s_setup_file, and run the following command to delete the cluste.
+```bash
+sudo su - ubuntu
+cd /k8s_setup_file
+sudo terraform destroy --auto-approve
+```
+
+
+
+#### Now, time to delete the ```Virtual machine```.
+Go to folder *<span style="color: cyan;">"19.Real-Time-DevOps-Project/Terraform_Code/Code_IAC_Terraform_box"</span>* and run the terraform command.
+```bash
+cd Terraform_Code/
+
+$ ls -l
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+da---l          26/09/24   9:48 AM                Code_IAC_Terraform_box
+
+Terraform destroy --auto-approve
+```
 
 ---
 
