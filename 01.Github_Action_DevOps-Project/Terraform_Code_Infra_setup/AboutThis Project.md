@@ -280,28 +280,29 @@ kubectl config get-contexts
 - Go to SonarQube EC2 and run the following command 
 - Access SonarQube via ```http://<your-server-ip>:9000```.
 
-> 💡 **Note:** When you access the above URl then it will be promot for login. Use the "admin/admin" for first time login and will prompt for change the password Once you change the password, make sure to create a strong and secure one that you can remember. Afterward, you will have full access to the system's features and settings. 
+> 💡 **Note:** *When you access the above URl then it will be promot for login. Use the "`admin/admin`" for first time login and will prompt for change the password Once you change the password, make sure to create a strong and secure one that you can remember. Afterward, you will have full access to the system's features and settings. *
 
-####  <span style="color: cyan;"> Create a token in SonarQube
+###  <span style="color: cyan;"> Create a token in SonarQube
   - Administration>Security>Users>Create a new token
   
 ![image-1](https://github.com/user-attachments/assets/84265e50-bc10-4959-aee9-36179c2b99ab)
 
 
-####  <span style="color: yellow;"> Configure Sonarqube credential in Jenkins</span>.
+##  <span style="color: yellow;"> Configure Secrets and Variables in GitHub Repo</span>.
 ```
-Dashboard> Manage Jenkins> Credentials> System> Global credentials (unrestricted)
+<GithubAction_DevOps_Projects>/settings/Secrets and Variables/Actions.
 ```
-![image-2](https://github.com/user-attachments/assets/8006669a-95c0-4d4c-b7cc-1a9cac571b8f)
+> 💡 **Note:** 
+> >*You have to update all the required tokens and secrets value here. Part of Terraform code, I have already created a dummy values, which needs to be replaced. Once you have replaced the dummy values with the actual tokens and secrets, ensure that you test the configuration thoroughly to confirm that everything functions as expected. This will help prevent any issues during deployment and maintain the integrity of your infrastructure.*
 
-####  <span style="color: cyan;"> Configure/Integrate SonarQube in Jenkins</span>
+##  <span style="color: cyan;"> Configure Selfhosted runner in Github Repo</span>
 ```
-Dashboard > Manage Jenkins > System
+<GithubAction_DevOps_Projects>/settings/actions/runners
 ```
-![image-4](https://github.com/user-attachments/assets/16476494-db0c-4874-a2d7-0842194c69de)
-![image-5](https://github.com/user-attachments/assets/95aedde7-ac31-46c3-a216-f47d6c3c38a6)
+> 💡 **Note:** 
+> >*Take note of the token value from here and paste it into the script in runner at the following spot. This ensures that the script executes successfully with the necessary permissions. Once you've finished, save your modifications and run the script to test whether it works as planned.*
 
-#### <span style="color: orange;">  Build a pipeline.</span>
+## <span style="color: orange;">  Build a pipeline.</span>
 
   - Here is the [Pipeline Script](https://github.com/mrbalraj007/DevOps_free_Bootcamp/blob/main/19.Real-Time-DevOps-Project/Terraform_Code/Code_IAC_Terraform_box/All_Pipelines/Pipeline_CI.md)
 
