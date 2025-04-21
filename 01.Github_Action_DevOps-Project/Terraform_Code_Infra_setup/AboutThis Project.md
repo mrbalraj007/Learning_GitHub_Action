@@ -403,7 +403,8 @@ This should now execute correctly because the problematic carriage return charac
 ![alt text](image-1.png)
 > 💡 **Note:** 
 > >*You have to update all the required tokens and secrets value here. Part of Terraform code, I have already created a dummy values, which needs to be replaced. Once you have replaced the dummy values with the actual tokens and secrets, ensure that you test the configuration thoroughly to confirm that everything functions as expected. This will help prevent any issues during deployment and maintain the integrity of your infrastructure.*
-To Update Sonar URL
+
+- To Update Sonar URL
 ![alt text](image-22.png)
 
 - To update the `EKS_KUBECONFIG` secret
