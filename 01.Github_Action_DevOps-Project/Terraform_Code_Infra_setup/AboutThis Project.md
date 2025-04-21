@@ -75,6 +75,7 @@ Important:
 + First create a **`pem-key`** manually from the AWS console. i.e "MYLABKEY.pem" because it is being used for creating `EC2` VMs and `EKS cluster`.
 + b. Copy `MYLABKEY.pem` in the terraform directory as below your terraform code
 
+> 💡 **Note:** This EC2 instance is not used for workloads, only for EKS bootstrapping.
 
 - [x] [Clone repository for terraform code](https://github.com/mrbalraj007/DevOps_free_Bootcamp/tree/main/19.Real-Time-DevOps-Project/Terraform_Code/Code_IAC_Terraform_box)<br>
   __Note__: Replace resource names and variables as per your requirement in terraform code
