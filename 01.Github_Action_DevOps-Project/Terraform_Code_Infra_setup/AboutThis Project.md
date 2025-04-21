@@ -128,9 +128,47 @@ dar--l          21/04/25  12:34 PM                03.Code_IAC_Terraform_box
    curl -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/user
    ```
    - You should see your GitHub user info in JSON, **not** "Bad credentials".
+---
+
+## **Key Points**
+1. **GitHub Actions Overview**:
+   - GitHub Actions is used as the CI/CD tool for this project.
+   - It eliminates the need for setting up and maintaining Jenkins servers by providing managed runners.
+
+2. **Pipeline Stages**:
+   - **Compile**: Builds the application.
+   - **Security Checks**: Scans for vulnerabilities using Trivy and GitLeaks.
+   - **Unit Testing**: Executes test cases to ensure code quality.
+   - **Build and Publish Docker Image**: Builds a Docker image and uploads it as an artifact.
+   - **Deploy to Kubernetes**: Deploys the application to an EKS cluster using Terraform.
+
+3. **Tools and Technologies Used**:
+   - **GitHub Actions**: CI/CD automation.
+   - **Docker**: Containerization of the application.
+   - **Trivy**: Security scanning for vulnerabilities.
+   - **GitLeaks**: Detects hardcoded secrets in the source code.
+   - **SonarQube**: Code quality analysis.
+   - **AWS CLI**: Manages AWS resources.
+   - **Terraform**: Infrastructure as Code (IaC) for provisioning EKS clusters.
+   - **Kubernetes**: Orchestrates containerized applications.
+
+4. **Why Use This Project**:
+   - Automates the software delivery process.
+   - Ensures code quality and security through automated checks.
+   - Simplifies deployment to Kubernetes clusters.
+   - Demonstrates best practices for CI/CD pipelines.
+
+5. **Takeaways**:
+   - Understanding of GitHub Actions and its capabilities.
+   - Hands-on experience with integrating security tools like Trivy and GitLeaks.
+   - Knowledge of deploying applications to Kubernetes using Terraform.
+   - Insights into managing AWS resources with AWS CLI.
 
 ---
-## <span style="color: Yellow;">Setting Up the Infrastructure </span>
+
+## **Step-by-Step Process**
+
+### <span style="color: Yellow;">Setting Up the Infrastructure </span>
 
 I have created a Terraform code to set up the entire infrastructure, including the installation of required applications, tools, and the EKS cluster automatically created.
 - &rArr;<span style="color: brown;"> Docker Install
@@ -142,7 +180,7 @@ I have created a Terraform code to set up the entire infrastructure, including t
 
 > 💡 **Note:**  &rArr;<span style="color: Green;"> ```EKS cluster``` creation will take approx. 10 to 15 minutes.
 > 
-### <span style="color: Yellow;"> EC2 Instances creation
+#### <span style="color: Yellow;"> EC2 Instances creation
 
 First, we'll create the necessary virtual machines using ```terraform``` code. 
 
@@ -276,6 +314,10 @@ kubectl cluster-info
 kubectl config get-contexts
 ```
 ---
+## <span style="color: yellow;"> **Verify Repo and GitHub Actions**
+   - GitHub repository created and initialize it because we are using terraform.
+   - Verify a `.github/workflows` directory and created a two YAML file for the pipeline.
+ 
 ## <span style="color: yellow;"> Setup SonarQube </span>
 - Go to SonarQube EC2 and run the following command 
 - Access SonarQube via ```http://<your-server-ip>:9000```.
@@ -299,64 +341,24 @@ kubectl config get-contexts
 ```
 <GithubAction_DevOps_Projects>/settings/actions/runners
 ```
+![alt text](image.png)
+![alt text](image-1.png)
+
 > 💡 **Note:** 
 > >*Take note of the token value from here and paste it into the script in runner at the following spot. This ensures that the script executes successfully with the necessary permissions. Once you've finished, save your modifications and run the script to test whether it works as planned.*
 
 ## <span style="color: orange;">  Build a pipeline.</span>
 
-  - Here is the [Pipeline Script](https://github.com/mrbalraj007/DevOps_free_Bootcamp/blob/main/19.Real-Time-DevOps-Project/Terraform_Code/Code_IAC_Terraform_box/All_Pipelines/Pipeline_CI.md)
+  - Here is the complete [Pipeline Script](https://github.com/mrbalraj007/DevOps_free_Bootcamp/blob/main/19.Real-Time-DevOps-Project/Terraform_Code/Code_IAC_Terraform_box/All_Pipelines/Pipeline_CI.md)
 
 - Build deployment pipeline.
-![image-23](https://github.com/user-attachments/assets/03539b39-05cc-4dea-9b7b-55efb973aaed)
+
 
 Run the pipeline; the first time it would fail, and rerun it with parameters.
 
 - I ran the pipeline but it failed with below error message.
 
-![image-13](https://github.com/user-attachments/assets/3fba5e83-e1e7-4ac3-b34f-673a1993cf29)
 
----
-## **Key Points**
-1. **GitHub Actions Overview**:
-   - GitHub Actions is used as the CI/CD tool for this project.
-   - It eliminates the need for setting up and maintaining Jenkins servers by providing managed runners.
-
-2. **Pipeline Stages**:
-   - **Compile**: Builds the application.
-   - **Security Checks**: Scans for vulnerabilities using Trivy and GitLeaks.
-   - **Unit Testing**: Executes test cases to ensure code quality.
-   - **Build and Publish Docker Image**: Builds a Docker image and uploads it as an artifact.
-   - **Deploy to Kubernetes**: Deploys the application to an EKS cluster using Terraform.
-
-3. **Tools and Technologies Used**:
-   - **GitHub Actions**: CI/CD automation.
-   - **Docker**: Containerization of the application.
-   - **Trivy**: Security scanning for vulnerabilities.
-   - **GitLeaks**: Detects hardcoded secrets in the source code.
-   - **SonarQube**: Code quality analysis.
-   - **AWS CLI**: Manages AWS resources.
-   - **Terraform**: Infrastructure as Code (IaC) for provisioning EKS clusters.
-   - **Kubernetes**: Orchestrates containerized applications.
-
-4. **Why Use This Project**:
-   - Automates the software delivery process.
-   - Ensures code quality and security through automated checks.
-   - Simplifies deployment to Kubernetes clusters.
-   - Demonstrates best practices for CI/CD pipelines.
-
-5. **Takeaways**:
-   - Understanding of GitHub Actions and its capabilities.
-   - Hands-on experience with integrating security tools like Trivy and GitLeaks.
-   - Knowledge of deploying applications to Kubernetes using Terraform.
-   - Insights into managing AWS resources with AWS CLI.
-
----
-
-## **Step-by-Step Process**
-
-### **1. Setting Up GitHub Actions**
-   - Create a GitHub repository and initialize it.
-   - Add a `.github/workflows` directory and create a YAML file for the pipeline.
 
 ### **2. Adding a Virtual Machine as a Runner**
    - Use GitHub's shared runners or set up a self-hosted runner.
