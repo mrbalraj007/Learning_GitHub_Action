@@ -314,28 +314,13 @@ kubectl cluster-info
 kubectl config get-contexts
 ```
 ---
-## <span style="color: yellow;"> **Verify Repo and GitHub Actions**
+### <span style="color: yellow;"> **Verify GitHub Repo and GitHub Actions**
    - GitHub repository created and initialize it because we are using terraform.
    - Verify a `.github/workflows` directory and created a two YAML file for the pipeline.
- 
-## <span style="color: yellow;"> Setup SonarQube </span>
-- Go to SonarQube EC2 and run the following command 
-- Access SonarQube via ```http://<your-server-ip>:9000```.
 
-> 💡 **Note:** *When you access the above URl then it will be promot for login. Use the "`admin/admin`" for first time login and will prompt for change the password Once you change the password, make sure to create a strong and secure one that you can remember. Afterward, you will have full access to the system's features and settings. *
-
-###  <span style="color: cyan;"> Create a token in SonarQube
-  - Administration>Security>Users>Create a new token
-  
-![image-1](https://github.com/user-attachments/assets/84265e50-bc10-4959-aee9-36179c2b99ab)
-
-
-##  <span style="color: yellow;"> Configure Secrets and Variables in GitHub Repo</span>.
-```
-<GithubAction_DevOps_Projects>/settings/Secrets and Variables/Actions.
-```
-> 💡 **Note:** 
-> >*You have to update all the required tokens and secrets value here. Part of Terraform code, I have already created a dummy values, which needs to be replaced. Once you have replaced the dummy values with the actual tokens and secrets, ensure that you test the configuration thoroughly to confirm that everything functions as expected. This will help prevent any issues during deployment and maintain the integrity of your infrastructure.*
+### **Adding a Virtual Machine as a Runner**
+   - I'll be using self-hosted runner to execute all the pipeline.
+   - Configure the runner by following the commands provided in GitHub's settings.
 
 ##  <span style="color: cyan;"> Configure Selfhosted runner in Github Repo</span>
 ```
@@ -347,24 +332,34 @@ kubectl config get-contexts
 > 💡 **Note:** 
 > >*Take note of the token value from here and paste it into the script in runner at the following spot. This ensures that the script executes successfully with the necessary permissions. Once you've finished, save your modifications and run the script to test whether it works as planned.*
 
-## <span style="color: orange;">  Build a pipeline.</span>
 
-  - Here is the complete [Pipeline Script](https://github.com/mrbalraj007/DevOps_free_Bootcamp/blob/main/19.Real-Time-DevOps-Project/Terraform_Code/Code_IAC_Terraform_box/All_Pipelines/Pipeline_CI.md)
+### <span style="color: yellow;"> Setup SonarQube </span>
+- Go to SonarQube EC2 and run the following command 
+- Access SonarQube via ```http://<your-server-ip>:9000```.
 
-- Build deployment pipeline.
+> 💡 **Note:** *When you access the above URl then it will be promot for login. Use the "`admin/admin`" for first time login and will prompt for change the password Once you change the password, make sure to create a strong and secure one that you can remember. Afterward, you will have full access to the system's features and settings. *
 
+####  <span style="color: cyan;"> Create a token in SonarQube
+  - Administration>Security>Users>Create a new token
+  
+![image-1](https://github.com/user-attachments/assets/84265e50-bc10-4959-aee9-36179c2b99ab)
+
+
+###  <span style="color: yellow;"> Configure Secrets and Variables in GitHub Repo</span>.
+```
+<GithubAction_DevOps_Projects>/settings/Secrets and Variables/Actions.
+```
+> 💡 **Note:** 
+> >*You have to update all the required tokens and secrets value here. Part of Terraform code, I have already created a dummy values, which needs to be replaced. Once you have replaced the dummy values with the actual tokens and secrets, ensure that you test the configuration thoroughly to confirm that everything functions as expected. This will help prevent any issues during deployment and maintain the integrity of your infrastructure.*
+
+
+### <span style="color: orange;">  **Writing the CI/CD Pipeline**
 
 Run the pipeline; the first time it would fail, and rerun it with parameters.
 
 - I ran the pipeline but it failed with below error message.
 
 
-
-### **2. Adding a Virtual Machine as a Runner**
-   - Use GitHub's shared runners or set up a self-hosted runner.
-   - Configure the runner by following the commands provided in GitHub's settings.
-
-### **3. Writing the CI/CD Pipeline**
    - **Compile Stage**:
      - Use `actions/checkout` to clone the repository.
      - Set up the required environment (e.g., JDK 17 for Java projects).
@@ -381,8 +376,13 @@ Run the pipeline; the first time it would fail, and rerun it with parameters.
      - Use Terraform to provision an EKS cluster.
      - Deploy the application using Kubernetes manifests.
 
-### **4. Configuring AWS CLI**
-   - Install AWS CLI on the runner.
+- Here is the complete [Pipeline Script](https://github.com/mrbalraj007/DevOps_free_Bootcamp/blob/main/19.Real-Time-DevOps-Project/Terraform_Code/Code_IAC_Terraform_box/All_Pipelines/Pipeline_CI.md)
+
+- Build deployment pipeline.
+
+
+### **Attach Role to Runner EC2**
+   - Select the EC2 VM and click on the security on the runner.
    - Run `aws configure` to set up access keys and region.
    - Use AWS CLI to interact with the EKS cluster.
 
@@ -397,43 +397,29 @@ Run the pipeline; the first time it would fail, and rerun it with parameters.
 ---
 
 ## <span style="color: Yellow;"> Environment Cleanup:
-- As we are using Terraform, we will use the following command to delete 
+### <span style="color: cyan;"> To delete deployment:
+- I've created a Github Action to destroy the Kubernetes `deployment` and `services`.
 
-- __Delete all deployment/Service__ first
+  - __Delete all deployment/Service__ first
     - ```sh
         kubectl delete deployment.apps/singh-app
         kubectl delete service singh-app
         kubectl delete service/singh-service
         ```
-   - __```EKS cluster```__ second
-   - then delete the __```virtual machine```__.
-
-
-
-
-#### To delete ```AWS EKS cluster```
-   -   Login into the bootstrap EC2 instance and change the directory to /k8s_setup_file, and run the following command to delete the cluste.
-```bash
-sudo su - ubuntu
-cd /k8s_setup_file
-sudo terraform destroy --auto-approve
-```
-
-
-
-#### Now, time to delete the ```Virtual machine```.
-Go to folder *<span style="color: cyan;">"19.Real-Time-DevOps-Project/Terraform_Code/Code_IAC_Terraform_box"</span>* and run the terraform command.
-```bash
-cd Terraform_Code/
-
-$ ls -l
-Mode                 LastWriteTime         Length Name
-----                 -------------         ------ ----
-da---l          26/09/24   9:48 AM                Code_IAC_Terraform_box
-
-Terraform destroy --auto-approve
-```
-
+### <span style="color: cyan;"> To delete ```AWS EKS cluster```
+   -   Login into the `Terraform EC2 `instance and change the directory to /`k8s_setup_file`, and run the following command to delete the cluster.
+       - ```sh
+         sudo su - ubuntu
+         cd /k8s_setup_file
+         sudo terraform destroy --auto-approve
+         ```
+###  <span style="color: cyan;"> To delete the ```Virtual machine```.
+Go to folder *<span style="color: cyan;">"01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup"</span>* and run the terraform command.
+   - ```sh
+      Terraform destroy --auto-approve
+     ```
+> 💡 **Note:** 
+>> You must use this command from `each folder` in order to destroy the entire infrastructure.
 ---
 
 ### **Why Use This Project**
@@ -450,7 +436,7 @@ This project provides a comprehensive guide to setting up a CI/CD pipeline using
 
 __Ref Link:__
 
-- [Youtube VideoLink](https://www.youtube.com/watch?v=Gd9Aofx-iLI&t=7808s)
+- [Youtube VideoLink](https://www.youtube.com/watch?v=icZUzgtz_d8)
 
 - [Install Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
 
