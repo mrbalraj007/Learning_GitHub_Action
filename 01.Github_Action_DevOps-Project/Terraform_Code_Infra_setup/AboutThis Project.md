@@ -120,14 +120,21 @@ dar--l          21/04/25  12:34 PM                03.Code_IAC_Terraform_box
    set GITHUB_TOKEN=your_github_token
    
    # For Windows PowerShell (I used this one)
-   $env:GITHUB_TOKEN="your_github_token"
+   # $env:GITHUB_TOKEN="your_github_token"
+   $env:TF_VAR_github_token = "your-github-personal-access-token"
    ```
+- [x] **Test and verify with curl again:**
+   ```bash
+   curl -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/user
+   ```
+   - You should see your GitHub user info in JSON, **not** "Bad credentials".
 
 ---
 ## <span style="color: Yellow;">Setting Up the Infrastructure </span>
 
 I have created a Terraform code to set up the entire infrastructure, including the installation of required applications, tools, and the EKS cluster automatically created.
 - &rArr;<span style="color: brown;"> Docker Install
+- &rArr;<span style="color: brown;"> SonarQube Install
 - &rArr;<span style="color: brown;"> Trivy Install
 - &rArr;<span style="color: brown;"> AWS Cli Install
 - &rArr;<span style="color: brown;"> Terraform Install
@@ -141,22 +148,16 @@ First, we'll create the necessary virtual machines using ```terraform``` code.
 
 Below is a terraform Code:
 
-Once you [clone repo](https://github.com/mrbalraj007/DevOps_free_Bootcamp.git) then go to folder *<span style="color: cyan;">"19.Real-Time-DevOps-Project/Terraform_Code/Code_IAC_Terraform_box"</span>* and run the terraform command.
+Once you [clone repo](https://github.com/mrbalraj007/Learning_GitHub_Action/blob/main/01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup) then go to folder *<span style="color: cyan;">"01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup"</span>* and run the terraform command.
 ```bash
-cd Terraform_Code/Code_IAC_Terraform_box
+cd 01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup
 
-$ ls -l
-dar--l          13/12/24  11:23 AM                All_Pipelines
-dar--l          12/12/24   4:38 PM                k8s_setup_file
-dar--l          11/12/24   2:48 PM                scripts
--a---l          11/12/24   2:47 PM            507 .gitignore
--a---l          13/12/24   9:00 AM           7238 main.tf
--a---l          11/12/24   2:47 PM           8828 main.txt
--a---l          11/12/24   2:47 PM           1674 MYLABKEY.pem
--a---l          11/12/24   2:47 PM            438 variables.tf
+$ ls
+
+ 00.Code_IAC-github-repo/   01.Code_IAC_Selfhosted-Runner-and-Trivy/   02.Code_IAC_SonarQube/   03.Code_IAC_Terraform_box/  'AboutThis Project.md'   main.tf   
 ```
 
-__<span style="color: Red;">Note__</span> &rArr; Make sure to run ```main.tf``` from inside the folders.
+> 💡 **Note:** </span> &rArr; Make sure to run ```main.tf``` which is located outside of the folder. I have created the code in such a way that a single file will call all of the folders.
 
 ```bash
 19.Real-Time-DevOps-Project/Terraform_Code/Code_IAC_Terraform_box/
