@@ -21,8 +21,8 @@ data "aws_ami" "ubuntu" {
 resource "aws_instance" "runner-svr" {
   # ami                    = "ami-0287a05f0ef0e9d9a"      #change ami id for different region
   ami                    = data.aws_ami.ubuntu.id
-  instance_type          = "t2.medium" #"t2.large"
-  key_name               = "MYLABKEY"  #change key name as per your setup
+  instance_type          = "t3.small" #"t2.large, t2.medium"
+  key_name               = "MYLABKEY" #change key name as per your setup
   vpc_security_group_ids = [aws_security_group.runner-VM-SG.id]
   user_data              = templatefile("./runner_install.sh", {})
 
@@ -37,14 +37,14 @@ resource "aws_instance" "runner-svr" {
   instance_market_options {
     market_type = "spot"
     spot_options {
-      max_price = "0.0109" # Set your maximum price for the spot instance
+      max_price = "0.0067" # Set your maximum price for the spot instance
     }
   }
 
   # Copy the actions-runner folder after the instance is created
   provisioner "file" {
     source      = "./actions-runner"
-    destination = "/home/ubuntu/actions-runner"
+    destination = "/home/ubuntu/"
 
     connection {
       type        = "ssh"
@@ -58,10 +58,12 @@ resource "aws_instance" "runner-svr" {
   provisioner "remote-exec" {
     inline = [
       "ls -la /home/ubuntu/actions-runner",
-      "sudo chown -R ubuntu:ubuntu /home/ubuntu/actions-runner",
-      "ls -la /home/ubuntu/actions-runner/selfhost-runner.sh",
-      "sudo chmod -x /home/ubuntu/actions-runner/selfhost-runner.sh",
-      "ls -la /home/ubuntu/actions-runner/selfhost-runner.sh"
+      "sudo chown -R ubuntu:ubuntu /home/ubuntu/actions-runner"
+      # "sudo mv /home/ubuntu/actions-runner/selfhost-runner.txt /home/ubuntu/actions-runner/selfhost-runner.sh"
+      # "ls -la /home/ubuntu/actions-runner/selfhost-runner.sh",
+      # "sudo chmod -x /home/ubuntu/actions-runner/selfhost-runner.sh",
+      # "sudo mv /home/ubuntu/actions-runner/selfhost-runner.sh /home/ubuntu/actions-runner/setup-runner.sh",
+      # "ls -la /home/ubuntu/actions-runner/setup-runner.sh"
     ]
 
     connection {

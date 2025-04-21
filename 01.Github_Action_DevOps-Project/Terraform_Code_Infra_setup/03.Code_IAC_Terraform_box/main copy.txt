@@ -14,11 +14,12 @@ data "aws_ami" "ubuntu" {
 
   owners = ["099720109477"] # Canonical owner ID for Ubuntu AMIs
 }
+
 # Custom IAM Policy for EKS
 resource "aws_iam_policy" "eks_custom_policy" {
   name        = "eks_custom_policy"
   description = "Custom policy for EKS operations"
-  policy      = jsonencode({
+  policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
@@ -142,6 +143,7 @@ resource "aws_iam_instance_profile" "k8s_cluster_instance_profile" {
 #   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 # }
 
+
 resource "aws_instance" "terrabox" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = "t2.medium"
@@ -149,8 +151,6 @@ resource "aws_instance" "terrabox" {
   vpc_security_group_ids = [aws_security_group.TerraBox.id]
   iam_instance_profile   = aws_iam_instance_profile.k8s_cluster_instance_profile.name
   user_data              = templatefile("./terrabox_install.sh", {})
-
-depends_on = [aws_iam_instance_profile.k8s_cluster_instance_profile]  # This ensures the profile is created first.
 
   tags = {
     Name = "terrabox-SVR"
@@ -160,13 +160,13 @@ depends_on = [aws_iam_instance_profile.k8s_cluster_instance_profile]  # This ens
     volume_size = 25
   }
 
-  # K8S cluster main
-  # instance_market_options {
-  #    market_type = "spot"
-  #    spot_options {
-  #      max_price = "0.0145" # Set your maximum price for the spot instance
-  #    }
-  #  }
+# K8S cluster main
+# instance_market_options {
+#    market_type = "spot"
+#    spot_options {
+#      max_price = "0.0145" # Set your maximum price for the spot instance
+#    }
+#  }
 
   # Copy the folder after the instance is created and SSH is available
   provisioner "file" {

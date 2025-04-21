@@ -5,8 +5,8 @@ RUNNER_VERSION="2.323.0"
 RUNNER_URL="https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz"
 RUNNER_DIR="actions-runner"
 GITHUB_URL="https://github.com/mrbalraj007/GithubAction_DevOps_Projects" # define your git repo name
-TOKEN="AMY4NLF3LR4RBMPS3DXILVDIACEFA"  # define your token value from runner
-RUNNER_NAME="ip-172-31-21-174"
+TOKEN="AMY4NLH5RYWBCJSBC5FSWG3IAWJKS"  # define your token value from runner
+RUNNER_NAME="Custom_self_hosted_runner"
 RUNNER_GROUP="Default"
 WORK_FOLDER="_work"
 
@@ -17,7 +17,7 @@ mkdir -p $RUNNER_DIR && cd $RUNNER_DIR
 curl -o actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz -L $RUNNER_URL
 
 # Optional: Validate the hash
-echo "0dbc9bf5a58620fc52cb6cc0448abcca964a8d74b5f39773b7afcad9ab691e19  actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz" | shasum -a 256 -c
+# echo "0dbc9bf5a58620fc52cb6cc0448abcca964a8d74b5f39773b7afcad9ab691e19 actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz" | shasum -a 256 -c
 
 # Extract the installer
 tar xzf ./actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz
