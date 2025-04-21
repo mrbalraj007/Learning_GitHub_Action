@@ -70,12 +70,20 @@ This project outlines the step-by-step process of setting up a CI/CD pipeline us
 Before diving into this project, here are some skills and tools you should be familiar with:
 
 > ⚠️ **Important:** Make sure the EC2 instance has the correct IAM role attached before running Terraform.
+> ⚠️ **Important:**
+> 
+> 01. Make sure the EC2 instance has the correct IAM role attached before running Terraform.
+> 02. Ensure the security groups allow SSH access from your IP.
+> 03. Confirm that the instance has the required AWS CLI and tools installed.
+> 04. Do not store AWS credentials in plaintext on the instance.
+
 
 Important: 
 + First create a **`pem-key`** manually from the AWS console. i.e "MYLABKEY.pem" because it is being used for creating `EC2` VMs and `EKS cluster`.
 + b. Copy `MYLABKEY.pem` in the terraform directory as below your terraform code
 
 > 💡 **Note:** This EC2 instance is not used for workloads, only for EKS bootstrapping.
+> ⚠️ **Important:** Make sure the EC2 instance has the correct IAM role attached before running Terraform.
 
 - [x] [Clone repository for terraform code](https://github.com/mrbalraj007/DevOps_free_Bootcamp/tree/main/19.Real-Time-DevOps-Project/Terraform_Code/Code_IAC_Terraform_box)<br>
   __Note__: Replace resource names and variables as per your requirement in terraform code
