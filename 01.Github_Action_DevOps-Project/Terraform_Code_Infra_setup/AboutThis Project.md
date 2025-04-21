@@ -262,9 +262,10 @@ Once EKS cluster is setup then need to run the following command to make it intr
 ```sh
 aws eks update-kubeconfig --name balraj-cluster --region us-east-1
 ```
+> 💡 **Note:**
 *The ```aws eks update-kubeconfig``` command is used to configure your local kubectl tool to interact with an Amazon EKS (Elastic Kubernetes Service) cluster. It updates or creates a kubeconfig file that contains the necessary authentication information to allow kubectl to communicate with your specified EKS cluster.*
 
-<span style="color: Orange;"> What happens when you run this command:</span><br>
+<span style="color: Orange;"> **What happens when you run this command**:</span><br>
 The AWS CLI retrieves the required connection information for the EKS cluster (such as the API server endpoint and certificate) and updates the kubeconfig file located at ```~/.kube/config (by default)```.
 It configures the authentication details needed to connect kubectl to your EKS cluster using IAM roles.
 After running this command, you will be able to interact with your EKS cluster using kubectl commands, such as ```kubectl get nodes``` or ```kubectl get pods```.
@@ -279,7 +280,7 @@ kubectl config get-contexts
 - Go to SonarQube EC2 and run the following command 
 - Access SonarQube via ```http://<your-server-ip>:9000```.
 
-> 💡 **Note:** When you access the above URl then it will be promot for login. Use the "admin/admin" for first time login and will prompt for change the password Once you change the password, make sure to create a strong and secure one that you can remember. Afterward, you will have full access to the system's features and settings. 
+> 💡⚠️ **Important:**  When you access the above URl then it will be promot for login. Use the "admin/admin" for first time login and will prompt for change the password Once you change the password, make sure to create a strong and secure one that you can remember. Afterward, you will have full access to the system's features and settings. 
 
 ####  <span style="color: cyan;"> Create a token in SonarQube
   - Administration>Security>Users>Create a new token
