@@ -160,16 +160,15 @@ $ ls
 > 💡 **Note:** </span> &rArr; Make sure to run ```main.tf``` which is located outside of the folder. I have created the code in such a way that a single file will call all of the folders.
 
 ```bash
-19.Real-Time-DevOps-Project/Terraform_Code/Code_IAC_Terraform_box/
-
-dar--l          13/12/24  11:23 AM                All_Pipelines
-dar--l          12/12/24   4:38 PM                k8s_setup_file
-dar--l          11/12/24   2:48 PM                scripts
--a---l          11/12/24   2:47 PM            507 .gitignore
--a---l          13/12/24   9:00 AM           7238 main.tf
--a---l          11/12/24   2:47 PM           8828 main.txt
--a---l          11/12/24   2:47 PM           1674 MYLABKEY.pem
--a---l          11/12/24   2:47 PM            438 variables.tf
+ ls -la
+total 72
+-rw-r--r-- 1 bsingh 1049089   493 Aug 20  2024  .gitignore
+drwxr-xr-x 1 bsingh 1049089     0 Apr 21 12:34  00.Code_IAC-github-repo/
+drwxr-xr-x 1 bsingh 1049089     0 Apr 21 12:34  01.Code_IAC_Selfhosted-Runner-and-Trivy/
+drwxr-xr-x 1 bsingh 1049089     0 Apr 21 13:38  02.Code_IAC_SonarQube/
+drwxr-xr-x 1 bsingh 1049089     0 Apr 21 12:34  03.Code_IAC_Terraform_box/
+-rw-r--r-- 1 bsingh 1049089 21284 Apr 21 14:44 'AboutThis Project.md'
+-rw-r--r-- 1 bsingh 1049089  1309 Apr 19 20:48  main.tf
 ```
 You need to run ```main.tf``` file using following terraform command.
 
