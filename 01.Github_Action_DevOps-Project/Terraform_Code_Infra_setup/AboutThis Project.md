@@ -66,8 +66,11 @@ This project outlines the step-by-step process of setting up a CI/CD pipeline us
 
 ---
 ## <span style="color: Yellow;"> Prerequisites </span>
-
 Before diving into this project, here are some skills and tools you should be familiar with:
+
+- Terraform installed on your machine.
+- A GitHub account.
+- A GitHub personal access token with the necessary permissions to create repositories.
 
 > ⚠️ **Important:** 
 
@@ -104,7 +107,21 @@ dar--l          21/04/25  12:34 PM                03.Code_IAC_Terraform_box
       - `03.Code_IAC_Terraform_box/k8s_setup_file/variable.tf` (i.e ```MYLABKEY```*)
   
       
-
+**Set up your GitHub token**:
+   Create a new GitHub personal access token with the `repo` scope at https://github.com/settings/tokens.
+   
+   Then set it as an environment variable (DO NOT commit your token to version control):
+   
+   ```bash
+   # For Linux/macOS
+   export GITHUB_TOKEN=your_github_token
+   
+   # For Windows Command Prompt
+   set GITHUB_TOKEN=your_github_token
+   
+   # For Windows PowerShell (I used this one)
+   $env:GITHUB_TOKEN="your_github_token"
+   ```
 
 ---
 ## <span style="color: Yellow;">Setting Up the Infrastructure </span>
