@@ -69,6 +69,7 @@ This project outlines the step-by-step process of setting up a CI/CD pipeline us
 
 Before diving into this project, here are some skills and tools you should be familiar with:
 
+> ⚠️ **Important:** Make sure the EC2 instance has the correct IAM role attached before running Terraform.
 
 Important: 
 + First create a **`pem-key`** manually from the AWS console. i.e "MYLABKEY.pem" because it is being used for creating `EC2` VMs and `EKS cluster`.
