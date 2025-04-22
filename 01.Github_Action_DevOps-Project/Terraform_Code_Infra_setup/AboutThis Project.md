@@ -336,7 +336,7 @@ kubectl config get-contexts
    - ```
       <GithubAction_DevOps_Projects>/settings/actions/runners
       ```
-    ![alt text](All_ScreenShot/image-5.png)
+   ![alt text](All_ScreenShot/image-5.png)
    - Click on new `self-hosted runner` and select `Linux`
    - Notedown the token value
    ![alt text](All_ScreenShot/image-6.png)
