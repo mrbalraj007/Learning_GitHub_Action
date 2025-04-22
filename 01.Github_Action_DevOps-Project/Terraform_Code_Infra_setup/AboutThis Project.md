@@ -221,7 +221,7 @@ terraform apply
 ```
 -------
 
-![alt text](/All_ScreenShot/image-4.png)
+![alt text](All_ScreenShot/image-4.png)
 
 Once you run the terraform command, then we will verify the following things to make sure everything is setup via a terraform.
 
@@ -283,7 +283,7 @@ To see help text, you can run:
 ```
 
 # Terraform cluster verify
-![alt text](image-12.png)
+![alt text](All_ScreenShot/image-12.png)
 
 - [x] <span style="color: brown;"> Verify the EKS cluster
 
@@ -305,7 +305,7 @@ Once EKS cluster is setup then need to run the following command to make it intr
 ```sh
 aws eks update-kubeconfig --name balraj-cluster --region us-east-1
 ```
-![alt text](image-13.png)
+![alt text](All_ScreenShot/image-13.png)
 
 > > ⚠️ **Important:** <br>
 *The ```aws eks update-kubeconfig``` command is used to configure your local kubectl tool to interact with an Amazon EKS (Elastic Kubernetes Service) cluster. It updates or creates a kubeconfig file that contains the necessary authentication information to allow kubectl to communicate with your specified EKS cluster.*
