@@ -320,15 +320,15 @@ kubectl get nodes
 kubectl cluster-info
 kubectl config get-contexts
 ```
-![alt text](image-17.png)
-![alt text](image-18.png)
+![alt text](All_ScreenShot/image-17.png)
+![alt text](All_ScreenShot/image-18.png)
 
 ---
 ### <span style="color: yellow;"> **Verify GitHub Repo and GitHub Actions**
    - GitHub repository created and initialize it because we are using terraform.
-   - ![alt text](image-2.png)
+   - ![alt text](All_ScreenShot/image-2.png)
    - Verify a `.github/workflows` directory and created a two YAML file for the pipeline.
-   ![alt text](image-3.png)
+   ![alt text](All_ScreenShot/image-3.png)
 
 ###   <span style="color: cyan;">**Adding a Virtual Machine as a Runner**
    - I'll be using self-hosted runner to execute all the pipeline.
@@ -336,15 +336,15 @@ kubectl config get-contexts
    - ```
       <GithubAction_DevOps_Projects>/settings/actions/runners
       ```
-    ![alt text](image-5.png)
+    ![alt text](All_ScreenShot/image-5.png)
    - Click on new `self-hosted runner` and select `Linux`
    - Notedown the token value
-   ![alt text](image-6.png)
+   ![alt text](All_ScreenShot/image-6.png)
    - Take putty session of `runner` EC2
    - Go to `actions-runner` folder
-   - ![alt text](image-7.png)
+   - ![alt text](All_ScreenShot/image-7.png)
    - Update the token value here
-   - ![alt text](image-8.png)
+   - ![alt text](All_ScreenShot/image-8.png)
    - change the execution mode for script and run it.
    - `chmod +x selfhost-runner.sh`
 
@@ -352,7 +352,7 @@ kubectl config get-contexts
 > >*Take note of the token value from here and paste it into the script in runner at the following spot. This ensures that the script executes successfully with the necessary permissions. Once you've finished, save your modifications and run the script to test whether it works as planned.*
 
 I am getting this error message.
-![alt text](image-9.png)
+![alt text](All_ScreenShot/image-9.png)
 
 **Solution:**
 try explicitly invoking the bash interpreter:
@@ -377,15 +377,15 @@ Bash
 ./selfhost-runner.sh
 This should now execute correctly because the problematic carriage return characters will have been removed
 
-![alt text](image-10.png)
-![alt text](image-11.png)
+![alt text](All_ScreenShot/image-10.png)
+![alt text](All_ScreenShot/image-11.png)
 
 
 ### <span style="color: yellow;"> Setup SonarQube </span>
 - Go to SonarQube EC2 and run the following command 
 - Access SonarQube via ```http://<your-server-ip>:9000```.
-![alt text](image-19.png)
-![alt text](image-20.png)
+![alt text](All_ScreenShot/image-19.png)
+![alt text](All_ScreenShot/image-20.png)
 > 💡 **Note:** *When you access the above URl then it will be promot for login. Use the "`admin/admin`" for first time login and will prompt for change the password Once you change the password, make sure to create a strong and secure one that you can remember. Afterward, you will have full access to the system's features and settings. *
 
 ####  <span style="color: cyan;"> Create a token in SonarQube
@@ -393,19 +393,19 @@ This should now execute correctly because the problematic carriage return charac
   
 ![image-1](https://github.com/user-attachments/assets/84265e50-bc10-4959-aee9-36179c2b99ab)
 
-![alt text](image-21.png)
+![alt text](All_ScreenShot/image-21.png)
 
 ###  <span style="color: yellow;"> Configure Secrets and Variables in GitHub Repo</span>.
 ```
 <GithubAction_DevOps_Projects>/settings/Secrets and Variables/Actions.
 ```
-![alt text](image.png)
-![alt text](image-1.png)
+![alt text](All_ScreenShot/image.png)
+![alt text](All_ScreenShot/image-1.png)
 > 💡 **Note:** 
 > >*You have to update all the required tokens and secrets value here. Part of Terraform code, I have already created a dummy values, which needs to be replaced. Once you have replaced the dummy values with the actual tokens and secrets, ensure that you test the configuration thoroughly to confirm that everything functions as expected. This will help prevent any issues during deployment and maintain the integrity of your infrastructure.*
 
 - To Update Sonar URL
-![alt text](image-22.png)
+![alt text](All_ScreenShot/image-22.png)
 
 - To update the `EKS_KUBECONFIG` secret
 - Take putty session of Terraform EC2 instnace
@@ -414,9 +414,9 @@ This should now execute correctly because the problematic carriage return charac
 
 ### **Attach Role to Runner EC2**
    - Select the EC2 VM and click on the actions > security> Mofify IAM Roles on the runner.
-   ![alt text](image-14.png)
+   ![alt text](All_ScreenShot/image-14.png)
    - Select the role `Role_k8_Cluster_profile` 
-   ![alt text](image-15.png)
+   ![alt text](All_ScreenShot/image-15.png)
    - Click on update IAM Role.
 
 ### **5. Setting Up Terraform**
@@ -448,8 +448,8 @@ Run the pipeline; the first time it would fail, and rerun it with parameters.
      - Use Terraform to provision an EKS cluster.
      - Deploy the application using Kubernetes manifests.
 
-![alt text](image-23.png)
-![alt text](image-24.png)
+![alt text](All_ScreenShot/image-23.png)
+![alt text](All_ScreenShot/image-24.png)
 
 
 - Here is the complete [Pipeline Script](https://github.com/mrbalraj007/DevOps_free_Bootcamp/blob/main/19.Real-Time-DevOps-Project/Terraform_Code/Code_IAC_Terraform_box/All_Pipelines/Pipeline_CI.md)
@@ -459,30 +459,30 @@ Run the pipeline; the first time it would fail, and rerun it with parameters.
    - Verify the deployment by checking the status of pods and services.
 
 - Verify the Docker Image
--![alt text](image-25.png)
+-![alt text](All_ScreenShot/image-25.png)
 Verify code couverage in SonarQube
-- ![alt text](image-26.png)
-- ![alt text](image-28.png)
+- ![alt text](All_ScreenShot/image-26.png)
+- ![alt text](All_ScreenShot/image-28.png)
 Verify the pipeline Status
-![alt text](image-27.png)
+![alt text](All_ScreenShot/image-27.png)
 
 
 - Verify the pods in runner VM
-- ![alt text](image-29.png)
-- ![alt text](image-30.png)
-- ![alt text](image-31.png)
+- ![alt text](All_ScreenShot/image-29.png)
+- ![alt text](All_ScreenShot/image-30.png)
+- ![alt text](All_ScreenShot/image-31.png)
 ---
 
 ## <span style="color: Yellow;"> Environment Cleanup:
-![alt text](image-16.png)
+![alt text](All_ScreenShot/image-16.png)
 
 ### <span style="color: cyan;"> To delete deployment:
 - I've created a Github Action to destroy the Kubernetes `deployment` and `services`.
-- ![alt text](image-32.png)
+- ![alt text](All_ScreenShot/image-32.png)
 
   - __Delete all deployment/Service__ In github action, and click on the second pipeline to delete the deployment and service.
-   ![alt text](image-33.png)
-   ![alt text](image-34.png)
+   ![alt text](All_ScreenShot/image-33.png)
+   ![alt text](All_ScreenShot/image-34.png)
 
 ### <span style="color: cyan;"> To delete ```AWS EKS cluster```
    -   Login into the `Terraform EC2 `instance and change the directory to /`k8s_setup_file`, and run the following command to delete the cluster.
@@ -491,22 +491,22 @@ Verify the pipeline Status
          cd /k8s_setup_file
          sudo terraform destroy --auto-approve
          ```
-- ![alt text](image-35.png)
+- ![alt text](All_ScreenShot/image-35.png)
 
 I noticed that permission is set to root for terraform. we have to take ownership first and then try to delete it.
-![alt text](image-36.png)
+![alt text](All_ScreenShot/image-36.png)
 
 ```sh
 sudo chown -R ubuntu:ubuntu /home/ubuntu/k8s_setup_file/.terraform*
 ```
 I was still getting error message while runing the desrtoy
-![alt text](image-37.png)
+![alt text](All_ScreenShot/image-37.png)
 ```sh
 sudo chown -R ubuntu:ubuntu /home/ubuntu/k8s_setup_file/terraform*
 ```
 it works :-)
 
-![alt text](image-38.png)
+![alt text](All_ScreenShot/image-38.png)
 
 ###  <span style="color: cyan;"> To delete the ```Virtual machine```.
 Go to folder *<span style="color: cyan;">"01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup"</span>* and run the terraform command.
