@@ -371,7 +371,7 @@ After running this command, you will be able to interact with your EKS cluster u
    sudo apt-get update
    sudo apt-get install dos2unix
    ```
-   2. Run `dos2unix` on your selfhost-runner.sh script:
+   2. Run `dos2unix` on `selfhost-runner.sh` script:
    ```Bash
    dos2unix selfhost-runner.sh
    ```
@@ -427,15 +427,7 @@ Select `Actions`.
    ![alt text](All_ScreenShot/image-15.png)
    - Click on update IAM Role.
 
-
-
 ### <span style="color: orange;">  **Writing the CI/CD Pipeline**
-
-Run the pipeline; the first time it would fail, and rerun it with parameters.
-
-- I ran the pipeline but it failed with below error message.
-
-
    - **Compile Stage**:
      - Use `actions/checkout` to clone the repository.
      - Set up the required environment (e.g., JDK 17 for Java projects).
@@ -455,38 +447,42 @@ Run the pipeline; the first time it would fail, and rerun it with parameters.
 ![alt text](All_ScreenShot/image-23.png)
 ![alt text](All_ScreenShot/image-24.png)
 
+- Here is the complete [CICD- Pipeline details](https://github.com/mrbalraj007/Github-Actions-Project/blob/main/.github/workflows/cicd.yml)
 
-- Here is the complete [Pipeline Script](https://github.com/mrbalraj007/DevOps_free_Bootcamp/blob/main/19.Real-Time-DevOps-Project/Terraform_Code/Code_IAC_Terraform_box/All_Pipelines/Pipeline_CI.md)
-
-### **6. Deploying to Kubernetes**
+<!-- **6. Deploying to Kubernetes**
    - Use `kubectl` to apply Kubernetes manifests.
-   - Verify the deployment by checking the status of pods and services.
+   - Verify the deployment by checking the status of pods and services. -->
 
-- Verify the Docker Image
--![alt text](All_ScreenShot/image-25.png)
-Verify code couverage in SonarQube
-- ![alt text](All_ScreenShot/image-26.png)
-- ![alt text](All_ScreenShot/image-28.png)
-Verify the pipeline Status
-![alt text](All_ScreenShot/image-27.png)
+### Verify the Docker Image
+   ![alt text](All_ScreenShot/image-25.png)
+### Verify code coverage in SonarQube
+   ![alt text](All_ScreenShot/image-26.png)
+   ![alt text](All_ScreenShot/image-28.png)
+### Verify pipeline Status
+   ![alt text](All_ScreenShot/image-27.png)
 
 
-- Verify the pods in runner VM
-- ![alt text](All_ScreenShot/image-29.png)
-- ![alt text](All_ScreenShot/image-30.png)
-- ![alt text](All_ScreenShot/image-31.png)
+### Verify the pods in runner VM
+   ![alt text](All_ScreenShot/image-29.png)
+   ![alt text](All_ScreenShot/image-30.png)
+### Verify Application Status
+   ![alt text](All_ScreenShot/image-31.png)
 ---
 
 ## <span style="color: Yellow;"> Environment Cleanup:
-![alt text](All_ScreenShot/image-16.png)
+- Following resouces are created as pert of this project.   
+   ![alt text](All_ScreenShot/image-16.png)
 
 ### <span style="color: cyan;"> To delete deployment:
-- I've created a Github Action to destroy the Kubernetes `deployment` and `services`.
-- ![alt text](All_ScreenShot/image-32.png)
+- I've created a `Github Action` to destroy the Kubernetes `deployment` and `services`.
+   ![alt text](All_ScreenShot/image-32.png)
 
-  - __Delete all deployment/Service__ In github action, and click on the second pipeline to delete the deployment and service.
+  - __Delete all deployment/Service__: 
+    - In github action, and click on the second pipeline to delete the deployment and service.
    ![alt text](All_ScreenShot/image-33.png)
    ![alt text](All_ScreenShot/image-34.png)
+
+    - Here is the complete [CICD- Pipeline to destroy Deployment and Services](https://github.com/mrbalraj007/Github-Actions-Project/blob/main/.github/workflows/Destroy.yaml)
 
 ### <span style="color: cyan;"> To delete ```AWS EKS cluster```
    -   Login into the `Terraform EC2 `instance and change the directory to /`k8s_setup_file`, and run the following command to delete the cluster.
@@ -495,26 +491,36 @@ Verify the pipeline Status
          cd /k8s_setup_file
          sudo terraform destroy --auto-approve
          ```
-- ![alt text](All_ScreenShot/image-35.png)
+#### **Troubleshooting:** 
+- I am getting below error message while running the `Terraform destroy`.
+   ![alt text](All_ScreenShot/image-35.png)
 
-I noticed that permission is set to root for terraform. we have to take ownership first and then try to delete it.
+
+##### **Fix/Solution:**
+
+- I noticed that permission is set to root for terraform dirctory. we have to take ownership first and then try to delete it.
 ![alt text](All_ScreenShot/image-36.png)
-
-```sh
-sudo chown -R ubuntu:ubuntu /home/ubuntu/k8s_setup_file/.terraform*
-```
-I was still getting error message while runing the desrtoy
-![alt text](All_ScreenShot/image-37.png)
-```sh
-sudo chown -R ubuntu:ubuntu /home/ubuntu/k8s_setup_file/terraform*
-```
-it works :-)
-
+- Run the following command to take ownership
+   ```sh
+   sudo chown -R ubuntu:ubuntu /home/ubuntu/k8s_setup_file/.terraform*
+   ```
+- I was still getting error message while runing the desrtoy
+   ![alt text](All_ScreenShot/image-37.png)
+- I ran the following command again for entire terraform folder.
+   ```sh
+   sudo chown -R ubuntu:ubuntu /home/ubuntu/k8s_setup_file/terraform*
+   ```
+- Rerun the destroy command and this time it works :-)
 ![alt text](All_ScreenShot/image-38.png)
 
 ###  <span style="color: cyan;"> To delete the ```Virtual machine```.
 Go to folder *<span style="color: cyan;">"01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup"</span>* and run the terraform command.
-   - ```sh
+   - `00.Code_IAC-github-repo`
+   - `01.Code_IAC_Selfhosted-Runner-and-Trivy`
+   -` 02.Code_IAC_SonarQube`
+   - `03.Code_IAC_Terraform_box`
+      
+      ```sh
       Terraform destroy --auto-approve
      ```
 > 💡 **Note:** 
@@ -536,6 +542,12 @@ This project provides a comprehensive guide to setting up a CI/CD pipeline using
 __Ref Link:__
 
 - [Youtube VideoLink](https://www.youtube.com/watch?v=icZUzgtz_d8)
+- [Clearfile-content cache in visualstudio code](https://stackoverflow.com/questions/45216264/clear-file-content-cache-in-visual-studio-code)
+
+
+- Need to Cleanup
+- [managing-GitHub-access-tokens](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+
 
 - [Install Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
 
@@ -550,6 +562,3 @@ __Ref Link:__
 - [Jenkins-environment-variables-1](https://phoenixnap.com/kb/jenkins-environment-variables)
 - [Jenkins-environment-variables-2](https://devopsqa.wordpress.com/2019/11/19/list-of-available-jenkins-environment-variables/)
 
-
-https://stackoverflow.com/questions/45216264/clear-file-content-cache-in-visual-studio-code
-https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
