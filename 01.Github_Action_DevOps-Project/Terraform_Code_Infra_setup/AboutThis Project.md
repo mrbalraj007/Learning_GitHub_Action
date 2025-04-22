@@ -1,4 +1,4 @@
-sudo rm /etc/apt/sources.list.d/trivy.list
+<!-- sudo rm /etc/apt/sources.list.d/trivy.list
 ✅ Step-by-step Fix:
 1. Check for Duplicate Sources
 Run this to find duplicate entries:
@@ -52,11 +52,11 @@ bash
 Copy
 Edit
 sudo rm /etc/apt/sources.list.d/trivy.list
+ -->
 
 
 
-
-=================================\\
+---
 # Technical Project project: GitHub Actions CI/CD Pipeline with Live Project
 
 ---
@@ -221,7 +221,7 @@ terraform apply
 ```
 -------
 
-![alt text](image-4.png)
+![alt text](/All_ScreenShot/image-4.png)
 
 Once you run the terraform command, then we will verify the following things to make sure everything is setup via a terraform.
 
