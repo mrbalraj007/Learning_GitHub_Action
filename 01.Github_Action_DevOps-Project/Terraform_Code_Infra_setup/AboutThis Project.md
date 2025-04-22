@@ -74,7 +74,7 @@ Before diving into this project, here are some skills and tools you should be fa
 
 > ⚠️ **Important:** 
 
-> 01. Make sure First you will create a **`.pem`** manually from the AWS console. i.e "MYLABKEY.pem" because it will be used for creating `EC2` VMs and `EKS cluster`.
+> 01. Make sure First you will create a **`.pem`** key manually from the AWS console. i.e "MYLABKEY.pem" because it will be used for creating `EC2` VMs and `EKS cluster`.
 > 02. Copy `MYLABKEY.pem` in the terraform directory (`01.Code_IAC_Selfhosted-Runner-and-Trivy` and `03.Code_IAC_Terraform_box` ) as below your terraform code
 > 03. [Generate the Github Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
 ```sh
@@ -94,7 +94,7 @@ dar--l          21/04/25  12:34 PM                03.Code_IAC_Terraform_box
 -a---l          19/04/25   8:48 PM           1309 main.tf                                                                                  
 ````
 
-- [x] [Clone repository for terraform code](https://github.com/mrbalraj007/Learning_GitHub_Action/tree/main/01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup)<br>
+- [Clone repository for terraform code](https://github.com/mrbalraj007/Learning_GitHub_Action/tree/main/01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup)<br>
   > 💡 **Note:** Replace GitHub Token, resource names and variables as per your requirement in terraform code
   > - For **`github Repo`** Token value to be updated in file 
       - `00.Code_IAC-github-repo/variables.tf` (i.e default- ```xxxxxx```*)
@@ -107,10 +107,9 @@ dar--l          21/04/25  12:34 PM                03.Code_IAC_Terraform_box
       - `03.Code_IAC_Terraform_box/k8s_setup_file/variable.tf` (i.e ```MYLABKEY```*)
   
       
-- [x] **Set up your GitHub token**:
-   Create a new GitHub personal access token with the `repo` scope at https://github.com/settings/tokens.
-   
-   Then set it as an environment variable (DO NOT commit your token to version control):
+- **Set up your GitHub token**:
+   - Create a new GitHub personal access token with the `repo` scope at https://github.com/settings/tokens. 
+   - Then set it as an environment variable (DO NOT commit your token to version control):
    
    ```bash
    # For Linux/macOS
@@ -123,9 +122,12 @@ dar--l          21/04/25  12:34 PM                03.Code_IAC_Terraform_box
    # $env:GITHUB_TOKEN="your_github_token"
    $env:TF_VAR_github_token = "your-github-personal-access-token"
    ```
-- [x] **Test and verify with curl again:**
-   ```bash
-   curl -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/user
+- **Test and verify with curl again in powershell terminal:**
+   ```powershell
+   $headers = @{
+    Authorization = "token $env:TF_VAR_github_token"
+   }
+   Invoke-WebRequest -Uri "https://api.github.com/user" -Headers $headers
    ```
    - You should see your GitHub user info in JSON, **not** "Bad credentials".
 ---
@@ -174,13 +176,12 @@ I have created a Terraform code to set up the entire infrastructure, including t
 - &rArr;<span style="color: brown;"> Docker Install
 - &rArr;<span style="color: brown;"> SonarQube Install
 - &rArr;<span style="color: brown;"> Trivy Install
-- &rArr;<span style="color: brown;"> AWS Cli Install
 - &rArr;<span style="color: brown;"> Terraform Install
 - &rArr;<span style="color: brown;"> EKS Cluster Setup
 
 > 💡 **Note:**  &rArr;<span style="color: Green;"> ```EKS cluster``` creation will take approx. 10 to 15 minutes.
 > 
-#### <span style="color: Yellow;"> EC2 Instances creation
+#### <span style="color: Yellow;"> To Create EC2 Instances
 
 First, we'll create the necessary virtual machines using ```terraform``` code. 
 
@@ -223,20 +224,21 @@ terraform apply
 
 ![alt text](All_ScreenShot/image-4.png)
 
-Once you run the terraform command, then we will verify the following things to make sure everything is setup via a terraform.
+Once you run the terraform command, then we will verify the following things to make sure everything is setup properly via a terraform.
 
 ### <span style="color: Orange;"> Inspect the ```Cloud-Init``` logs</span>: 
-Once connected to EC2 instance then you can check the status of the ```user_data``` script by inspecting the [log files](https://github.com/mrbalraj007/DevOps_free_Bootcamp/blob/main/19.Real-Time-DevOps-Project/cloud-init-output.log).
+Once connected to EC2 instance then you can check the status of the ```user_data``` script by inspecting the [log files](https://github.com/mrbalraj007/Learning_GitHub_Action/blob/main/01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup/03.Code_IAC_Terraform_box/cloud-init-output.log).
 ```bash
 # Primary log file for cloud-init
 sudo tail -f /var/log/cloud-init-output.log
                     or 
 sudo cat /var/log/cloud-init-output.log | more
 ```
-- *If the user_data script runs successfully, you will see output logs and any errors encountered during execution.*
-- *If there’s an error, this log will provide clues about what failed.*
+  > 🔍- *If the user_data script runs successfully, you will see output logs and any errors encountered during execution.*
 
-Outcome of "```cloud-init-output.log```"
+  > 🔍- *If there’s an error, this log will provide clues about what failed.*
+
+- Verify the Outcome of "```cloud-init-output.log```"
 
 ### <span style="color: cyan;"> Verify the Installation 
 
@@ -281,31 +283,32 @@ To see help text, you can run:
   aws <command> help
   aws <command> <subcommand> help
 ```
+###  <span style="color: brown;"> Verify the EKS Cluster installation
+- Will take a putty session of from Terraform EC2
+- On the ```terraform``` virtual machine, Go to directory ```k8s_setup_file``` and open the file ```cat apply.log``` to verify the cluster is created or not.
+- Will verify the cluster status from 
+   - `sudo cat /var/log/cloud-init-output.log | more` or 
+   - `cat /home/ubuntu/k8s_setup_file/apply.log`
 
-# Terraform cluster verify
-![alt text](All_ScreenShot/image-12.png)
+   ```sh
+   ubuntu@ip-172-31-90-126:~/k8s_setup_file$ pwd
+   /home/ubuntu/k8s_setup_file
+   ubuntu@ip-172-31-90-126:~/k8s_setup_file$ cd ..
+   ```
+   ![alt text](All_ScreenShot/image-12.png)
 
-- [x] <span style="color: brown;"> Verify the EKS cluster
+- After Terraform deploys on the instance, now it's time to setup the cluster. If you logout the ssh session then reconnect the SSH and run to following command:
 
-On the ```terraform``` virtual machine, Go to directory ```k8s_setup_file``` and open the file ```cat apply.log``` to verify the cluster is created or not.
-```sh
-ubuntu@ip-172-31-90-126:~/k8s_setup_file$ pwd
-/home/ubuntu/k8s_setup_file
-ubuntu@ip-172-31-90-126:~/k8s_setup_file$ cd ..
-```
+   ```bash
+   aws eks update-kubeconfig --name <cluster-name> --region 
+   <region>
+   ```
+- Once EKS cluster is setup then need to run the following command to make it intract with EKS.
 
-After Terraform deploys on the instance, now it's time to setup the cluster. You can SSH into the instance and run:
-
-```bash
-aws eks update-kubeconfig --name <cluster-name> --region 
-<region>
-```
-Once EKS cluster is setup then need to run the following command to make it intract with EKS.
-
-```sh
-aws eks update-kubeconfig --name balraj-cluster --region us-east-1
-```
-![alt text](All_ScreenShot/image-13.png)
+   ```sh
+   aws eks update-kubeconfig --name balraj-cluster --region us-east-1
+   ```
+   ![alt text](All_ScreenShot/image-13.png)
 
 > > ⚠️ **Important:** <br>
 *The ```aws eks update-kubeconfig``` command is used to configure your local kubectl tool to interact with an Amazon EKS (Elastic Kubernetes Service) cluster. It updates or creates a kubeconfig file that contains the necessary authentication information to allow kubectl to communicate with your specified EKS cluster.*
@@ -315,81 +318,83 @@ The AWS CLI retrieves the required connection information for the EKS cluster (s
 It configures the authentication details needed to connect kubectl to your EKS cluster using IAM roles.
 After running this command, you will be able to interact with your EKS cluster using kubectl commands, such as ```kubectl get nodes``` or ```kubectl get pods```.
 
-```sh
-kubectl get nodes
-kubectl cluster-info
-kubectl config get-contexts
-```
+   ```sh
+   kubectl get nodes
+   kubectl cluster-info
+   kubectl config get-contexts
+   ```
 ![alt text](All_ScreenShot/image-17.png)
 ![alt text](All_ScreenShot/image-18.png)
 
 ---
 ### <span style="color: yellow;"> **Verify GitHub Repo and GitHub Actions**
-   - GitHub repository created and initialize it because we are using terraform.
-   - ![alt text](All_ScreenShot/image-2.png)
-   - Verify a `.github/workflows` directory and created a two YAML file for the pipeline.
-   ![alt text](All_ScreenShot/image-3.png)
+   - Verify GitHub repository created and initialize it because we are using terraform.
+      ![alt text](All_ScreenShot/image-2.png)
+   - Verify a `.github/workflows` directory created along with two YAML file for the pipeline.
+      ![alt text](All_ScreenShot/image-3.png)
 
-###   <span style="color: cyan;">**Adding a Virtual Machine as a Runner**
+### <span style="color: cyan;">**Adding a Virtual Machine as a Runner**
    - I'll be using self-hosted runner to execute all the pipeline.
    - Configure the runner by following the commands provided in GitHub's settings.
-   - ```
-      <GithubAction_DevOps_Projects>/settings/actions/runners
+      ```
+         Go to "GithubAction_DevOps_Projects"
+         Click on settings
+         then select the actions and choose "runners"
       ```
    ![alt text](All_ScreenShot/image-5.png)
    - Click on new `self-hosted runner` and select `Linux`
-   - Notedown the token value
+   - Notedown the token value somewhere as we need to in runner VM.
    ![alt text](All_ScreenShot/image-6.png)
    - Take putty session of `runner` EC2
    - Go to `actions-runner` folder
-   - ![alt text](All_ScreenShot/image-7.png)
-   - Update the token value here
-   - ![alt text](All_ScreenShot/image-8.png)
-   - change the execution mode for script and run it.
+      ![alt text](All_ScreenShot/image-7.png)
+   - Update/Paste the token value here as mentioned in screenshot.
+      ![alt text](All_ScreenShot/image-8.png)
+   - Change the execution mode for script and run it.
    - `chmod +x selfhost-runner.sh`
 
 > 💡 **Note:** 
 > >*Take note of the token value from here and paste it into the script in runner at the following spot. This ensures that the script executes successfully with the necessary permissions. Once you've finished, save your modifications and run the script to test whether it works as planned.*
 
-I am getting this error message.
+#### **Troubleshooting:** 
+- I am getting below error message while execute the file.
 ![alt text](All_ScreenShot/image-9.png)
 
-**Solution:**
-try explicitly invoking the bash interpreter:
-Bash
-
-bash ./selfhost-runner.sh
-
-
-The solution is to remove these carriage return characters using the dos2unix command:
+##### **Fix/Solution:**
+ - I try explicitly invoking the bash interpreter:
+   ```Bash
+   bash ./selfhost-runner.sh
+   ```
+- The solution is to remove these carriage return characters using the dos2unix command:
    1. Install dos2unix if you haven't already:
-Bash
-
-sudo apt-get update
-sudo apt-get install dos2unix
-   2. Run dos2unix on your selfhost-runner.sh script:
-Bash
-
-dos2unix selfhost-runner.sh
+   ```Bash
+   sudo apt-get update
+   sudo apt-get install dos2unix
+   ```
+   2. Run `dos2unix` on your selfhost-runner.sh script:
+   ```Bash
+   dos2unix selfhost-runner.sh
+   ```
    3. Try running the script again:
-Bash
+   ```Bash
+   ./selfhost-runner.sh
+   ```
+> 💡 **Idea:** This should now execute correctly because the problematic carriage return characters will have been removed
 
-./selfhost-runner.sh
-This should now execute correctly because the problematic carriage return characters will have been removed
-
+It works :-) and I am able to execute the file.
 ![alt text](All_ScreenShot/image-10.png)
 ![alt text](All_ScreenShot/image-11.png)
 
 
 ### <span style="color: yellow;"> Setup SonarQube </span>
-- Go to SonarQube EC2 and run the following command 
+- Go to SonarQube EC2 and notedown the Public IPAddress and open a new browser.
 - Access SonarQube via ```http://<your-server-ip>:9000```.
 ![alt text](All_ScreenShot/image-19.png)
 ![alt text](All_ScreenShot/image-20.png)
-> 💡 **Note:** *When you access the above URl then it will be promot for login. Use the "`admin/admin`" for first time login and will prompt for change the password Once you change the password, make sure to create a strong and secure one that you can remember. Afterward, you will have full access to the system's features and settings. *
+> 💡 **Note:** *When you access the above URl then it will be promot for login. Use the "`admin/admin`" for first time login and will prompt for change the password Once you change the password, make sure to create a strong and secure one that you can remember. Afterward, you will have full access to the system's features and settings.*
 
 ####  <span style="color: cyan;"> Create a token in SonarQube
-  - Administration>Security>Users>Create a new token
+  - Go to `Administration`>`Security`>`Users`>Create a new token
   
 ![image-1](https://github.com/user-attachments/assets/84265e50-bc10-4959-aee9-36179c2b99ab)
 
@@ -397,31 +402,30 @@ This should now execute correctly because the problematic carriage return charac
 
 ###  <span style="color: yellow;"> Configure Secrets and Variables in GitHub Repo</span>.
 ```
-<GithubAction_DevOps_Projects>/settings/Secrets and Variables/Actions.
+Go to Repo `GithubAction_DevOps_Projects`
+Click on `settings`
+Click on `Secrets and Variables`
+Select `Actions`.
 ```
 ![alt text](All_ScreenShot/image.png)
 ![alt text](All_ScreenShot/image-1.png)
 > 💡 **Note:** 
 > >*You have to update all the required tokens and secrets value here. Part of Terraform code, I have already created a dummy values, which needs to be replaced. Once you have replaced the dummy values with the actual tokens and secrets, ensure that you test the configuration thoroughly to confirm that everything functions as expected. This will help prevent any issues during deployment and maintain the integrity of your infrastructure.*
 
-- To Update Sonar URL
+- **To Update Sonar URL** 
 ![alt text](All_ScreenShot/image-22.png)
 
-- To update the `EKS_KUBECONFIG` secret
-- Take putty session of Terraform EC2 instnace
-- run the command `cat ~/.kube/config`
-- copy the whole content and paste into the secret.
+- **To update the `EKS_KUBECONFIG` secret**
+  - Take putty session of Terraform EC2 instnace
+  - run the command `cat ~/.kube/config`
+  - copy the whole content and paste into the secret.
 
 ### **Attach Role to Runner EC2**
-   - Select the EC2 VM and click on the actions > security> Mofify IAM Roles on the runner.
+   - Select the EC2 VM and click on the `actions` > `security`>` Mofify IAM Roles on the runner`.
    ![alt text](All_ScreenShot/image-14.png)
    - Select the role `Role_k8_Cluster_profile` 
    ![alt text](All_ScreenShot/image-15.png)
    - Click on update IAM Role.
-
-### **5. Setting Up Terraform**
-   - Write Terraform scripts to provision the EKS cluster.
-   - Use `terraform apply` to create the infrastructure.
 
 
 
