@@ -54,10 +54,10 @@ Edit
 sudo rm /etc/apt/sources.list.d/trivy.list
  -->
 
-
-
 ---
-# Technical Project project: GitHub Actions CI/CD Pipeline with Live Project
+# Automating EKS Deployment with Terraform and GitHub Actions – The DevOps Way
+<!-- Kubernetes Made Easy: Terraform-Powered EKS Provisioning with GitHub Actions CI/CD
+Technical Project project: GitHub Actions CI/CD Pipeline with Live Project -->
 
 ---
 
