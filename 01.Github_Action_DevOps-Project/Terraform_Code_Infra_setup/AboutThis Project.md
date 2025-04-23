@@ -59,6 +59,7 @@ sudo rm /etc/apt/sources.list.d/trivy.list
 <!-- Kubernetes Made Easy: Terraform-Powered EKS Provisioning with GitHub Actions CI/CD
 Technical Project project: GitHub Actions CI/CD Pipeline with Live Project -->
 ![Image](https://github.com/user-attachments/assets/ec55f5be-f471-4131-bee1-ae3dece0de11)
+![Image](https://github.com/user-attachments/assets/1441af6c-9a1a-4bdd-97bd-1197519455c5)
 ---
 
 ## **Project Overview**
