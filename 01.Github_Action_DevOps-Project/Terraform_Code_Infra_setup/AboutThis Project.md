@@ -56,9 +56,11 @@ sudo rm /etc/apt/sources.list.d/trivy.list
 
 ---
 # Automating EKS Deployment with Terraform and GitHub Actions – The DevOps Way
-<!-- Kubernetes Made Easy: Terraform-Powered EKS Provisioning with GitHub Actions CI/CD
-Technical Project project: GitHub Actions CI/CD Pipeline with Live Project -->
-https://github.com/user-attachments/assets/b93fa528-6778-4c97-94ee-6e36c7f4fa8e
+<!-- 
+- Kubernetes Made Easy: Terraform-Powered EKS Provisioning with GitHub Actions CI/CD
+- Technical Project project: GitHub Actions CI/CD Pipeline with Live Project
+# https://github.com/user-attachments/assets/b93fa528-6778-4c97-94ee-6e36c7f4fa8e
+ -->
 ![Image](https://github.com/user-attachments/assets/1441af6c-9a1a-4bdd-97bd-1197519455c5)
 ---
 
