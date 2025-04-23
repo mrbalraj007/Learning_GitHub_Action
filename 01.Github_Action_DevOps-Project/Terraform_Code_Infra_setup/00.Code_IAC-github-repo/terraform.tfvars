@@ -9,8 +9,8 @@ github_owner           = "mrbalraj007" # Replace with your GitHub username or or
 actions_secrets = {
   SONAR_TOKEN           = "super_secret_value"
   DOCKERHUB_TOKEN       = "another_secret_value"
-  AWS_ACCESS_KEY_ID     = "AWS_ACCESS_KEY_ID_values"
-  AWS_SECRET_ACCESS_KEY = "AWS_SECRET_ACCESS_KEY_values"
+  # AWS_ACCESS_KEY_ID     = "AWS_ACCESS_KEY_ID_values"
+  # AWS_SECRET_ACCESS_KEY = "AWS_SECRET_ACCESS_KEY_values"
   EKS_KUBECONFIG        = "yet_another_value"
 }
 
