@@ -543,22 +543,7 @@ __Ref Link:__
 
 - [Youtube VideoLink](https://www.youtube.com/watch?v=icZUzgtz_d8)
 - [Clearfile-content cache in visualstudio code](https://stackoverflow.com/questions/45216264/clear-file-content-cache-in-visual-studio-code)
-
-
-- Need to Cleanup
 - [managing-GitHub-access-tokens](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
-
-
-- [Install Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
-
-- [Install AWS Cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
-
-- [EKS Create-repository](https://docs.aws.amazon.com/cli/latest/reference/ecr/create-repository.html)
-
-- [EKS describe-repositories](https://docs.aws.amazon.com/cli/latest/reference/ecr/describe-repositories.html)
-
-- [AWS configure](https://docs.aws.amazon.com/cli/latest/reference/configure/set.html)
-
-- [Jenkins-environment-variables-1](https://phoenixnap.com/kb/jenkins-environment-variables)
-- [Jenkins-environment-variables-2](https://devopsqa.wordpress.com/2019/11/19/list-of-available-jenkins-environment-variables/)
-
+- [GitHub Actions Markget Place](https://github.com/marketplace)
+- [download-a-build-artifact](https://github.com/marketplace/actions/download-a-build-artifact)
+- [upload-a-build-artifact](https://github.com/marketplace/actions/upload-a-build-artifact)
