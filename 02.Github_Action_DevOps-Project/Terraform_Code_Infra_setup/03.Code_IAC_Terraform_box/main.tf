@@ -1,3 +1,80 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "5.67.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.region_name
+}
+
+# To Create Security Group for EC2 Instance 
+resource "aws_security_group" "ProjectSG" {
+  name        = "JENKINS-SERVER-SG"
+  description = "Jenkins Server Ports"
+
+  dynamic "ingress" {
+    for_each = toset([22, 25, 80, 443, 3000, 6443, 465, 27017])
+    content {
+      description = "inbound rule for port ${ingress.value}"
+      from_port   = ingress.value
+      to_port     = ingress.value
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
+
+  # Port 2379-2380 is required for etcd-cluster
+  ingress {
+    description = "etc-cluster Port"
+    from_port   = 2379
+    to_port     = 2380
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "Custom TCP Port Range"
+    from_port   = 3000
+    to_port     = 10000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "Custom TCP Port Range 30000 to 32767"
+    from_port   = 20000
+    to_port     = 32767
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Port 10250-10260 is required for K8s
+  ingress {
+    description = "K8s Ports"
+    from_port   = 10250
+    to_port     = 10260
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Define outbound rules to allow all
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "JENKINS-SVR-SG"
+  }
+
+}
+
 # Fetch the latest Ubuntu 24.04 LTS AMI
 data "aws_ami" "ubuntu" {
   most_recent = true
@@ -14,37 +91,83 @@ data "aws_ami" "ubuntu" {
 
   owners = ["099720109477"] # Canonical owner ID for Ubuntu AMIs
 }
-# Custom IAM Policy for EKS
+
+# Separate EC2 Instance for Terraform with IAM Profile and Folder Copy
+resource "aws_instance" "terraform_vm" {
+  ami                    = data.aws_ami.ubuntu.id
+  key_name               = var.key_name      # Change key name as per your setup
+  instance_type          = var.instance_type # Instance type for Terraform VM t2.large
+  iam_instance_profile   = aws_iam_instance_profile.k8s_cluster_instance_profile.name
+  vpc_security_group_ids = [aws_security_group.ProjectSG.id]
+  user_data              = templatefile("./scripts/user_data_terraform.sh", {})
+
+  tags = {
+    Name = var.server_name
+  }
+
+  root_block_device {
+    volume_size = var.volume_size
+  }
+
+  instance_market_options {
+    market_type = "spot"
+    spot_options {
+      max_price = "0.0251" # Set your maximum price for the spot instance
+    }
+  }
+
+
+  # Copy the k8s_setup_file folder after the instance is created
+  provisioner "file" {
+    source      = "./k8s_setup_file"
+    destination = "/home/ubuntu/k8s_setup_file"
+
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = file("MYLABKEY.pem")
+      host        = self.public_ip
+    }
+  }
+
+  # Set appropriate ownership for the copied folder
+  provisioner "remote-exec" {
+    inline = [
+      "sudo chown -R ubuntu:ubuntu /home/ubuntu/k8s_setup_file"
+    ]
+
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = file("MYLABKEY.pem")
+      host        = self.public_ip
+    }
+  }
+}
+
+# Custom IAM Policy for EKS with full permissions
 resource "aws_iam_policy" "eks_custom_policy" {
   name        = "eks_custom_policy"
-  description = "Custom policy for EKS operations"
-  policy      = jsonencode({
-    Version = "2012-10-17"
+  description = "Custom policy for EKS operations with full permissions"
+  policy = jsonencode({
+    Version = "2012-10-17",
     Statement = [
       {
-        Effect = "Allow"
-        Action = [
-          "eks:CreateNodegroup",
-          "eks:DescribeNodegroup",
-          "eks:DeleteNodegroup",
-          "eks:ListNodegroups",
-          "eks:CreateCluster",
-          "eks:DescribeCluster",
-          "eks:DeleteCluster",
-          "eks:ListClusters"
-        ]
+        Sid      = "VisualEditor0",
+        Effect   = "Allow",
+        Action   = "eks:*",
         Resource = "*"
       }
     ]
   })
 }
 
+
 # Attach Custom EKS Policy to IAM Role
 resource "aws_iam_role_policy_attachment" "eks_custom_policy_attachment" {
   role       = aws_iam_role.k8s_cluster_role.name
   policy_arn = aws_iam_policy.eks_custom_policy.arn
 }
-
 
 # Create IAM Role
 resource "aws_iam_role" "k8s_cluster_role" {
@@ -66,6 +189,12 @@ resource "aws_iam_role" "k8s_cluster_role" {
 
 # Create IAM permissions
 
+# Create Profile for EC2 
+resource "aws_iam_instance_profile" "k8s_cluster_instance_profile" {
+  name = "Role_k8s_cluster-Profile"
+  role = aws_iam_role.k8s_cluster_role.name
+}
+
 # Attach Full AmazonEKSClusterPolicy Permissions to IAM Role
 resource "aws_iam_role_policy_attachment" "eks_full_access" {
   role       = aws_iam_role.k8s_cluster_role.name
@@ -78,10 +207,16 @@ resource "aws_iam_role_policy_attachment" "eksservice_full_access" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
 }
 
-# Attach Full AmazonEC2ContainerRegistryReadOnly Services Permissions to IAM Role
-resource "aws_iam_role_policy_attachment" "containerreg_full_access" {
+# # Attach Full AmazonEC2ContainerRegistryReadOnly Services Permissions to IAM Role
+# resource "aws_iam_role_policy_attachment" "containerreg_full_access" {
+#   role       = aws_iam_role.k8s_cluster_role.name
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+# }
+
+# Attach Full AdministratorAccess Services Permissions to IAM Role
+resource "aws_iam_role_policy_attachment" "AdministratorAccess_full_access" {
   role       = aws_iam_role.k8s_cluster_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
 # Attach Full AmazonEKSWorkerNodePolicy Services Permissions to IAM Role
@@ -113,124 +248,19 @@ resource "aws_iam_role_policy_attachment" "vpc_full_access" {
   role       = aws_iam_role.k8s_cluster_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonVPCFullAccess"
 }
-# # Attach Full AutoScalingFullAccess Permissions to IAM Role
-# resource "aws_iam_role_policy_attachment" "scale_full_access" {
-#   role       = aws_iam_role.k8s_cluster_role.name
-#   policy_arn = "arn:aws:iam::aws:policy/AutoScalingFullAccess"
-# }
+
 # Attach Full ElasticLoadBalancingFullAccess Permissions to IAM Role
 resource "aws_iam_role_policy_attachment" "elb_full_access" {
   role       = aws_iam_role.k8s_cluster_role.name
   policy_arn = "arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess"
 }
 
-# Create Profile for EC2 
-resource "aws_iam_instance_profile" "k8s_cluster_instance_profile" {
-  name = "Role_k8s_cluster-Profile"
-  role = aws_iam_role.k8s_cluster_role.name
+
+
+output "terraform_vm_public_ip" {
+  value = aws_instance.terraform_vm.public_ip
 }
 
-# # Attach Full Route53 Permissions to IAM Role
-# resource "aws_iam_role_policy_attachment" "route_full_access" {
-#   role       = aws_iam_role.k8s_cluster_role.name
-#   policy_arn = "arn:aws:iam::aws:policy/AmazonRoute53FullAccess"
-# }
-
-# # Attach Full S3 Permissions to IAM Role
-# resource "aws_iam_role_policy_attachment" "s3_full_access" {
-#   role       = aws_iam_role.k8s_cluster_role.name
-#   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-# }
-
-resource "aws_instance" "terrabox" {
-  ami                    = data.aws_ami.ubuntu.id
-  instance_type          = "t2.medium"
-  key_name               = "MYLABKEY" # Change key name as per your setup
-  vpc_security_group_ids = [aws_security_group.TerraBox.id]
-  iam_instance_profile   = aws_iam_instance_profile.k8s_cluster_instance_profile.name
-  user_data              = templatefile("./terrabox_install.sh", {})
-
-depends_on = [aws_iam_instance_profile.k8s_cluster_instance_profile]  # This ensures the profile is created first.
-
-  tags = {
-    Name = "terrabox-SVR"
-  }
-
-  root_block_device {
-    volume_size = 25
-  }
-
-  # K8S cluster main
-  # instance_market_options {
-  #    market_type = "spot"
-  #    spot_options {
-  #      max_price = "0.0145" # Set your maximum price for the spot instance
-  #    }
-  #  }
-
-  # Copy the folder after the instance is created and SSH is available
-  provisioner "file" {
-    source      = "k8s_setup_file"
-    destination = "/home/ubuntu/k8s_setup_file"
-
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      private_key = file("MYLABKEY.pem")
-      host        = self.public_ip
-    }
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "sudo chown -R ubuntu:ubuntu /home/ubuntu/k8s_setup_file",
-      # "sudo chown -R ubuntu:ubuntu /home/ubuntu/k8s_setup_file/*"
-    ]
-
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      private_key = file("MYLABKEY.pem")
-      host        = self.public_ip
-    }
-  }
-}
-
-resource "aws_security_group" "TerraBox" {
-  name        = "terra-VM-SG"
-  description = "Allow inbound traffic"
-
-  dynamic "ingress" {
-    for_each = toset([25, 22, 80, 443, 6443, 465, 8080, 9000, 3000])
-    content {
-      description = "inbound rule for port ${ingress.value}"
-      from_port   = ingress.value
-      to_port     = ingress.value
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-    }
-  }
-
-  ingress {
-    description = "Custom TCP Port Range"
-    from_port   = 2000
-    to_port     = 11000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "terra-VM-SG"
-  }
-}
-
-output "instance_ip" {
-  value = aws_instance.terrabox.public_ip
+output "terraform_vm_private_ip" {
+  value = aws_instance.terraform_vm.private_ip
 }
