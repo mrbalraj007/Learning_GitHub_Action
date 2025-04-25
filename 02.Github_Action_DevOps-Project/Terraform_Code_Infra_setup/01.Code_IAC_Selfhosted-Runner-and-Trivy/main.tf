@@ -34,12 +34,12 @@ resource "aws_instance" "runner-svr" {
     volume_size = 25
   }
 
-  instance_market_options {
-    market_type = "spot"
-    spot_options {
-      max_price = "0.0067" # Set your maximum price for the spot instance
-    }
-  }
+  # instance_market_options {
+  #   market_type = "spot"
+  #   spot_options {
+  #     max_price = "0.0067" # Set your maximum price for the spot instance
+  #   }
+  # }
 
   # Copy the actions-runner folder after the instance is created
   provisioner "file" {

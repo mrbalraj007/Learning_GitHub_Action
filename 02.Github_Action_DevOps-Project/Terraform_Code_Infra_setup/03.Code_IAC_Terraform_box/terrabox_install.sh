@@ -64,4 +64,4 @@ terraform validate
 #terraform plan -out=plan.out
 terraform plan | tee plan.log
 echo "Applying the Terraform plan with auto-approve..."
-#terraform apply -auto-approve | tee apply.log
+terraform apply -auto-approve | tee apply.log

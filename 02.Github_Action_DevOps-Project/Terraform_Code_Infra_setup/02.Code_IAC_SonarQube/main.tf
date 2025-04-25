@@ -21,7 +21,7 @@ data "aws_ami" "ubuntu" {
 resource "aws_instance" "sonar" {
   # ami                    = "ami-0287a05f0ef0e9d9a"      #change ami id for different region
   ami                    = data.aws_ami.ubuntu.id
-  instance_type          = "t3.small"
+  instance_type          = "t2.medium" # t2.medium , t3.small
   key_name               = "MYLABKEY" #change key name as per your setup
   vpc_security_group_ids = [aws_security_group.sonar-VM-SG.id]
   user_data              = templatefile("./sonar_install.sh", {})
@@ -33,12 +33,13 @@ resource "aws_instance" "sonar" {
   root_block_device {
     volume_size = 25
   }
-  instance_market_options {
-    market_type = "spot"
-    spot_options {
-      max_price = "0.0151" # Set your maximum price for the spot instance
-    }
-  }
+
+  # instance_market_options {
+  #  market_type = "spot"
+  #  spot_options {
+  #    max_price = "0.0151" # Set your maximum price for the spot instance
+  #  }
+  # }
 }
 
 resource "aws_security_group" "sonar-VM-SG" {

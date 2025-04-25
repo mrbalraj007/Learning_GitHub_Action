@@ -9,13 +9,16 @@ github_owner           = "mrbalraj007" # Replace with your GitHub username or or
 actions_secrets = {
   SONAR_TOKEN     = "super_secret_value"
   DOCKERHUB_TOKEN = "another_secret_value"
-  # AWS_ACCESS_KEY_ID     = "AWS_ACCESS_KEY_ID_values"
+  MY_GITHUB_PAT_TOKEN     = "need to update value here"
   # AWS_SECRET_ACCESS_KEY = "AWS_SECRET_ACCESS_KEY_values"
   EKS_KUBECONFIG = "yet_another_value"
+  SONAR_HOST_URL     = "some_value"
+  DOCKERHUB_USERNAME = "another_value"
 }
 
 actions_variables = {
-  SONAR_HOST_URL     = "some_value"
-  DOCKERHUB_USERNAME = "another_value"
+
   AWS_REGION         = "us-east-1"
+  MY_GITHUB_REPO_NAME = "GithubAction_DevOps_Projects.git"
+  MY_GITHUB_LOGIN_ID = "mrbalraj007"
 }
