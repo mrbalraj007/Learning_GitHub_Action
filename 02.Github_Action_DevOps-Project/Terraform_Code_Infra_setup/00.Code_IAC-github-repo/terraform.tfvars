@@ -19,6 +19,6 @@ actions_secrets = {
 actions_variables = {
 
   AWS_REGION         = "us-east-1"
-  MY_GITHUB_REPO_NAME = "GithubAction_DevOps_Projects.git"
-  MY_GITHUB_LOGIN_ID = "mrbalraj007"
+  # MY_GITHUB_REPO_NAME = "GithubAction_DevOps_Projects.git"
+  # MY_GITHUB_LOGIN_ID = "mrbalraj007"
 }

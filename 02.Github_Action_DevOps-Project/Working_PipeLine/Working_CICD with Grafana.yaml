@@ -1,0 +1,272 @@
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ "main" ]
+    paths-ignore:
+      - 'deployment-service.yaml'
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+    inputs:
+      grafana_version:
+        description: 'Grafana version (leave empty for latest)'
+        required: false
+        default: ''
+      prometheus_version:
+        description: 'Prometheus version (leave empty for latest)'
+        required: false
+        default: ''
+
+jobs:
+  build:
+    runs-on: self-hosted
+    outputs:
+      version: ${{ env.VERSION }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.MY_GITHUB_PAT_TOKEN }}
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn package --file pom.xml
+
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Boardgame
+          path: target/*.jar
+
+      - name: Trivy Installation
+        run: |
+          sudo apt-get install -y wget apt-transport-https gnupg lsb-release
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update -y
+          sudo apt-get install -y trivy
+
+      - name: Trivy FS scan
+        run: trivy fs --format table -o fs.html .
+
+      - name: Gitleaks Installation
+        run: sudo apt install gitleaks -y
+
+      - name: Gitleaks Code Scan
+        run: gitleaks detect --source . -r gitleaks-report.json -f json
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v5.0.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: SonarQube Quality Gate check
+        id: sonarqube-quality-gate-check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        with:
+          pollingTimeoutSec: 600
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Docker Tag
+        id: version
+        run: |
+          VERSION=v$(date +"%Y%m%d%H%M%S")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Build Docker Image
+        run: docker build . -t balrajsi/boardgame:${{ env.VERSION }}
+
+      - name: Trivy Image Scan
+        run: trivy image --format table -o trivy-image-report.html balrajsi/boardgame:${{ env.VERSION }}
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Push Docker Image
+        run: docker push balrajsi/boardgame:${{ env.VERSION }}
+
+  update-manifests:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.MY_GITHUB_PAT_TOKEN }}
+          fetch-depth: 0
+
+      - name: Update K8s Manifests
+        run: |
+          cat deployment-service.yaml
+          sed -i "s|image:.*|image: balrajsi/boardgame:${{ needs.build.outputs.version }}|g" deployment-service.yaml
+          cat deployment-service.yaml
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git add deployment-service.yaml
+          git commit -m "Update deployment-service.yaml with new image version - ${{ needs.build.outputs.version }}" || echo "No changes to commit"
+          echo "Pushing changes using PAT token..."
+          git push "https://${{ secrets.MY_GITHUB_PAT_TOKEN }}@github.com/${{ github.repository }}" HEAD:main
+
+  install-monitoring-tools:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup environment
+        shell: bash
+        run: |
+          echo "Setting up environment for monitoring tools installation"
+          sudo apt-get update -y
+          sudo apt-get install -y curl wget apt-transport-https software-properties-common
+
+      - name: Get latest Grafana version if not specified
+        id: grafana_version
+        shell: bash
+        run: |
+          if [ -z "${{ github.event.inputs.grafana_version }}" ]; then
+            GRAFANA_VERSION=$(curl -s https://api.github.com/repos/grafana/grafana/releases/latest | grep -oP '"tag_name": "v\K(.*)(?=")')
+            echo "Using latest Grafana version: ${GRAFANA_VERSION}"
+            echo "VERSION=${GRAFANA_VERSION}" >> $GITHUB_OUTPUT
+          else
+            echo "Using specified Grafana version: ${{ github.event.inputs.grafana_version }}"
+            echo "VERSION=${{ github.event.inputs.grafana_version }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install Grafana
+        shell: bash
+        run: |
+          echo "Installing Grafana"
+          wget -q -O - https://packages.grafana.com/gpg.key | sudo apt-key add -
+          echo "deb https://packages.grafana.com/oss/deb stable main" | sudo tee -a /etc/apt/sources.list.d/grafana.list
+          sudo apt-get update -y
+          sudo apt-get install -y grafana
+          sudo systemctl enable grafana-server
+          sudo systemctl start grafana-server
+          echo "Grafana installation completed"
+
+      - name: Get latest Prometheus version if not specified
+        id: prometheus_version
+        shell: bash
+        run: |
+          if [ -z "${{ github.event.inputs.prometheus_version }}" ]; then
+            PROMETHEUS_VERSION=$(curl -s https://api.github.com/repos/prometheus/prometheus/releases/latest | grep -oP '"tag_name": "v\K(.*)(?=")')
+            echo "Using latest Prometheus version: ${PROMETHEUS_VERSION}"
+            echo "VERSION=${PROMETHEUS_VERSION}" >> $GITHUB_OUTPUT
+          else
+            echo "Using specified Prometheus version: ${{ github.event.inputs.prometheus_version }}"
+            echo "VERSION=${{ github.event.inputs.prometheus_version }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install Prometheus
+        shell: bash
+        run: |
+          echo "Installing Prometheus v${{ steps.prometheus_version.outputs.VERSION }}"
+          sudo useradd --no-create-home --shell /bin/false prometheus || echo "User prometheus may already exist"
+          sudo mkdir -p /etc/prometheus /var/lib/prometheus
+          wget https://github.com/prometheus/prometheus/releases/download/v${{ steps.prometheus_version.outputs.VERSION }}/prometheus-${{ steps.prometheus_version.outputs.VERSION }}.linux-amd64.tar.gz
+          tar -xvf prometheus-${{ steps.prometheus_version.outputs.VERSION }}.linux-amd64.tar.gz
+          sudo cp prometheus-${{ steps.prometheus_version.outputs.VERSION }}.linux-amd64/prometheus /usr/local/bin/
+          sudo cp prometheus-${{ steps.prometheus_version.outputs.VERSION }}.linux-amd64/promtool /usr/local/bin/
+          if [ -d "prometheus-${{ steps.prometheus_version.outputs.VERSION }}.linux-amd64/consoles" ]; then
+            sudo cp -r prometheus-${{ steps.prometheus_version.outputs.VERSION }}.linux-amd64/consoles /etc/prometheus/
+          else
+            sudo mkdir -p /etc/prometheus/consoles
+          fi
+          if [ -d "prometheus-${{ steps.prometheus_version.outputs.VERSION }}.linux-amd64/console_libraries" ]; then
+            sudo cp -r prometheus-${{ steps.prometheus_version.outputs.VERSION }}.linux-amd64/console_libraries /etc/prometheus/
+          else
+            sudo mkdir -p /etc/prometheus/console_libraries
+          fi
+          sudo tee /etc/prometheus/prometheus.yml > /dev/null << EOF
+          global:
+            scrape_interval: 15s
+          scrape_configs:
+            - job_name: 'prometheus'
+              scrape_interval: 5s
+              static_configs:
+                - targets: ['localhost:9090']
+          EOF
+          sudo chown -R prometheus:prometheus /etc/prometheus /var/lib/prometheus
+          sudo tee /etc/systemd/system/prometheus.service > /dev/null << EOF
+          [Unit]
+          Description=Prometheus
+          Wants=network-online.target
+          After=network-online.target
+          [Service]
+          User=prometheus
+          Group=prometheus
+          Type=simple
+          ExecStart=/usr/local/bin/prometheus \\
+            --config.file /etc/prometheus/prometheus.yml \\
+            --storage.tsdb.path /var/lib/prometheus/ \\
+            --web.console.templates=/etc/prometheus/consoles \\
+            --web.console.libraries=/etc/prometheus/console_libraries
+          [Install]
+          WantedBy=multi-user.target
+          EOF
+          sudo systemctl daemon-reload
+          sudo systemctl enable prometheus
+          sudo systemctl start prometheus
+          rm -rf prometheus-${{ steps.prometheus_version.outputs.VERSION }}.linux-amd64*
+          echo "Prometheus installation completed"
+
+      - name: Configure Grafana data source for Prometheus
+        shell: bash
+        run: |
+          echo "Configuring Prometheus data source in Grafana"
+          sleep 10
+          curl -X POST -H "Content-Type: application/json" -d '{
+            "name":"Prometheus",
+            "type":"prometheus",
+            "url":"http://localhost:9090",
+            "access":"proxy",
+            "basicAuth":false,
+            "isDefault":true
+          }' http://admin:admin@localhost:3000/api/datasources
+          echo "Data source configuration completed"
+
+      - name: Verify services are running
+        shell: bash
+        run: |
+          echo "Verifying services are running..."
+          if systemctl is-active --quiet grafana-server; then
+            echo "Grafana is running"
+          else
+            echo "Grafana service is not running"
+            exit 1
+          fi
+          if systemctl is-active --quiet prometheus; then
+            echo "Prometheus is running"
+          else
+            echo "Prometheus service is not running"
+            exit 1
+          fi
+          echo "All monitoring tools are installed and running successfully!"
