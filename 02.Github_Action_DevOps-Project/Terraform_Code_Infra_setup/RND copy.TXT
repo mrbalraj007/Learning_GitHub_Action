@@ -1,0 +1,116 @@
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.MY_GITHUB_PAT_TOKEN }}
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn package --file pom.xml
+
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Boardgame
+          path: target/*.jar 
+
+      - name: Trivy Installation
+        run: |
+          sudo apt-get install -y wget apt-transport-https gnupg lsb-release
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update -y
+          sudo apt-get install -y trivy
+
+      - name: Trivy FS scan
+        run: |
+          trivy fs --format table -o fs.html .
+
+      - name: Gitleaks Installation
+        run: sudo apt install gitleaks -y
+
+      - name: Gitleaks Code Scan
+        run: gitleaks detect --source . -r gitleaks-report.json -f json
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v5.0.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: SonarQube Quality Gate check
+        id: sonarqube-quality-gate-check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        with:
+          pollingTimeoutSec: 600
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Docker Tag
+        id: version
+        run: |
+          VERSION=v$(date +"%Y%m%d%H%M%S")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Build Docker Image
+        run: |
+          docker build . -t balrajsi/boardgame:${{ env.VERSION }}
+
+      - name: Trivy Image Scan
+        run: |
+          trivy image --format table -o trivy-image-report.html balrajsi/boardgame:${{ env.VERSION }}
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Push Docker Image
+        run: docker push balrajsi/boardgame:${{ env.VERSION }}      
+      
+      - name: Update K8s Manifests
+        run: |
+          cat deployment-service.yaml
+          sed -i "s|image: */boardshack:.*|image: balrajsi/boardshack:${{ env.VERSION }}|g" deployment-service.yaml
+          cat deployment-service.yaml
+      
+      - name: Commit and push changes
+        run: |
+            git config --global user.email "github-actions@github.com"
+            git config --global user.name "GitHub Actions"
+            git add deployment-service.yaml
+            git commit -m "Update deployment-service.yaml with new image version - ${{ env.VERSION }}"
+            echo "Pushing changes using PAT token..."
+            git push "https://${{ secrets.MY_GITHUB_PAT_TOKEN }}@github.com/${{ vars.MY_GITHUB_PAT_TOKEN }}/${{ vars.MY_GITHUB_PAT_TOKEN }}" HEAD:main
