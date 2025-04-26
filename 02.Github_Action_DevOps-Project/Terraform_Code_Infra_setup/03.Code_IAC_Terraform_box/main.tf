@@ -13,8 +13,8 @@ provider "aws" {
 
 # To Create Security Group for EC2 Instance 
 resource "aws_security_group" "ProjectSG" {
-  name        = "JENKINS-SERVER-SG"
-  description = "Jenkins Server Ports"
+  name        = "Terraform-SERVER-SG"
+  description = "Terraform Server Ports"
 
   dynamic "ingress" {
     for_each = toset([22, 25, 80, 443, 3000, 6443, 465, 27017])
@@ -70,7 +70,7 @@ resource "aws_security_group" "ProjectSG" {
   }
 
   tags = {
-    Name = "JENKINS-SVR-SG"
+    Name = "Terraform-SVR-SG"
   }
 
 }

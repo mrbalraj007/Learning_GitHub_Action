@@ -14,31 +14,31 @@ print_message() {
 print_message "Setting hostname to 'bootstrap-svr'"
 sudo hostnamectl set-hostname bootstrap-svr
 
-# Create user 'ansadmin' if it doesn't already exist
-if ! id "ansadmin" &>/dev/null; then
-    print_message "Creating user 'ansadmin'"
-    sudo useradd -m -s /bin/bash ansadmin
-    echo "ansadmin:password" | sudo chpasswd
-    echo "ansadmin ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/ansadmin
-else
-    echo "User 'ansadmin' already exists."
-fi
+# # Create user 'ansadmin' if it doesn't already exist
+# if ! id "ansadmin" &>/dev/null; then
+#     print_message "Creating user 'ansadmin'"
+#     sudo useradd -m -s /bin/bash ansadmin
+#     echo "ansadmin:password" | sudo chpasswd
+#     echo "ansadmin ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/ansadmin
+# else
+#     echo "User 'ansadmin' already exists."
+# fi
 
-# Enable password-based SSH login
-print_message "Configuring SSH for password-based authentication"
-sudo sed -i 's/^#PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
-sudo sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
-sudo systemctl restart ssh
+# # Enable password-based SSH login
+# print_message "Configuring SSH for password-based authentication"
+# sudo sed -i 's/^#PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+# sudo sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+# sudo systemctl restart ssh
 
-# Generate SSH key for ansadmin user
-print_message "Generating SSH key for 'ansadmin' user"
-sudo -u ansadmin bash -c 'mkdir -p ~/.ssh && chmod 700 ~/.ssh'
-if [ ! -f /home/ansadmin/.ssh/id_rsa ]; then
-    sudo -u ansadmin ssh-keygen -t rsa -b 2048 -f /home/ansadmin/.ssh/id_rsa -N ""
-    echo "SSH key generated for 'ansadmin' user."
-else
-    echo "SSH key already exists for 'ansadmin' user."
-fi
+# # Generate SSH key for ansadmin user
+# print_message "Generating SSH key for 'ansadmin' user"
+# sudo -u ansadmin bash -c 'mkdir -p ~/.ssh && chmod 700 ~/.ssh'
+# if [ ! -f /home/ansadmin/.ssh/id_rsa ]; then
+#     sudo -u ansadmin ssh-keygen -t rsa -b 2048 -f /home/ansadmin/.ssh/id_rsa -N ""
+#     echo "SSH key generated for 'ansadmin' user."
+# else
+#     echo "SSH key already exists for 'ansadmin' user."
+# fi
 
 
 # Function to check if a command exists
@@ -70,18 +70,18 @@ sudo apt update -y
 sudo apt install -y openjdk-17-jre-headless
 java --version
 
-# Install Jenkins
-print_message "Installing Jenkins"
-if ! dpkg -s jenkins >/dev/null 2>&1; then
-    curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee /usr/share/keyrings/jenkins-keyring.asc > /dev/null
-    echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/" | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
-    sudo apt-get update -y
-    sudo apt-get install -y jenkins
-    sudo systemctl enable jenkins
-    sudo systemctl start jenkins
-else
-    echo "Jenkins is already installed and running."
-fi
+# # Install Jenkins
+# print_message "Installing Jenkins"
+# if ! dpkg -s jenkins >/dev/null 2>&1; then
+#     curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+#     echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/" | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+#     sudo apt-get update -y
+#     sudo apt-get install -y jenkins
+#     sudo systemctl enable jenkins
+#     sudo systemctl start jenkins
+# else
+#     echo "Jenkins is already installed and running."
+# fi
 
 # Install Docker
 print_message "Installing Docker"
@@ -96,18 +96,18 @@ sudo usermod -aG docker $USER && newgrp docker || echo "User '$USER' is already 
 sudo systemctl enable docker
 sudo systemctl start docker
 
-# Install and configure SonarQube
-print_message "Installing and configuring SonarQube"
-if [ ! "$(docker ps -q -f name=SonarQube-Server)" ]; then
-    if [ "$(docker ps -aq -f status=exited -f name=SonarQube-Server)" ]; then
-        # Cleanup
-        docker rm SonarQube-Server
-    fi
-    docker run -d --name SonarQube-Server -p 9000:9000 sonarqube:lts-community
-    echo "SonarQube is being set up and may take a few minutes to become ready."
-else
-    echo "SonarQube container is already running."
-fi
+# # Install and configure SonarQube
+# print_message "Installing and configuring SonarQube"
+# if [ ! "$(docker ps -q -f name=SonarQube-Server)" ]; then
+#     if [ "$(docker ps -aq -f status=exited -f name=SonarQube-Server)" ]; then
+#         # Cleanup
+#         docker rm SonarQube-Server
+#     fi
+#     docker run -d --name SonarQube-Server -p 9000:9000 sonarqube:lts-community
+#     echo "SonarQube is being set up and may take a few minutes to become ready."
+# else
+#     echo "SonarQube container is already running."
+# fi
 
 # Install necessary dependencies
 print_message "Installing necessary dependencies"
@@ -172,28 +172,28 @@ else
     echo "AWS CLI is already installed."
 fi
 
-# Fetch public IP address of the server
-ip=$(curl -s ifconfig.me)
+# # Fetch public IP address of the server
+# ip=$(curl -s ifconfig.me)
 
-# Retrieve Jenkins initial admin password
-if [ -f /var/lib/jenkins/secrets/initialAdminPassword ]; then
-    pass=$(sudo cat /var/lib/jenkins/secrets/initialAdminPassword)
-else
-    echo "Jenkins initial admin password file not found. Ensure Jenkins is installed and started."
-    exit 1
-fi
+# # Retrieve Jenkins initial admin password
+# if [ -f /var/lib/jenkins/secrets/initialAdminPassword ]; then
+#     pass=$(sudo cat /var/lib/jenkins/secrets/initialAdminPassword)
+# else
+#     echo "Jenkins initial admin password file not found. Ensure Jenkins is installed and started."
+#     exit 1
+# fi
 
-# Output the URLs and credentials
-echo "Access Jenkins Server here --> http://$ip:8080"
-echo "Jenkins Initial Password: $pass"
-echo "Access SonarQube Server here --> http://$ip:9000"
-echo "SonarQube Username & Password: admin"
+# # Output the URLs and credentials
+# echo "Access Jenkins Server here --> http://$ip:8080"
+# echo "Jenkins Initial Password: $pass"
+# echo "Access SonarQube Server here --> http://$ip:9000"
+# echo "SonarQube Username & Password: admin"
 
 
-# Install Node.js (Version 16)
-print_message "Installing Node.js"
-curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
-sudo apt-get install -y nodejs
+# # Install Node.js (Version 16)
+# print_message "Installing Node.js"
+# curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+# sudo apt-get install -y nodejs
 
 
 echo "Starting Terraform setup..."
