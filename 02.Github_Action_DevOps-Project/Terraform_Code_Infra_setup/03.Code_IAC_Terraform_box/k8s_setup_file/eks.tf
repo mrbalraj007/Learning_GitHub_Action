@@ -23,11 +23,11 @@ module "eks" {
   eks_managed_node_groups = {
     singh-node = {
       min_size     = 2
-      max_size     = 4
+      max_size     = 2
       desired_size = 2
 
-      instance_types = ["t2.medium"]
-      capacity_type  = "SPOT"
+      instance_types = ["t2.medium"] # "t2.small"
+      capacity_type  = "SPOT" # Updated capacity type
 
       tags = {
         ExtraTag = "Singh_Node"
