@@ -17,8 +17,8 @@ module "eks" {
     }
   }
 
-  vpc_id                   = module.vpc.vpc_id
-  subnet_ids               = module.vpc.private_subnets
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.private_subnets
 
   eks_managed_node_groups = {
     singh-node = {
@@ -26,8 +26,8 @@ module "eks" {
       max_size     = 2
       desired_size = 2
 
-      instance_types = ["t2.medium"] # "t2.small"
-      capacity_type  = "SPOT" # Updated capacity type
+      instance_types = ["t3.small"] # "t2.small", t2.medium
+      capacity_type  = "SPOT"        # Updated capacity type
 
       tags = {
         ExtraTag = "Singh_Node"
