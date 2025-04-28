@@ -1,68 +1,176 @@
-<!-- sudo rm /etc/apt/sources.list.d/trivy.list
-✅ Step-by-step Fix:
-1. Check for Duplicate Sources
-Run this to find duplicate entries:
+# Corporate DevOps Pipeline Implementation: GitHub Actions to Kubernetes
 
-bash
-Copy
-Edit
-grep -r "aquasecurity.github.io" /etc/apt/sources.list /etc/apt/sources.list.d/
-You'll likely see multiple entries for Trivy, possibly with different Signed-By values.
+## Executive Summary
 
-2. Remove the Conflicting Entry/Entries
-Remove the Trivy source files causing the conflict:
+This document outlines a comprehensive end-to-end DevOps pipeline implementation reflecting real-world corporate workflows. The project demonstrates how to build a complete CI/CD pipeline using GitHub Actions, integrating code quality checks, container management, Kubernetes deployment, and monitoring solutions. The implementation follows industry best practices and provides a blueprint for modern application delivery workflows.
 
-bash
-Copy
-Edit
-sudo rm /etc/apt/sources.list.d/trivy.list
-(Adjust the filename if different based on the output of step 1.)
+## Tools & Technologies Used
 
- that's the root cause right there. You have two conflicting lines in the same file (/etc/apt/sources.list.d/trivy.list):
+### Core Components:
+- **GitHub Actions**: CI/CD pipeline orchestration
+- **Self-hosted Runner**: Custom VM for pipeline execution
+- **Kubernetes**: Self-managed cluster for application deployment
+- **Docker**: Application containerization
+- **SonarQube**: Code quality and security analysis
+- **Trivy**: Container and filesystem vulnerability scanning
+- **GitLeaks**: Detects hardcoded secrets in the source code.
+- **AWS CLI**: Manages AWS resources.
+- **Terraform**: Infrastructure as Code (IaC) for provisioning EKS clusters.
+ 
+### Monitoring Stack:
+- **Prometheus**: Metrics collection and storage
+- **Grafana**: Visualization and dashboarding
+- **Blackbox Exporter**: External HTTP endpoint monitoring
+- **Node Exporter**: System-level metrics collection
 
-One line includes signed-by=/usr/share/keyrings/trivy.gpg
+### Infrastructure:
+- **AWS EC2**: Virtual machine hosting
+- **Ubuntu 20.04**: Base operating system
 
-The other does not — and that creates the conflict.
+## Project Architecture
 
-🔧 Fix It
-You just need to clean up that file and leave only one valid line. Here's how:
+```
+Client Request → JIRA Ticket → Developer Implementation → GitHub Repository
+     ↓
+GitHub Actions Pipeline (Self-hosted Runner)
+[Code Checkout → Build → Test → SonarQube Analysis → Artifact Creation → 
+ Docker Build → Trivy Scan → DockerHub Push → K8s Deployment]
+     ↓
+Kubernetes Cluster (Master/Worker) → Application Deployment
+     ↓
+Prometheus/Grafana Monitoring
+```
 
-Option 1: Clean manually (quick edit)
-bash
-Copy
-Edit
-sudo nano /etc/apt/sources.list.d/trivy.list
-Change this:
+## Implementation Steps
 
-bash
-Copy
-Edit
-deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb noble main
-deb https://aquasecurity.github.io/trivy-repo/deb noble main
-To this (just keep one line):
+### 1. Infrastructure Setup
 
-bash
-Copy
-Edit
-deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb noble main
-Then save and exit (Ctrl+O, Enter, Ctrl+X).
+#### 1.1 Kubernetes Cluster Configuration
+- Created master and worker nodes on AWS EC2 (t2.medium, 4GB RAM)
+- Configured security groups with required ports (22, 80, 443, 3000-10000)
+- Automated cluster setup using shell scripts for repeatability
 
-Option 2: Or delete the file entirely (if you're removing Trivy anyway)
-bash
-Copy
-Edit
-sudo rm /etc/apt/sources.list.d/trivy.list
- -->
+#### 1.2 Self-hosted GitHub Actions Runner
+- Provisioned dedicated EC2 instance (8GB RAM)
+- Registered with GitHub repository using authentication token
+- Configured with necessary tools (Maven, Docker, Trivy)
 
----
-# Automating EKS Deployment with Terraform and GitHub Actions – The DevOps Way
-<!-- Kubernetes Made Easy: Terraform-Powered EKS Provisioning with GitHub Actions CI/CD
-Technical Project project: GitHub Actions CI/CD Pipeline with Live Project -->
+#### 1.3 SonarQube Server
+- Deployed as Docker container on Runner instance
+- Exposed on port 9000 for pipeline integration
+- Created authentication token for secure pipeline access
 
----
+### 2. Pipeline Implementation
 
-## **Project Overview**
-This project outlines the step-by-step process of setting up a CI/CD pipeline using GitHub Actions. The project demonstrates how to automate the build, test, and deployment of an application to Kubernetes using tools like Docker, Trivy, SonarQube, and Terraform. The project also highlights the integration of AWS role for managing cloud resources and Kubernetes clusters.
+#### 2.1 GitHub Actions Workflow
+- Created `.github/workflows` directory with pipeline definition
+- Configured triggers based on push events to main branch
+- Implemented job separation with proper dependency management
+
+#### 2.2 Build and Quality Gates
+- Java application compilation with Maven
+- Unit testing with automated reporting
+- SonarQube analysis with quality gate enforcement
+- Artifact generation and publication to GitHub
+
+#### 2.3 Container Management
+- Docker image creation from application artifact
+- Vulnerability scanning with Trivy
+- Secure DockerHub authentication and image pushing
+
+#### 2.4 Kubernetes Deployment
+- RBAC setup with service accounts and role bindings
+- Secret management for secure cluster authentication
+- Deployment manifests with proper resource management
+- Service exposure via LoadBalancer (cloud-ready)
+
+### 3. Monitoring Implementation
+
+#### 3.1 Prometheus Setup
+- Deployed Prometheus server for metrics collection
+- Configured scrape intervals and retention policies
+- Integrated with exporters for comprehensive monitoring
+
+#### 3.2 Application Monitoring
+- Blackbox Exporter configuration for HTTP endpoint monitoring
+- Probe setup for response time and availability tracking
+- Dashboard creation for application health visualization
+
+#### 3.3 System Monitoring
+```markdown
+// ...existing code...
+
+## Node Exporter Configuration for System Monitoring
+
+The Node Exporter implementation provides critical system-level metrics for the Runner VM:
+
+1. **Installation Process**:
+   - Downloaded Node Exporter package from prometheus.io
+   - Extracted and renamed for better organization
+   - Executed as background process on port 9100
+
+2. **Prometheus Integration**:
+   - Added Node Exporter target to Prometheus configuration
+   - Configured appropriate scrape interval
+   - Verified successful connection in Prometheus targets dashboard
+
+3. **Grafana Dashboard**:
+   - Imported specialized Node Exporter dashboard
+   - Configured metrics for CPU, memory, disk, and network monitoring
+   - Set up automatic refresh intervals for real-time visibility
+
+This system-level monitoring complements the application monitoring provided by Blackbox Exporter, giving complete visibility across the infrastructure and application stack.
+
+## Project Challenges
+
+### Technical Complexity
+```
+
+## Project Challenges
+
+### Technical Complexity
+   - Coordinating multiple tools and technologies in a cohesive pipeline
+   - Ensuring proper authentication between services (GitHub, Docker Hub, Kubernetes)
+   - Managing Kubernetes RBAC for secure but sufficient permissions
+   - Configuring Prometheus targets with proper scraping intervals
+
+### Integration Points
+   - Bridging self-hosted runner with GitHub Actions ecosystem
+   - Connecting pipeline stages with appropriate artifact handoffs
+   - Ensuring monitoring tools receive metrics from all components
+   - Managing secrets securely across multiple services
+
+### Infrastructure Management
+   - Provisioning right-sized VMs for each component
+   - Configuring network security for appropriate access
+   - Ensuring high availability for critical components
+   - Managing resource consumption across the stack
+
+## Project Benefits
+
+### Development Workflow
+   - Automated quality gates prevent problematic code from reaching production
+   - Developers receive immediate feedback on code quality and security
+   - Clear visibility of deployment status and application health
+   - Reduced manual intervention in deployment processes
+
+### Operational Excellence
+   - Real-time monitoring of application and infrastructure
+   - Early detection of performance degradation or failures
+   - Ability to correlate infrastructure metrics with application behavior
+   - Historical metrics for capacity planning and optimization
+
+### Security Enhancements
+   - Vulnerability scanning at multiple levels (code, container)
+   - Principle of least privilege through RBAC implementation
+   - Secure secret management across the pipeline
+   - Audit trail of deployments and changes
+
+### Business Value
+   - Faster time-to-market for new features and bug fixes
+   - Improved application reliability and performance
+   - Reduced operational overhead through automation
+   - Better resource utilization through monitoring insights
 
 ---
 ## <span style="color: Yellow;"> Prerequisites </span>
@@ -94,7 +202,7 @@ dar--l          21/04/25  12:34 PM                03.Code_IAC_Terraform_box
 -a---l          19/04/25   8:48 PM           1309 main.tf                                                                                  
 ````
 
-- [Clone repository for terraform code](https://github.com/mrbalraj007/Learning_GitHub_Action/tree/main/01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup)<br>
+- [Clone repository for terraform code](https://github.com/mrbalraj007/Learning_GitHub_Action/tree/main/02.Github_Action_DevOps-Project/Terraform_Code_Infra_setup)<br>
   > 💡 **Note:** Replace GitHub Token, resource names and variables as per your requirement in terraform code
   > - For **`github Repo`** Token value to be updated in file 
       - `00.Code_IAC-github-repo/variables.tf` (i.e default- ```xxxxxx```*)
@@ -145,14 +253,7 @@ dar--l          21/04/25  12:34 PM                03.Code_IAC_Terraform_box
    - **Deploy to Kubernetes**: Deploys the application to an EKS cluster using Terraform.
 
 3. **Tools and Technologies Used**:
-   - **GitHub Actions**: CI/CD automation.
-   - **Docker**: Containerization of the application.
-   - **Trivy**: Security scanning for vulnerabilities.
-   - **GitLeaks**: Detects hardcoded secrets in the source code.
-   - **SonarQube**: Code quality analysis.
-   - **AWS CLI**: Manages AWS resources.
-   - **Terraform**: Infrastructure as Code (IaC) for provisioning EKS clusters.
-   - **Kubernetes**: Orchestrates containerized applications.
+  
 
 4. **Why Use This Project**:
    - Automates the software delivery process.
@@ -403,9 +504,7 @@ It works :-) and I am able to execute the file.
 ###  <span style="color: yellow;"> Configure Secrets and Variables in GitHub Repo</span>.
 ```
 Go to Repo `GithubAction_DevOps_Projects`
-Click on `settings`
-Click on `Secrets and Variables`
-Select `Actions`.
+            Click on `settings` > `Secrets and Variables` > Select `Actions`.
 ```
 ![alt text](All_ScreenShot/image.png)
 ![alt text](All_ScreenShot/image-1.png)
@@ -535,15 +634,26 @@ Go to folder *<span style="color: cyan;">"01.Github_Action_DevOps-Project/Terraf
 
 ---
 
-### **Conclusion**
-This project provides a comprehensive guide to setting up a CI/CD pipeline using GitHub Actions. By integrating tools like Docker, Trivy, SonarQube, and Terraform, it ensures a secure and efficient software delivery process. The use of AWS CLI and Kubernetes further demonstrates the deployment of applications to cloud-native environments. This project is a valuable resource for DevOps engineers looking to implement modern CI/CD pipelines.
+## Conclusion
+
+This project demonstrates a comprehensive DevOps implementation that bridges the gap between development and operations through automation, monitoring, and security best practices. The pipeline not only streamlines the deployment process but also ensures quality and security at every step.
+
+By implementing this solution, organizations can achieve:
+
+1. **Increased Deployment Frequency**: Automation reduces the friction in deploying new code
+2. **Improved Quality Assurance**: Integrated testing and scanning prevent defects
+3. **Enhanced Operational Visibility**: Comprehensive monitoring provides insights
+4. **Better Developer Experience**: Streamlined workflows with immediate feedback
+
+The modular nature of the implementation allows organizations to adapt specific components to their needs while maintaining the overall workflow integrity. As container orchestration and cloud-native technologies continue to evolve, this pipeline architecture provides a solid foundation that can be extended to incorporate emerging tools and practices.
+
 
 
 __Ref Link:__
 
-- [Youtube VideoLink](https://www.youtube.com/watch?v=icZUzgtz_d8)
+- [Youtube VideoLink](https://www.youtube.com/watch?v=FTrTFOLbdm4)
 - [Clearfile-content cache in visualstudio code](https://stackoverflow.com/questions/45216264/clear-file-content-cache-in-visual-studio-code)
-- [managing-GitHub-access-tokens](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+- [Managing-GitHub-access-tokens](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
 - [GitHub Actions Markget Place](https://github.com/marketplace)
-- [download-a-build-artifact](https://github.com/marketplace/actions/download-a-build-artifact)
-- [upload-a-build-artifact](https://github.com/marketplace/actions/upload-a-build-artifact)
+- [Download-a-build-artifact](https://github.com/marketplace/actions/download-a-build-artifact)
+- [Upload-a-build-artifact](https://github.com/marketplace/actions/upload-a-build-artifact)
