@@ -2,20 +2,20 @@
 
 ## Executive Summary
 
-This document outlines a comprehensive end-to-end DevOps pipeline implementation reflecting real-world corporate workflows. The project demonstrates how to build a complete CI/CD pipeline using GitHub Actions, integrating code quality checks, container management, Kubernetes deployment, and monitoring solutions. The implementation follows industry best practices and provides a blueprint for modern application delivery workflows.
+This project outlines a comprehensive end-to-end DevOps pipeline implementation reflecting real-world corporate workflows. The project demonstrates how to build a complete CI/CD pipeline using GitHub Actions, integrating code quality checks, container management, Kubernetes deployment, and monitoring solutions. The implementation follows industry best practices and provides a blueprint for modern application delivery workflows.
 
 ## Tools & Technologies Used
 
 ### Core Components:
-- **GitHub Actions**: CI/CD pipeline orchestration
-- **Self-hosted Runner**: Custom VM for pipeline execution
-- **Kubernetes**: Self-managed cluster for application deployment
-- **Docker**: Application containerization
-- **SonarQube**: Code quality and security analysis
-- **Trivy**: Container and filesystem vulnerability scanning
-- **GitLeaks**: Detects hardcoded secrets in the source code.
-- **AWS CLI**: Manages AWS resources.
-- **Terraform**: Infrastructure as Code (IaC) for provisioning EKS clusters.
+   - **GitHub Actions**: CI/CD pipeline orchestration
+   - **Self-hosted Runner**: Custom VM for pipeline execution
+   - **Kubernetes**: Self-managed cluster for application deployment
+   - **Docker**: Application containerization
+   - **SonarQube**: Code quality and security analysis
+   - **Trivy**: Container and filesystem vulnerability scanning
+   - **GitLeaks**: Detects hardcoded secrets in the source code.
+   - **AWS CLI**: Manages AWS resources.
+   - **Terraform**: Infrastructure as Code (IaC) for provisioning EKS clusters.
  
 ### Monitoring Stack:
 - **Prometheus**: Metrics collection and storage
@@ -25,7 +25,7 @@ This document outlines a comprehensive end-to-end DevOps pipeline implementation
 
 ### Infrastructure:
 - **AWS EC2**: Virtual machine hosting
-- **Ubuntu 20.04**: Base operating system
+- **Ubuntu 24.04**: Base operating system
 
 ## Project Architecture
 
@@ -439,7 +439,7 @@ After running this command, you will be able to interact with your EKS cluster u
    - Verify GitHub repository created and initialize it because we are using terraform.
       ![alt text](image-16.png)
    - Verify a `.github/workflows` directory created along with two YAML file for the pipeline.
-      ********************Need to updatee here**************
+      ![alt text](image-55.png)
 
 ### <span style="color: cyan;">**Adding a Virtual Machine as a Runner**
    - I'll be using self-hosted runner to execute all the pipeline.
@@ -646,6 +646,13 @@ argocd-server-metrics                     ClusterIP      172.20.152.24    <none>
 ```
 ![alt text](image-40.png)
 ![alt text](image-41.png)
+![alt text](image-42.png)
+
+- To get the login credential for argocd.
+```sh
+tail -n 200 /var/log/cloud-init-output.log | grep "ArgoCD Initial Password"
+```
+![alt text](image-43.png)
 
 - 
 #### <span style="color: orange;"> Configure Application in ArgoCD </span>
@@ -653,36 +660,48 @@ Once you access the ArgoCD URL and create an application
  - **Application Name**: boardgame-app
  - **Project Name**: default
  - **Sync Policy**: Automatic (Select Prune Resources and SelfHeal)
- - **Repository URL**: https://github.com/mrbalraj007/Amazon-Prime-Clone-Project.git
+ - **Repository URL**: https://github.com/mrbalraj007/GithubAction_DevOps_Projects.git
  - **Revison**: main
- - **Path**: k8s_files (where Kubernetes files reside)
+ - **Path**: . (where Kubernetes files reside)
  - **cluster URL**: Select default cluster
  - **Namespace**: default
 
-![image-25](https://github.com/user-attachments/assets/4caad6f2-dc55-4267-96dc-ea717f9effb8)
-![image-26](https://github.com/user-attachments/assets/a820c29f-8547-4b5e-9186-5e48acdb9d5f)
+![alt text](image-44.png)
+![alt text](image-45.png)
 
-- Update the **latest image** name in ```deployment.yml```
-![image-27](https://github.com/user-attachments/assets/47134897-c0c0-4cda-949b-ef94f38150bd)
+- Try to change something in ```deployment.yml``` (i.e Replica to `2` from 5))
 
-**Verify the apps Status**
-![image-28](https://github.com/user-attachments/assets/9c25274d-5464-476e-bfdb-9eddcce21975)
+![alt text](image-47.png)
 
-**Verify Pods & service status**
-![image-29](https://github.com/user-attachments/assets/39589d65-4cd4-480c-b5c6-a59fdc341b50)
+- **Verify the apps Status**
+![alt text](image-46.png)
+
+- **Verify Pods & service status**
+![alt text](image-48.png)
+![alt text](image-54.png)
 
 Click on the hostnames (URL details) from the service and access it in the browser.
 ```
-http://af70e2590416f4788be765b667bb8175-2006799998.us-east-1.elb.amazonaws.com:3000/
+ab89f017a0d0c415a8d64e42810e63a4-389987165.us-east-1.elb.amazonaws.com
 ```
+![alt text](image-49.png)
 
-![image-30](https://github.com/user-attachments/assets/c78e077f-0457-4468-a69a-b71a4a73af2d)
-
-
-Congratulations :-) the application is working and accessible.
-![image-31](https://github.com/user-attachments/assets/70dc9605-5650-43ed-bd06-2c035abcb843)
+**Congratulations** :-) the application is working and accessible.
+![alt text](image-50.png)
 
 ### <span style="color: orange;"> Setup Monitoring using Prometheus/Grafana  </span>
+- Will run the following command to get a URL of Grafana
+```bash
+ubuntu@bootstrap-svr:~$ tail -n 200 /var/log/cloud-init-output.log | grep "You can access Grafana at: "
+You can access Grafana at: http://ab1f9e98b0d4b40dc84beed46f7c20ad-854431452.us-east-1.elb.amazonaws.com
+```
+![alt text](image-51.png)
+
+- Get Grafana 'admin' user password by running:
+```bash
+  kubectl --namespace prometheus get secrets stable-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
+```
+![alt text](image-52.png)
 
 - Access Prometheus/Grafana and create a custom dashboard in Prometheus/Grafana.
   
@@ -697,17 +716,17 @@ Dashboard in Grafana
 ---
 
 ## <span style="color: Yellow;"> Environment Cleanup:
-- Following resouces are created as pert of this project.   
-   ![alt text](All_ScreenShot/image-16.png)
+- Following resouces are created as part of this project.   
+   ![alt text](image-53.png)
 
 ### <span style="color: cyan;"> To delete deployment:
 - I've created a `Github Action` to destroy the Kubernetes `deployment` and `services`.
-   ![alt text](All_ScreenShot/image-32.png)
+   
 
   - __Delete all deployment/Service__: 
     - In github action, and click on the second pipeline to delete the deployment and service.
-   ![alt text](All_ScreenShot/image-33.png)
-   ![alt text](All_ScreenShot/image-34.png)
+    ![alt text](image-56.png)
+    ![alt text](image-57.png)
 
     - Here is the complete [CICD- Pipeline to destroy Deployment and Services](https://github.com/mrbalraj007/Github-Actions-Project/blob/main/.github/workflows/Destroy.yaml)
 
@@ -738,10 +757,10 @@ Dashboard in Grafana
    sudo chown -R ubuntu:ubuntu /home/ubuntu/k8s_setup_file/terraform*
    ```
 - Rerun the destroy command and this time it works :-)
-![alt text](All_ScreenShot/image-38.png)
+
 
 ###  <span style="color: cyan;"> To delete the ```Virtual machine```.
-Go to folder *<span style="color: cyan;">"01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup"</span>* and run the terraform command.
+Go to folder *<span style="color: cyan;">"02.Github_Action_DevOps-Project/Terraform_Code_Infra_setup"</span>* and run the terraform command.
    - `00.Code_IAC-github-repo`
    - `01.Code_IAC_Selfhosted-Runner-and-Trivy`
    -` 02.Code_IAC_SonarQube`
