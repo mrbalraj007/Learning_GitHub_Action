@@ -1,37 +1,32 @@
-# Fetch the latest Ubuntu 24.04 LTS AMI
+# Fetch the latest Ubuntu AMI
 data "aws_ami" "ubuntu" {
   most_recent = true
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server*"] # For Ubuntu Instance.
-    #values = ["amzn2-ami-hvm-*-x86_64*"] # For Amazon Instance.
+    values = [var.ami_filter_name]
   }
 
   filter {
     name   = "virtualization-type"
-    values = ["hvm"]
+    values = [var.ami_virtualization_type]
   }
 
-  owners = ["099720109477"] # Canonical owner ID for Ubuntu AMIs
-  # owners = ["137112412989"] # Amazon owner ID for Amazon Linux AMIs
+  owners = var.ami_owners
 }
 
 
 resource "aws_instance" "sonar" {
-  # ami                    = "ami-0287a05f0ef0e9d9a"      #change ami id for different region
   ami                    = data.aws_ami.ubuntu.id
-  instance_type          = "t2.medium" # t2.medium , t3.small
-  key_name               = "MYLABKEY" #change key name as per your setup
+  instance_type          = var.instance_type
+  key_name               = var.key_name
   vpc_security_group_ids = [aws_security_group.sonar-VM-SG.id]
   user_data              = templatefile("./sonar_install.sh", {})
 
-  tags = {
-    Name = "SonarQube"
-  }
+  tags = var.instance_tags
 
   root_block_device {
-    volume_size = 25
+    volume_size = var.root_volume_size
   }
 
   # instance_market_options {
@@ -43,41 +38,41 @@ resource "aws_instance" "sonar" {
 }
 
 resource "aws_security_group" "sonar-VM-SG" {
-  name        = "sonar-VM-SG"
-  description = "Allow inbound traffic"
+  name        = var.sg_name
+  description = var.sg_description
 
   dynamic "ingress" {
-    for_each = toset([25, 22, 80, 443, 6443, 465, 8080, 9000, 3000])
+    for_each = toset(var.sg_ingress_ports)
     content {
       description = "inbound rule for port ${ingress.value}"
       from_port   = ingress.value
       to_port     = ingress.value
       protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
+      cidr_blocks = var.sg_cidr_blocks
     }
   }
 
   ingress {
     description = "Custom TCP Port Range"
-    from_port   = 2000
-    to_port     = 11000
+    from_port   = var.sg_custom_port_range.from_port
+    to_port     = var.sg_custom_port_range.to_port
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.sg_cidr_blocks
   }
 
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.sg_cidr_blocks
   }
 
   tags = {
-    Name = "sonar-VM-SG"
+    Name = "${var.sg_name}"
   }
 }
 
-
-output "instance_ip" {
-  value = aws_instance.sonar.public_ip
-}
+# Remove this output as it's now in outputs.tf
+# output "instance_ip" {
+#   value = aws_instance.sonar.public_ip
+# }
