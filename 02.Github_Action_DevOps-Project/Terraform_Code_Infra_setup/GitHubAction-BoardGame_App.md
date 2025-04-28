@@ -771,7 +771,20 @@ Go to folder *<span style="color: cyan;">"02.Github_Action_DevOps-Project/Terraf
      ```
 > 💡 **Note:** 
 >> You must use this command from `each folder` in order to destroy the entire infrastructure.
+
+I am getting below error message
+![alt text](image-58.png)
+
+![alt text](image-59.png)
+![alt text](image-60.png)
+
+Again error:
+![alt text](image-61.png)
+![alt text](image-62.png)
+
 ---
+
+
 
 ### **Why Use This Project**
 - **Automation**: Reduces manual effort in building, testing, and deploying applications.
