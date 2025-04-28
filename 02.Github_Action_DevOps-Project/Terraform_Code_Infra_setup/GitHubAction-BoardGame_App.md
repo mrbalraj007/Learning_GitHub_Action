@@ -199,20 +199,20 @@ dar--l          21/04/25   1:38 PM                02.Code_IAC_SonarQube
 dar--l          21/04/25  12:34 PM                03.Code_IAC_Terraform_box                                                                                                                                                                         
 -a---l          20/08/24   1:45 PM            493 .gitignore                                                                                                                                                                                                                                                                                                                                    
 -a---l          21/04/25   1:59 PM          18225 AboutThis Project.md                                                                                                                                                                              
--a---l          19/04/25   8:48 PM           1309 main.tf                                                                                  
+-a---l          19/04/25   8:48 PM           1309 main.tf # <---(This one need to run)                                                                                 
 ````
 
 - [Clone repository for terraform code](https://github.com/mrbalraj007/Learning_GitHub_Action/tree/main/02.Github_Action_DevOps-Project/Terraform_Code_Infra_setup)<br>
   > 💡 **Note:** Replace GitHub Token, resource names and variables as per your requirement in terraform code
   > - For **`github Repo`** Token value to be updated in file 
-      - `00.Code_IAC-github-repo/variables.tf` (i.e default- ```xxxxxx```*)
+      - `00.Code_IAC-github-repo/variables.tf` (i.e default- `xxxxxx`*)
   > - **For EC2 VM** 
-      - `01.Code_IAC_Selfhosted-Runner-and-Trivy/main.tf` (i.e keyname- ```MYLABKEY```*)
-      - `03.Code_IAC_Terraform_box/main.tf` (i.e keyname- ```MYLABKEY```*)
+      - `01.Code_IAC_Selfhosted-Runner-and-Trivy/terraform.tfvars` (i.e keyname- `MYLABKEY`*)
+      - `03.Code_IAC_Terraform_box/terraform.tfvars` (i.e keyname- `MYLABKEY`*)
   > - For **Cluster name** 
-      - `03.Code_IAC_Terraform_box/k8s_setup_file/main.tf` (i.e ```balraj```*).
+      - `03.Code_IAC_Terraform_box/k8s_setup_file/main.tf` (i.e `balraj`*).
   > - For **Node Pod**
-      - `03.Code_IAC_Terraform_box/k8s_setup_file/variable.tf` (i.e ```MYLABKEY```*)
+      - `03.Code_IAC_Terraform_box/k8s_setup_file/variable.tf` (i.e `MYLABKEY`*)
   
       
 - **Set up your GitHub token**:
@@ -273,22 +273,23 @@ dar--l          21/04/25  12:34 PM                03.Code_IAC_Terraform_box
 
 ### <span style="color: Yellow;">Setting Up the Infrastructure </span>
 
-I have created a Terraform code to set up the entire infrastructure, including the installation of required applications, tools, and the EKS cluster automatically created.
+I have created a Terraform code to set up the entire infrastructure, including the installation of required `Repo`, `SonarQube Scanner`, monitoring tools like `grafana and prometheus`, `argocd` and `EKS cluster` automatically created.
+
 - &rArr;<span style="color: brown;"> Docker Install
 - &rArr;<span style="color: brown;"> SonarQube Install
 - &rArr;<span style="color: brown;"> Trivy Install
 - &rArr;<span style="color: brown;"> Terraform Install
 - &rArr;<span style="color: brown;"> EKS Cluster Setup
 
-> 💡 **Note:**  &rArr;<span style="color: Green;"> ```EKS cluster``` creation will take approx. 10 to 15 minutes.
+> 💡 **Note:**  &rArr;<span style="color: Green;"> `**EKS cluster**` creation will take approx. 15 to 20 minutes.
 > 
 #### <span style="color: Yellow;"> To Create EC2 Instances
 
-First, we'll create the necessary virtual machines using ```terraform``` code. 
+First, we'll create the necessary virtual machines using `terraform` code. 
 
 Below is a terraform Code:
 
-Once you [clone repo](https://github.com/mrbalraj007/Learning_GitHub_Action/blob/main/01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup) then go to folder *<span style="color: cyan;">"01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup"</span>* and run the terraform command.
+Once you [clone repo](https://github.com/mrbalraj007/Learning_GitHub_Action/blob/main/02.Github_Action_DevOps-Project/Terraform_Code_Infra_setup) then go to folder *<span style="color: cyan;">"02.Github_Action_DevOps-Project/Terraform_Code_Infra_setup"</span>* and run the terraform command.
 ```bash
 cd 01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup
 
@@ -297,7 +298,7 @@ $ ls
  00.Code_IAC-github-repo/   01.Code_IAC_Selfhosted-Runner-and-Trivy/   02.Code_IAC_SonarQube/   03.Code_IAC_Terraform_box/  'AboutThis Project.md'   main.tf   
 ```
 
-> 💡 **Note:** </span> &rArr; Make sure to run ```main.tf``` which is located outside of the folder. I have created the code in such a way that a single file will call all of the folders.
+> 💡 **Note:** </span> &rArr; Make sure to run `main.tf` which is located outside of the folder. I have created the code in such a way that a single file will call all of the folders.
 
 ```bash
  ls -la
@@ -308,7 +309,7 @@ drwxr-xr-x 1 bsingh 1049089     0 Apr 21 12:34  01.Code_IAC_Selfhosted-Runner-an
 drwxr-xr-x 1 bsingh 1049089     0 Apr 21 13:38  02.Code_IAC_SonarQube/
 drwxr-xr-x 1 bsingh 1049089     0 Apr 21 12:34  03.Code_IAC_Terraform_box/
 -rw-r--r-- 1 bsingh 1049089 21284 Apr 21 14:44 'AboutThis Project.md'
--rw-r--r-- 1 bsingh 1049089  1309 Apr 19 20:48  main.tf
+-rw-r--r-- 1 bsingh 1049089  1309 Apr 19 20:48  main.tf # <---This need to be run>
 ```
 You need to run ```main.tf``` file using following terraform command.
 
@@ -322,13 +323,14 @@ terraform apply
 # Optional <terraform apply --auto-approve>
 ```
 -------
+![alt text](image.png)
 
 ![alt text](All_ScreenShot/image-4.png)
 
 Once you run the terraform command, then we will verify the following things to make sure everything is setup properly via a terraform.
 
-### <span style="color: Orange;"> Inspect the ```Cloud-Init``` logs</span>: 
-Once connected to EC2 instance then you can check the status of the ```user_data``` script by inspecting the [log files](https://github.com/mrbalraj007/Learning_GitHub_Action/blob/main/01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup/03.Code_IAC_Terraform_box/cloud-init-output.log).
+### <span style="color: Orange;"> Inspect the `Cloud-Init` logs</span>: 
+Once connected to EC2 instance then you can check the status of the `user_data` script by inspecting the [log files](https://github.com/mrbalraj007/Learning_GitHub_Action/blob/main/01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup/03.Code_IAC_Terraform_box/cloud-init-output.log).
 ```bash
 # Primary log file for cloud-init
 sudo tail -f /var/log/cloud-init-output.log
@@ -339,9 +341,9 @@ sudo cat /var/log/cloud-init-output.log | more
 
   > 🔍- *If there’s an error, this log will provide clues about what failed.*
 
-- Verify the Outcome of "```cloud-init-output.log```"
+- Verify the Outcome of "`cloud-init-output.log`"
 
-### <span style="color: cyan;"> Verify the Installation 
+### <span style="color: cyan;"> Verify the Installation on EC `Terrabox-SVR`
 
 - [x] <span style="color: brown;"> Docker version
 ```bash
@@ -385,31 +387,33 @@ To see help text, you can run:
   aws <command> <subcommand> help
 ```
 ###  <span style="color: brown;"> Verify the EKS Cluster installation
-- Will take a putty session of from Terraform EC2
-- On the ```terraform``` virtual machine, Go to directory ```k8s_setup_file``` and open the file ```cat apply.log``` to verify the cluster is created or not.
+- Will take a putty session of from `Terraform EC2`
+- On the `terraform` virtual machine, Go to directory `k8s_setup_file` and open the file `cat apply.log` to verify the cluster is created or not.
 - Will verify the cluster status from 
    - `sudo cat /var/log/cloud-init-output.log | more` or 
    - `cat /home/ubuntu/k8s_setup_file/apply.log`
-
+      ![alt text](image-1.png)
    ```sh
    ubuntu@ip-172-31-90-126:~/k8s_setup_file$ pwd
    /home/ubuntu/k8s_setup_file
    ubuntu@ip-172-31-90-126:~/k8s_setup_file$ cd ..
    ```
-   ![alt text](All_ScreenShot/image-12.png)
+  ```sh
+  kubectl get nodes
+  ``` 
+![alt text](image-2.png)
 
 - After Terraform deploys on the instance, now it's time to setup the cluster. If you logout the ssh session then reconnect the SSH and run to following command:
 
    ```bash
-   aws eks update-kubeconfig --name <cluster-name> --region 
-   <region>
+   eksctl utils write-kubeconfig --cluster="$CLUSTER_NAME" --region="$REGION"
    ```
 - Once EKS cluster is setup then need to run the following command to make it intract with EKS.
 
    ```sh
-   aws eks update-kubeconfig --name balraj-cluster --region us-east-1
+   eksctl utils write-kubeconfig --cluster="balraj-cluster" --region="us-east-1"
    ```
-   ![alt text](All_ScreenShot/image-13.png)
+   ![alt text](image-3.png)
 
 > > ⚠️ **Important:** <br>
 *The ```aws eks update-kubeconfig``` command is used to configure your local kubectl tool to interact with an Amazon EKS (Elastic Kubernetes Service) cluster. It updates or creates a kubeconfig file that contains the necessary authentication information to allow kubectl to communicate with your specified EKS cluster.*
@@ -424,15 +428,18 @@ After running this command, you will be able to interact with your EKS cluster u
    kubectl cluster-info
    kubectl config get-contexts
    ```
+   ![alt text](image-12.png)
+
 ![alt text](All_ScreenShot/image-17.png)
-![alt text](All_ScreenShot/image-18.png)
+![alt text](image-13.png)
+
 
 ---
 ### <span style="color: yellow;"> **Verify GitHub Repo and GitHub Actions**
    - Verify GitHub repository created and initialize it because we are using terraform.
-      ![alt text](All_ScreenShot/image-2.png)
+      ![alt text](image-16.png)
    - Verify a `.github/workflows` directory created along with two YAML file for the pipeline.
-      ![alt text](All_ScreenShot/image-3.png)
+      ********************Need to updatee here**************
 
 ### <span style="color: cyan;">**Adding a Virtual Machine as a Runner**
    - I'll be using self-hosted runner to execute all the pipeline.
@@ -506,18 +513,16 @@ It works :-) and I am able to execute the file.
 Go to Repo `GithubAction_DevOps_Projects`
             Click on `settings` > `Secrets and Variables` > Select `Actions`.
 ```
-![alt text](All_ScreenShot/image.png)
-![alt text](All_ScreenShot/image-1.png)
+![alt text](image-18.png)
+
 > 💡 **Note:** 
 > >*You have to update all the required tokens and secrets value here. Part of Terraform code, I have already created a dummy values, which needs to be replaced. Once you have replaced the dummy values with the actual tokens and secrets, ensure that you test the configuration thoroughly to confirm that everything functions as expected. This will help prevent any issues during deployment and maintain the integrity of your infrastructure.*
 
-- **To Update Sonar URL** 
-![alt text](All_ScreenShot/image-22.png)
-
 - **To update the `EKS_KUBECONFIG` secret**
-  - Take putty session of Terraform EC2 instnace
+  - Take putty session of `Terraform EC2` instnace
   - run the command `cat ~/.kube/config`
   - copy the whole content and paste into the secret.
+   ![alt text](image-25.png)
 
 ### **Attach Role to Runner EC2**
    - Select the EC2 VM and click on the `actions` > `security`>` Mofify IAM Roles on the runner`.
@@ -553,19 +558,142 @@ Go to Repo `GithubAction_DevOps_Projects`
    - Verify the deployment by checking the status of pods and services. -->
 
 ### Verify the Docker Image
-   ![alt text](All_ScreenShot/image-25.png)
+   ![alt text](image-26.png)
+   ![alt text](image-27.png)
 ### Verify code coverage in SonarQube
-   ![alt text](All_ScreenShot/image-26.png)
-   ![alt text](All_ScreenShot/image-28.png)
+   ![alt text](image-28.png)
+   ![alt text](image-29.png)
 ### Verify pipeline Status
-   ![alt text](All_ScreenShot/image-27.png)
+   ![alt text](image-30.png)
 
 
-### Verify the pods in runner VM
-   ![alt text](All_ScreenShot/image-29.png)
-   ![alt text](All_ScreenShot/image-30.png)
+### Verify the pods status from `runner VM`
+```bash
+ubuntu@ip-172-31-5-61:~$ kubectl get nodes
+NAME                         STATUS   ROLES    AGE   VERSION
+ip-10-0-3-164.ec2.internal   Ready    <none>   57m   v1.32.1-eks-5d632ec
+ip-10-0-4-227.ec2.internal   Ready    <none>   58m   v1.32.1-eks-5d632ec
+ubuntu@ip-172-31-5-61:~$ kubectl get all
+NAME                                       READY   STATUS    RESTARTS   AGE
+pod/boardgame-deployment-99f486879-q6twl   1/1     Running   0          27m
+pod/boardgame-deployment-99f486879-wnkqj   1/1     Running   0          27m
+
+NAME                     TYPE           CLUSTER-IP       EXTERNAL-IP                                                              PORT(S)        AGE
+service/boardgame-ssvc   LoadBalancer   172.20.232.244   ab89f017a0d0c415a8d64e42810e63a4-389987165.us-east-1.elb.amazonaws.com   80:31107/TCP   27m
+service/kubernetes       ClusterIP      172.20.0.1       <none>                                                                   443/TCP        64m
+
+NAME                                   READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/boardgame-deployment   2/2     2            2           27m
+
+NAME                                             DESIRED   CURRENT   READY   AGE
+replicaset.apps/boardgame-deployment-99f486879   2         2         2       27m
+
+```
+   ![alt text](image-31.png)
+   
 ### Verify Application Status
-   ![alt text](All_ScreenShot/image-31.png)
+   - Notedown the cluster IP address from above command and run it in browser.
+   ![alt text](image-32.png)
+
+### <span style="color: orange;"> Setup ArgoCD </span>
+
+- Run the following commands to verify the `Pods` and `services type` in `terraform EC2`
+
+```sh
+kubectl get pods -n argocd
+```
+![alt text](image-33.png)
+
+```sh
+kubectl get svc -n argocd
+```
+![alt text](image-34.png)
+
+```sh
+kubectl get pods -n prometheus
+```
+![alt text](image-38.png)
+
+```sh
+kubectl get service -n prometheus
+```
+![alt text](image-39.png)
+
+<!-- - Run these commands to change the service type from ```ClusterIP``` to ```LoadBalancer```.
+```sh
+kubectl patch svc stable-kube-prometheus-sta-prometheus -n prometheus -p '{"spec": {"type": "LoadBalancer"}}'
+kubectl patch svc stable-grafana -n prometheus -p '{"spec": {"type": "LoadBalancer"}}'
+kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
+```
+Verify status now.
+![image-24](https://github.com/user-attachments/assets/7d359db7-4768-4a07-9f8d-77c37a2b6df5) -->
+
+- validate `ArgoCD` and `Grafana` access on browser.
+
+#### <span style="color: orange;"> Access ArgoCD </span>
+- run the following command to get URL of ArgoCD
+```sh
+ubuntu@bootstrap-svr:~$ kubectl get svc -n argocd
+NAME                                      TYPE           CLUSTER-IP       EXTERNAL-IP                                                               PORT(S)                      AGE
+argocd-applicationset-controller          ClusterIP      172.20.167.221   <none>                                                                    7000/TCP,8080/TCP            66m
+argocd-dex-server                         ClusterIP      172.20.158.1     <none>                                                                    5556/TCP,5557/TCP,5558/TCP   66m
+argocd-metrics                            ClusterIP      172.20.168.248   <none>                                                                    8082/TCP                     66m
+argocd-notifications-controller-metrics   ClusterIP      172.20.67.200    <none>                                                                    9001/TCP                     66m
+argocd-redis                              ClusterIP      172.20.2.127     <none>                                                                    6379/TCP                     66m
+argocd-repo-server                        ClusterIP      172.20.162.115   <none>                                                                    8081/TCP,8084/TCP            66m
+argocd-server                             LoadBalancer   172.20.184.179   a05d8113a21ea47e0ad6499f45767594-1028681490.us-east-1.elb.amazonaws.com   80:32509/TCP,443:32733/TCP   66m
+argocd-server-metrics                     ClusterIP      172.20.152.24    <none>                                                                    8083/TCP                     66m
+```
+![alt text](image-40.png)
+![alt text](image-41.png)
+
+- 
+#### <span style="color: orange;"> Configure Application in ArgoCD </span>
+Once you access the ArgoCD URL and create an application
+ - **Application Name**: boardgame-app
+ - **Project Name**: default
+ - **Sync Policy**: Automatic (Select Prune Resources and SelfHeal)
+ - **Repository URL**: https://github.com/mrbalraj007/Amazon-Prime-Clone-Project.git
+ - **Revison**: main
+ - **Path**: k8s_files (where Kubernetes files reside)
+ - **cluster URL**: Select default cluster
+ - **Namespace**: default
+
+![image-25](https://github.com/user-attachments/assets/4caad6f2-dc55-4267-96dc-ea717f9effb8)
+![image-26](https://github.com/user-attachments/assets/a820c29f-8547-4b5e-9186-5e48acdb9d5f)
+
+- Update the **latest image** name in ```deployment.yml```
+![image-27](https://github.com/user-attachments/assets/47134897-c0c0-4cda-949b-ef94f38150bd)
+
+**Verify the apps Status**
+![image-28](https://github.com/user-attachments/assets/9c25274d-5464-476e-bfdb-9eddcce21975)
+
+**Verify Pods & service status**
+![image-29](https://github.com/user-attachments/assets/39589d65-4cd4-480c-b5c6-a59fdc341b50)
+
+Click on the hostnames (URL details) from the service and access it in the browser.
+```
+http://af70e2590416f4788be765b667bb8175-2006799998.us-east-1.elb.amazonaws.com:3000/
+```
+
+![image-30](https://github.com/user-attachments/assets/c78e077f-0457-4468-a69a-b71a4a73af2d)
+
+
+Congratulations :-) the application is working and accessible.
+![image-31](https://github.com/user-attachments/assets/70dc9605-5650-43ed-bd06-2c035abcb843)
+
+### <span style="color: orange;"> Setup Monitoring using Prometheus/Grafana  </span>
+
+- Access Prometheus/Grafana and create a custom dashboard in Prometheus/Grafana.
+  
+![image-32](https://github.com/user-attachments/assets/452104dd-c859-46cd-909a-c53345055cab)
+![image-33](https://github.com/user-attachments/assets/5f96e4af-4b06-49f8-9eae-a22b1c60ba04)
+![image-34](https://github.com/user-attachments/assets/b54fcf5d-98fe-4196-8c6d-d66b154af843)
+![image-35](https://github.com/user-attachments/assets/c0b83f08-4fdc-4f9b-b1cf-8d562918b806)
+
+Dashboard in Grafana
+![image-36](https://github.com/user-attachments/assets/ec873ad5-ed0c-43b4-9d85-2a08e16a5839)
+
 ---
 
 ## <span style="color: Yellow;"> Environment Cleanup:
