@@ -1,45 +1,33 @@
-# Fetch the latest Ubuntu 24.04 LTS AMI
+# Fetch the latest Ubuntu AMI
 data "aws_ami" "ubuntu" {
   most_recent = true
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server*"] # For Ubuntu Instance.
-    #values = ["amzn2-ami-hvm-*-x86_64*"] # For Amazon Instance.
+    values = [var.ami_filter_name]
   }
 
   filter {
     name   = "virtualization-type"
-    values = ["hvm"]
+    values = [var.ami_virtualization_type]
   }
 
-  owners = ["099720109477"] # Canonical owner ID for Ubuntu AMIs
-  # owners = ["137112412989"] # Amazon owner ID for Amazon Linux AMIs
+  owners = var.ami_owners
 }
 
 
 resource "aws_instance" "runner-svr" {
-  # ami                    = "ami-0287a05f0ef0e9d9a"      #change ami id for different region
   ami                    = data.aws_ami.ubuntu.id
-  instance_type          = "t3.small" #"t2.large, t2.medium"
-  key_name               = "MYLABKEY" #change key name as per your setup
+  instance_type          = var.instance_type
+  key_name               = var.key_name
   vpc_security_group_ids = [aws_security_group.runner-VM-SG.id]
   user_data              = templatefile("./runner_install.sh", {})
 
-  tags = {
-    Name = "runner-Trivy"
-  }
+  tags = var.instance_tags
 
   root_block_device {
-    volume_size = 25
+    volume_size = var.root_volume_size
   }
-
-  # instance_market_options {
-  #   market_type = "spot"
-  #   spot_options {
-  #     max_price = "0.0067" # Set your maximum price for the spot instance
-  #   }
-  # }
 
   # Copy the actions-runner folder after the instance is created
   provisioner "file" {
@@ -49,7 +37,7 @@ resource "aws_instance" "runner-svr" {
     connection {
       type        = "ssh"
       user        = "ubuntu"
-      private_key = file("MYLABKEY.pem")
+      private_key = file(var.private_key_path)
       host        = self.public_ip
     }
   }
@@ -59,58 +47,48 @@ resource "aws_instance" "runner-svr" {
     inline = [
       "ls -la /home/ubuntu/actions-runner",
       "sudo chown -R ubuntu:ubuntu /home/ubuntu/actions-runner"
-      # "sudo mv /home/ubuntu/actions-runner/selfhost-runner.txt /home/ubuntu/actions-runner/selfhost-runner.sh"
-      # "ls -la /home/ubuntu/actions-runner/selfhost-runner.sh",
-      # "sudo chmod -x /home/ubuntu/actions-runner/selfhost-runner.sh",
-      # "sudo mv /home/ubuntu/actions-runner/selfhost-runner.sh /home/ubuntu/actions-runner/setup-runner.sh",
-      # "ls -la /home/ubuntu/actions-runner/setup-runner.sh"
     ]
 
     connection {
       type        = "ssh"
       user        = "ubuntu"
-      private_key = file("MYLABKEY.pem")
+      private_key = file(var.private_key_path)
       host        = self.public_ip
     }
   }
-
 }
 
 resource "aws_security_group" "runner-VM-SG" {
-  name        = "runner-SG"
-  description = "Allow inbound traffic"
+  name        = var.sg_name
+  description = var.sg_description
 
   dynamic "ingress" {
-    for_each = toset([25, 22, 80, 443, 6443, 465, 8080, 9000, 3000])
+    for_each = toset(var.sg_ingress_ports)
     content {
       description = "inbound rule for port ${ingress.value}"
       from_port   = ingress.value
       to_port     = ingress.value
       protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
+      cidr_blocks = var.sg_cidr_blocks
     }
   }
 
   ingress {
     description = "Custom TCP Port Range"
-    from_port   = 2000
-    to_port     = 11000
+    from_port   = var.sg_custom_port_range.from_port
+    to_port     = var.sg_custom_port_range.to_port
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.sg_cidr_blocks
   }
 
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.sg_cidr_blocks
   }
 
   tags = {
-    Name = "runner-VM-SG"
+    Name = "${var.sg_name}"
   }
-}
-
-output "instance_ip" {
-  value = aws_instance.runner-svr.public_ip
 }

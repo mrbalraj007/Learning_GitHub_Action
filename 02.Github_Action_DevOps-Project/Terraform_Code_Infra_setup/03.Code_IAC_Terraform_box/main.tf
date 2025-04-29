@@ -111,9 +111,9 @@ resource "aws_instance" "terraform_vm" {
 
   instance_market_options {
     market_type = "spot"
-    spot_options {
-      max_price = "0.0251" # Set your maximum price for the spot instance
-    }
+   # spot_options {
+   #   max_price = "0.0251" # Set your maximum price for the spot instance
+   # }
   }
 
 

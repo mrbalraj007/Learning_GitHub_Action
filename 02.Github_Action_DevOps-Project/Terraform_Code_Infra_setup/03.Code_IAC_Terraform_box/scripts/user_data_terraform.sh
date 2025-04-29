@@ -120,6 +120,16 @@ else
     echo "AWS CLI is already installed."
 fi
 
+# Check AWS credentials
+print_message "Verifying AWS credentials"
+if ! aws sts get-caller-identity &>/dev/null; then
+    echo "Error: AWS credentials are not configured or invalid."
+    echo "Please configure AWS credentials before running this script."
+    exit 1
+else
+    echo "AWS credentials verified successfully."
+    aws sts get-caller-identity
+fi
 
 echo "Starting Terraform setup..."
 # Wait for 1 minute before continuing
@@ -127,9 +137,26 @@ echo "Waiting for 1 minute before continuing..."
 sleep 60
 echo "Continuing with Terraform setup..."
 
+# Create Terraform directory if it doesn't exist
+TERRAFORM_DIR="/home/ubuntu/k8s_setup_file"
+if [ ! -d "$TERRAFORM_DIR" ]; then
+    echo "Creating Terraform directory: $TERRAFORM_DIR"
+    mkdir -p "$TERRAFORM_DIR"
+fi
+
 # Navigate to Terraform configuration directory and apply
-cd /home/ubuntu/k8s_setup_file
+cd "$TERRAFORM_DIR" || {
+    echo "Error: Failed to change directory to $TERRAFORM_DIR"
+    exit 1
+}
+
 terraform init
+
+echo "Validating Terraform configuration..."
+terraform validate || {
+    echo "Error: Terraform configuration validation failed."
+    exit 1
+}
 
 echo "alignment of tf file if required..."
 terraform fmt
@@ -211,9 +238,47 @@ sudo chmod +x /usr/local/bin/argocd
 print_message "Check argocd services"
 kubectl get svc -n argocd
 
+# Set up ArgoCD access
+print_message "Setting up ArgoCD access"
+kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
+echo "Waiting for ArgoCD Load Balancer to be assigned..."
+sleep 60
+ARGOCD_SERVER=$(kubectl get svc argocd-server -n argocd -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+ARGOCD_PASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
+echo "ArgoCD Server: $ARGOCD_SERVER"
+echo "ArgoCD Initial Password: $ARGOCD_PASSWORD"
+echo "ArgoCD Username: admin"
+
 ## Install Kubernetes Dashboard
 print_message "Installing Kubernetes Dashboard"
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
+
+# Create admin user and role binding for Dashboard
+print_message "Creating admin user for Kubernetes Dashboard"
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin-user
+  namespace: kubernetes-dashboard
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-user
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: admin-user
+  namespace: kubernetes-dashboard
+EOF
+
+# Get token for dashboard access
+print_message "Generating token for Kubernetes Dashboard access"
+kubectl -n kubernetes-dashboard create token admin-user --duration=24h
 
 ## Install Helm
 print_message "Installing Helm"
@@ -240,8 +305,18 @@ kubectl get ns
 helm install stable prometheus-community/kube-prometheus-stack -n prometheus
 kubectl get pods -n prometheus
 
-# kubectl create namespace monitoring || echo "Namespace 'monitoring' already exists."
+# Expose Grafana service as LoadBalancer for easier access
+kubectl patch svc stable-grafana -n prometheus -p '{"spec": {"type": "LoadBalancer"}}'
+echo "Waiting for Grafana LoadBalancer to be assigned..."
+sleep 60
+GRAFANA_URL=$(kubectl get svc stable-grafana -n prometheus -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+GRAFANA_PASSWORD=$(kubectl get secret -n prometheus stable-grafana -o jsonpath="{.data.admin-password}" | base64 --decode)
+echo "Grafana URL: http://$GRAFANA_URL"
+echo "Grafana Username: admin"
+echo "Grafana Password: $GRAFANA_PASSWORD"
 
+# Clean up commented out code - removing the redundant monitoring namespace setup
+# kubectl create namespace monitoring || echo "Namespace 'monitoring' already exists."
 # helm install kind-prometheus prometheus-community/kube-prometheus-stack \
 #   --namespace monitoring \
 #   --set prometheus.service.nodePort=30000 \
@@ -257,3 +332,5 @@ kubectl get svc -n prometheus || {
   }
 
 print_message "Installation script completed successfully."
+echo "You can access the Kubernetes Dashboard at: http://$ARGOCD_SERVER"
+echo "You can access Grafana at: http://$GRAFANA_URL"

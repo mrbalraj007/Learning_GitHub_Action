@@ -1,13 +1,178 @@
+=======
+# Corporate DevOps Pipeline Implementation: GitHub Actions to Kubernetes
 
----
-# Automating EKS Deployment with Terraform and GitHub Actions – The DevOps Way
-<!-- Kubernetes Made Easy: Terraform-Powered EKS Provisioning with GitHub Actions CI/CD
-Technical Project project: GitHub Actions CI/CD Pipeline with Live Project -->
+## Executive Summary
 
----
+This project outlines a comprehensive end-to-end DevOps pipeline implementation reflecting real-world corporate workflows. The project demonstrates how to build a complete CI/CD pipeline using GitHub Actions, integrating code quality checks, container management, Kubernetes deployment, and monitoring solutions. The implementation follows industry best practices and provides a blueprint for modern application delivery workflows.
 
-## **Project Overview**
-This project outlines the step-by-step process of setting up a CI/CD pipeline using GitHub Actions. The project demonstrates how to automate the build, test, and deployment of an application to Kubernetes using tools like Docker, Trivy, SonarQube, and Terraform. The project also highlights the integration of AWS role for managing cloud resources and Kubernetes clusters.
+## Tools & Technologies Used
+
+### Core Components:
+   - **GitHub Actions**: CI/CD pipeline orchestration
+   - **Self-hosted Runner**: Custom VM for pipeline execution
+   - **Kubernetes**: Self-managed cluster for application deployment
+   - **Docker**: Application containerization
+   - **SonarQube**: Code quality and security analysis
+   - **Trivy**: Container and filesystem vulnerability scanning
+   - **GitLeaks**: Detects hardcoded secrets in the source code.
+   - **AWS CLI**: Manages AWS resources.
+   - **Terraform**: Infrastructure as Code (IaC) for provisioning EKS clusters.
+ 
+### Monitoring Stack:
+- **Prometheus**: Metrics collection and storage
+- **Grafana**: Visualization and dashboarding
+- **Blackbox Exporter**: External HTTP endpoint monitoring
+- **Node Exporter**: System-level metrics collection
+
+### Infrastructure:
+- **AWS EC2**: Virtual machine hosting
+- **Ubuntu 24.04**: Base operating system
+
+## Project Architecture
+
+```
+Client Request → JIRA Ticket → Developer Implementation → GitHub Repository
+     ↓
+GitHub Actions Pipeline (Self-hosted Runner)
+[Code Checkout → Build → Test → SonarQube Analysis → Artifact Creation → 
+ Docker Build → Trivy Scan → DockerHub Push → K8s Deployment]
+     ↓
+Kubernetes Cluster (Master/Worker) → Application Deployment
+     ↓
+Prometheus/Grafana Monitoring
+```
+
+## Implementation Steps
+
+### 1. Infrastructure Setup
+
+#### 1.1 Kubernetes Cluster Configuration
+- Created master and worker nodes on AWS EC2 (t2.medium, 4GB RAM)
+- Configured security groups with required ports (22, 80, 443, 3000-10000)
+- Automated cluster setup using shell scripts for repeatability
+
+#### 1.2 Self-hosted GitHub Actions Runner
+- Provisioned dedicated EC2 instance (8GB RAM)
+- Registered with GitHub repository using authentication token
+- Configured with necessary tools (Maven, Docker, Trivy)
+>>>>>>> fef5f647fdf244d4a875e6f2c0ca45a0f54ca0ff
+
+#### 1.3 SonarQube Server
+- Deployed as Docker container on Runner instance
+- Exposed on port 9000 for pipeline integration
+- Created authentication token for secure pipeline access
+
+### 2. Pipeline Implementation
+
+#### 2.1 GitHub Actions Workflow
+- Created `.github/workflows` directory with pipeline definition
+- Configured triggers based on push events to main branch
+- Implemented job separation with proper dependency management
+
+#### 2.2 Build and Quality Gates
+- Java application compilation with Maven
+- Unit testing with automated reporting
+- SonarQube analysis with quality gate enforcement
+- Artifact generation and publication to GitHub
+
+#### 2.3 Container Management
+- Docker image creation from application artifact
+- Vulnerability scanning with Trivy
+- Secure DockerHub authentication and image pushing
+
+#### 2.4 Kubernetes Deployment
+- RBAC setup with service accounts and role bindings
+- Secret management for secure cluster authentication
+- Deployment manifests with proper resource management
+- Service exposure via LoadBalancer (cloud-ready)
+
+### 3. Monitoring Implementation
+
+#### 3.1 Prometheus Setup
+- Deployed Prometheus server for metrics collection
+- Configured scrape intervals and retention policies
+- Integrated with exporters for comprehensive monitoring
+
+#### 3.2 Application Monitoring
+- Blackbox Exporter configuration for HTTP endpoint monitoring
+- Probe setup for response time and availability tracking
+- Dashboard creation for application health visualization
+
+#### 3.3 System Monitoring
+```markdown
+// ...existing code...
+
+## Node Exporter Configuration for System Monitoring
+
+The Node Exporter implementation provides critical system-level metrics for the Runner VM:
+
+1. **Installation Process**:
+   - Downloaded Node Exporter package from prometheus.io
+   - Extracted and renamed for better organization
+   - Executed as background process on port 9100
+
+2. **Prometheus Integration**:
+   - Added Node Exporter target to Prometheus configuration
+   - Configured appropriate scrape interval
+   - Verified successful connection in Prometheus targets dashboard
+
+3. **Grafana Dashboard**:
+   - Imported specialized Node Exporter dashboard
+   - Configured metrics for CPU, memory, disk, and network monitoring
+   - Set up automatic refresh intervals for real-time visibility
+
+This system-level monitoring complements the application monitoring provided by Blackbox Exporter, giving complete visibility across the infrastructure and application stack.
+
+## Project Challenges
+
+### Technical Complexity
+```
+
+## Project Challenges
+
+### Technical Complexity
+   - Coordinating multiple tools and technologies in a cohesive pipeline
+   - Ensuring proper authentication between services (GitHub, Docker Hub, Kubernetes)
+   - Managing Kubernetes RBAC for secure but sufficient permissions
+   - Configuring Prometheus targets with proper scraping intervals
+
+### Integration Points
+   - Bridging self-hosted runner with GitHub Actions ecosystem
+   - Connecting pipeline stages with appropriate artifact handoffs
+   - Ensuring monitoring tools receive metrics from all components
+   - Managing secrets securely across multiple services
+
+### Infrastructure Management
+   - Provisioning right-sized VMs for each component
+   - Configuring network security for appropriate access
+   - Ensuring high availability for critical components
+   - Managing resource consumption across the stack
+
+## Project Benefits
+
+### Development Workflow
+   - Automated quality gates prevent problematic code from reaching production
+   - Developers receive immediate feedback on code quality and security
+   - Clear visibility of deployment status and application health
+   - Reduced manual intervention in deployment processes
+
+### Operational Excellence
+   - Real-time monitoring of application and infrastructure
+   - Early detection of performance degradation or failures
+   - Ability to correlate infrastructure metrics with application behavior
+   - Historical metrics for capacity planning and optimization
+
+### Security Enhancements
+   - Vulnerability scanning at multiple levels (code, container)
+   - Principle of least privilege through RBAC implementation
+   - Secure secret management across the pipeline
+   - Audit trail of deployments and changes
+
+### Business Value
+   - Faster time-to-market for new features and bug fixes
+   - Improved application reliability and performance
+   - Reduced operational overhead through automation
+   - Better resource utilization through monitoring insights
 
 ---
 ## <span style="color: Yellow;"> Prerequisites </span>
@@ -36,20 +201,20 @@ dar--l          21/04/25   1:38 PM                02.Code_IAC_SonarQube
 dar--l          21/04/25  12:34 PM                03.Code_IAC_Terraform_box                                                                                                                                                                         
 -a---l          20/08/24   1:45 PM            493 .gitignore                                                                                                                                                                                                                                                                                                                                    
 -a---l          21/04/25   1:59 PM          18225 AboutThis Project.md                                                                                                                                                                              
--a---l          19/04/25   8:48 PM           1309 main.tf                                                                                  
+-a---l          19/04/25   8:48 PM           1309 main.tf # <---(This one need to run)                                                                                 
 ````
 
-- [Clone repository for terraform code](https://github.com/mrbalraj007/Learning_GitHub_Action/tree/main/01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup)<br>
+- [Clone repository for terraform code](https://github.com/mrbalraj007/Learning_GitHub_Action/tree/main/02.Github_Action_DevOps-Project/Terraform_Code_Infra_setup)<br>
   > 💡 **Note:** Replace GitHub Token, resource names and variables as per your requirement in terraform code
   > - For **`github Repo`** Token value to be updated in file 
-      - `00.Code_IAC-github-repo/variables.tf` (i.e default- ```xxxxxx```*)
+      - `00.Code_IAC-github-repo/variables.tf` (i.e default- `xxxxxx`*)
   > - **For EC2 VM** 
-      - `01.Code_IAC_Selfhosted-Runner-and-Trivy/main.tf` (i.e keyname- ```MYLABKEY```*)
-      - `03.Code_IAC_Terraform_box/main.tf` (i.e keyname- ```MYLABKEY```*)
+      - `01.Code_IAC_Selfhosted-Runner-and-Trivy/terraform.tfvars` (i.e keyname- `MYLABKEY`*)
+      - `03.Code_IAC_Terraform_box/terraform.tfvars` (i.e keyname- `MYLABKEY`*)
   > - For **Cluster name** 
-      - `03.Code_IAC_Terraform_box/k8s_setup_file/main.tf` (i.e ```balraj```*).
+      - `03.Code_IAC_Terraform_box/k8s_setup_file/main.tf` (i.e `balraj`*).
   > - For **Node Pod**
-      - `03.Code_IAC_Terraform_box/k8s_setup_file/variable.tf` (i.e ```MYLABKEY```*)
+      - `03.Code_IAC_Terraform_box/k8s_setup_file/variable.tf` (i.e `MYLABKEY`*)
   
       
 - **Set up your GitHub token**:
@@ -90,14 +255,7 @@ dar--l          21/04/25  12:34 PM                03.Code_IAC_Terraform_box
    - **Deploy to Kubernetes**: Deploys the application to an EKS cluster using Terraform.
 
 3. **Tools and Technologies Used**:
-   - **GitHub Actions**: CI/CD automation.
-   - **Docker**: Containerization of the application.
-   - **Trivy**: Security scanning for vulnerabilities.
-   - **GitLeaks**: Detects hardcoded secrets in the source code.
-   - **SonarQube**: Code quality analysis.
-   - **AWS CLI**: Manages AWS resources.
-   - **Terraform**: Infrastructure as Code (IaC) for provisioning EKS clusters.
-   - **Kubernetes**: Orchestrates containerized applications.
+  
 
 4. **Why Use This Project**:
    - Automates the software delivery process.
@@ -117,22 +275,23 @@ dar--l          21/04/25  12:34 PM                03.Code_IAC_Terraform_box
 
 ### <span style="color: Yellow;">Setting Up the Infrastructure </span>
 
-I have created a Terraform code to set up the entire infrastructure, including the installation of required applications, tools, and the EKS cluster automatically created.
+I have created a Terraform code to set up the entire infrastructure, including the installation of required `Repo`, `SonarQube Scanner`, monitoring tools like `grafana and prometheus`, `argocd` and `EKS cluster` automatically created.
+
 - &rArr;<span style="color: brown;"> Docker Install
 - &rArr;<span style="color: brown;"> SonarQube Install
 - &rArr;<span style="color: brown;"> Trivy Install
 - &rArr;<span style="color: brown;"> Terraform Install
 - &rArr;<span style="color: brown;"> EKS Cluster Setup
 
-> 💡 **Note:**  &rArr;<span style="color: Green;"> ```EKS cluster``` creation will take approx. 10 to 15 minutes.
+> 💡 **Note:**  &rArr;<span style="color: Green;"> `**EKS cluster**` creation will take approx. 15 to 20 minutes.
 > 
 #### <span style="color: Yellow;"> To Create EC2 Instances
 
-First, we'll create the necessary virtual machines using ```terraform``` code. 
+First, we'll create the necessary virtual machines using `terraform` code. 
 
 Below is a terraform Code:
 
-Once you [clone repo](https://github.com/mrbalraj007/Learning_GitHub_Action/blob/main/01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup) then go to folder *<span style="color: cyan;">"01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup"</span>* and run the terraform command.
+Once you [clone repo](https://github.com/mrbalraj007/Learning_GitHub_Action/blob/main/02.Github_Action_DevOps-Project/Terraform_Code_Infra_setup) then go to folder *<span style="color: cyan;">"02.Github_Action_DevOps-Project/Terraform_Code_Infra_setup"</span>* and run the terraform command.
 ```bash
 cd 01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup
 
@@ -141,7 +300,7 @@ $ ls
  00.Code_IAC-github-repo/   01.Code_IAC_Selfhosted-Runner-and-Trivy/   02.Code_IAC_SonarQube/   03.Code_IAC_Terraform_box/  'AboutThis Project.md'   main.tf   
 ```
 
-> 💡 **Note:** </span> &rArr; Make sure to run ```main.tf``` which is located outside of the folder. I have created the code in such a way that a single file will call all of the folders.
+> 💡 **Note:** </span> &rArr; Make sure to run `main.tf` which is located outside of the folder. I have created the code in such a way that a single file will call all of the folders.
 
 ```bash
  ls -la
@@ -152,7 +311,7 @@ drwxr-xr-x 1 bsingh 1049089     0 Apr 21 12:34  01.Code_IAC_Selfhosted-Runner-an
 drwxr-xr-x 1 bsingh 1049089     0 Apr 21 13:38  02.Code_IAC_SonarQube/
 drwxr-xr-x 1 bsingh 1049089     0 Apr 21 12:34  03.Code_IAC_Terraform_box/
 -rw-r--r-- 1 bsingh 1049089 21284 Apr 21 14:44 'AboutThis Project.md'
--rw-r--r-- 1 bsingh 1049089  1309 Apr 19 20:48  main.tf
+-rw-r--r-- 1 bsingh 1049089  1309 Apr 19 20:48  main.tf # <---This need to be run>
 ```
 You need to run ```main.tf``` file using following terraform command.
 
@@ -166,13 +325,14 @@ terraform apply
 # Optional <terraform apply --auto-approve>
 ```
 -------
+![alt text](image.png)
 
 ![alt text](All_ScreenShot/image-4.png)
 
 Once you run the terraform command, then we will verify the following things to make sure everything is setup properly via a terraform.
 
-### <span style="color: Orange;"> Inspect the ```Cloud-Init``` logs</span>: 
-Once connected to EC2 instance then you can check the status of the ```user_data``` script by inspecting the [log files](https://github.com/mrbalraj007/Learning_GitHub_Action/blob/main/01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup/03.Code_IAC_Terraform_box/cloud-init-output.log).
+### <span style="color: Orange;"> Inspect the `Cloud-Init` logs</span>: 
+Once connected to EC2 instance then you can check the status of the `user_data` script by inspecting the [log files](https://github.com/mrbalraj007/Learning_GitHub_Action/blob/main/01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup/03.Code_IAC_Terraform_box/cloud-init-output.log).
 ```bash
 # Primary log file for cloud-init
 sudo tail -f /var/log/cloud-init-output.log
@@ -183,9 +343,9 @@ sudo cat /var/log/cloud-init-output.log | more
 
   > 🔍- *If there’s an error, this log will provide clues about what failed.*
 
-- Verify the Outcome of "```cloud-init-output.log```"
+- Verify the Outcome of "`cloud-init-output.log`"
 
-### <span style="color: cyan;"> Verify the Installation 
+### <span style="color: cyan;"> Verify the Installation on EC `Terrabox-SVR`
 
 - [x] <span style="color: brown;"> Docker version
 ```bash
@@ -229,31 +389,33 @@ To see help text, you can run:
   aws <command> <subcommand> help
 ```
 ###  <span style="color: brown;"> Verify the EKS Cluster installation
-- Will take a putty session of from Terraform EC2
-- On the ```terraform``` virtual machine, Go to directory ```k8s_setup_file``` and open the file ```cat apply.log``` to verify the cluster is created or not.
+- Will take a putty session of from `Terraform EC2`
+- On the `terraform` virtual machine, Go to directory `k8s_setup_file` and open the file `cat apply.log` to verify the cluster is created or not.
 - Will verify the cluster status from 
    - `sudo cat /var/log/cloud-init-output.log | more` or 
    - `cat /home/ubuntu/k8s_setup_file/apply.log`
-
+      ![alt text](image-1.png)
    ```sh
    ubuntu@ip-172-31-90-126:~/k8s_setup_file$ pwd
    /home/ubuntu/k8s_setup_file
    ubuntu@ip-172-31-90-126:~/k8s_setup_file$ cd ..
    ```
-   ![alt text](All_ScreenShot/image-12.png)
+  ```sh
+  kubectl get nodes
+  ``` 
+![alt text](image-2.png)
 
 - After Terraform deploys on the instance, now it's time to setup the cluster. If you logout the ssh session then reconnect the SSH and run to following command:
 
    ```bash
-   aws eks update-kubeconfig --name <cluster-name> --region 
-   <region>
+   eksctl utils write-kubeconfig --cluster="$CLUSTER_NAME" --region="$REGION"
    ```
 - Once EKS cluster is setup then need to run the following command to make it intract with EKS.
 
    ```sh
-   aws eks update-kubeconfig --name balraj-cluster --region us-east-1
+   eksctl utils write-kubeconfig --cluster="balraj-cluster" --region="us-east-1"
    ```
-   ![alt text](All_ScreenShot/image-13.png)
+   ![alt text](image-3.png)
 
 > > ⚠️ **Important:** <br>
 *The ```aws eks update-kubeconfig``` command is used to configure your local kubectl tool to interact with an Amazon EKS (Elastic Kubernetes Service) cluster. It updates or creates a kubeconfig file that contains the necessary authentication information to allow kubectl to communicate with your specified EKS cluster.*
@@ -268,15 +430,18 @@ After running this command, you will be able to interact with your EKS cluster u
    kubectl cluster-info
    kubectl config get-contexts
    ```
+   ![alt text](image-12.png)
+
 ![alt text](All_ScreenShot/image-17.png)
-![alt text](All_ScreenShot/image-18.png)
+![alt text](image-13.png)
+
 
 ---
 ### <span style="color: yellow;"> **Verify GitHub Repo and GitHub Actions**
    - Verify GitHub repository created and initialize it because we are using terraform.
-      ![alt text](All_ScreenShot/image-2.png)
+      ![alt text](image-16.png)
    - Verify a `.github/workflows` directory created along with two YAML file for the pipeline.
-      ![alt text](All_ScreenShot/image-3.png)
+      ![alt text](image-55.png)
 
 ### <span style="color: cyan;">**Adding a Virtual Machine as a Runner**
    - I'll be using self-hosted runner to execute all the pipeline.
@@ -348,22 +513,18 @@ It works :-) and I am able to execute the file.
 ###  <span style="color: yellow;"> Configure Secrets and Variables in GitHub Repo</span>.
 ```
 Go to Repo `GithubAction_DevOps_Projects`
-Click on `settings`
-Click on `Secrets and Variables`
-Select `Actions`.
+            Click on `settings` > `Secrets and Variables` > Select `Actions`.
 ```
-![alt text](All_ScreenShot/image.png)
-![alt text](All_ScreenShot/image-1.png)
+![alt text](image-18.png)
+
 > 💡 **Note:** 
 > >*You have to update all the required tokens and secrets value here. Part of Terraform code, I have already created a dummy values, which needs to be replaced. Once you have replaced the dummy values with the actual tokens and secrets, ensure that you test the configuration thoroughly to confirm that everything functions as expected. This will help prevent any issues during deployment and maintain the integrity of your infrastructure.*
 
-- **To Update Sonar URL** 
-![alt text](All_ScreenShot/image-22.png)
-
 - **To update the `EKS_KUBECONFIG` secret**
-  - Take putty session of Terraform EC2 instnace
+  - Take putty session of `Terraform EC2` instnace
   - run the command `cat ~/.kube/config`
   - copy the whole content and paste into the secret.
+   ![alt text](image-25.png)
 
 ### **Attach Role to Runner EC2**
    - Select the EC2 VM and click on the `actions` > `security`>` Mofify IAM Roles on the runner`.
@@ -399,33 +560,175 @@ Select `Actions`.
    - Verify the deployment by checking the status of pods and services. -->
 
 ### Verify the Docker Image
-   ![alt text](All_ScreenShot/image-25.png)
+   ![alt text](image-26.png)
+   ![alt text](image-27.png)
 ### Verify code coverage in SonarQube
-   ![alt text](All_ScreenShot/image-26.png)
-   ![alt text](All_ScreenShot/image-28.png)
+   ![alt text](image-28.png)
+   ![alt text](image-29.png)
 ### Verify pipeline Status
-   ![alt text](All_ScreenShot/image-27.png)
+   ![alt text](image-30.png)
 
 
-### Verify the pods in runner VM
-   ![alt text](All_ScreenShot/image-29.png)
-   ![alt text](All_ScreenShot/image-30.png)
+### Verify the pods status from `runner VM`
+```bash
+ubuntu@ip-172-31-5-61:~$ kubectl get nodes
+NAME                         STATUS   ROLES    AGE   VERSION
+ip-10-0-3-164.ec2.internal   Ready    <none>   57m   v1.32.1-eks-5d632ec
+ip-10-0-4-227.ec2.internal   Ready    <none>   58m   v1.32.1-eks-5d632ec
+ubuntu@ip-172-31-5-61:~$ kubectl get all
+NAME                                       READY   STATUS    RESTARTS   AGE
+pod/boardgame-deployment-99f486879-q6twl   1/1     Running   0          27m
+pod/boardgame-deployment-99f486879-wnkqj   1/1     Running   0          27m
+
+NAME                     TYPE           CLUSTER-IP       EXTERNAL-IP                                                              PORT(S)        AGE
+service/boardgame-ssvc   LoadBalancer   172.20.232.244   ab89f017a0d0c415a8d64e42810e63a4-389987165.us-east-1.elb.amazonaws.com   80:31107/TCP   27m
+service/kubernetes       ClusterIP      172.20.0.1       <none>                                                                   443/TCP        64m
+
+NAME                                   READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/boardgame-deployment   2/2     2            2           27m
+
+NAME                                             DESIRED   CURRENT   READY   AGE
+replicaset.apps/boardgame-deployment-99f486879   2         2         2       27m
+
+```
+   ![alt text](image-31.png)
+   
 ### Verify Application Status
-   ![alt text](All_ScreenShot/image-31.png)
+   - Notedown the cluster IP address from above command and run it in browser.
+   ![alt text](image-32.png)
+
+### <span style="color: orange;"> Setup ArgoCD </span>
+
+- Run the following commands to verify the `Pods` and `services type` in `terraform EC2`
+
+```sh
+kubectl get pods -n argocd
+```
+![alt text](image-33.png)
+
+```sh
+kubectl get svc -n argocd
+```
+![alt text](image-34.png)
+
+```sh
+kubectl get pods -n prometheus
+```
+![alt text](image-38.png)
+
+```sh
+kubectl get service -n prometheus
+```
+![alt text](image-39.png)
+
+<!-- - Run these commands to change the service type from ```ClusterIP``` to ```LoadBalancer```.
+```sh
+kubectl patch svc stable-kube-prometheus-sta-prometheus -n prometheus -p '{"spec": {"type": "LoadBalancer"}}'
+kubectl patch svc stable-grafana -n prometheus -p '{"spec": {"type": "LoadBalancer"}}'
+kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
+```
+Verify status now.
+![image-24](https://github.com/user-attachments/assets/7d359db7-4768-4a07-9f8d-77c37a2b6df5) -->
+
+- validate `ArgoCD` and `Grafana` access on browser.
+
+#### <span style="color: orange;"> Access ArgoCD </span>
+- run the following command to get URL of ArgoCD
+```sh
+ubuntu@bootstrap-svr:~$ kubectl get svc -n argocd
+NAME                                      TYPE           CLUSTER-IP       EXTERNAL-IP                                                               PORT(S)                      AGE
+argocd-applicationset-controller          ClusterIP      172.20.167.221   <none>                                                                    7000/TCP,8080/TCP            66m
+argocd-dex-server                         ClusterIP      172.20.158.1     <none>                                                                    5556/TCP,5557/TCP,5558/TCP   66m
+argocd-metrics                            ClusterIP      172.20.168.248   <none>                                                                    8082/TCP                     66m
+argocd-notifications-controller-metrics   ClusterIP      172.20.67.200    <none>                                                                    9001/TCP                     66m
+argocd-redis                              ClusterIP      172.20.2.127     <none>                                                                    6379/TCP                     66m
+argocd-repo-server                        ClusterIP      172.20.162.115   <none>                                                                    8081/TCP,8084/TCP            66m
+argocd-server                             LoadBalancer   172.20.184.179   a05d8113a21ea47e0ad6499f45767594-1028681490.us-east-1.elb.amazonaws.com   80:32509/TCP,443:32733/TCP   66m
+argocd-server-metrics                     ClusterIP      172.20.152.24    <none>                                                                    8083/TCP                     66m
+```
+![alt text](image-40.png)
+![alt text](image-41.png)
+![alt text](image-42.png)
+
+- To get the login credential for argocd.
+```sh
+tail -n 200 /var/log/cloud-init-output.log | grep "ArgoCD Initial Password"
+```
+![alt text](image-43.png)
+
+- 
+#### <span style="color: orange;"> Configure Application in ArgoCD </span>
+Once you access the ArgoCD URL and create an application
+ - **Application Name**: boardgame-app
+ - **Project Name**: default
+ - **Sync Policy**: Automatic (Select Prune Resources and SelfHeal)
+ - **Repository URL**: https://github.com/mrbalraj007/GithubAction_DevOps_Projects.git
+ - **Revison**: main
+ - **Path**: . (where Kubernetes files reside)
+ - **cluster URL**: Select default cluster
+ - **Namespace**: default
+
+![alt text](image-44.png)
+![alt text](image-45.png)
+
+- Try to change something in ```deployment.yml``` (i.e Replica to `2` from 5))
+
+![alt text](image-47.png)
+
+- **Verify the apps Status**
+![alt text](image-46.png)
+
+- **Verify Pods & service status**
+![alt text](image-48.png)
+![alt text](image-54.png)
+
+Click on the hostnames (URL details) from the service and access it in the browser.
+```
+ab89f017a0d0c415a8d64e42810e63a4-389987165.us-east-1.elb.amazonaws.com
+```
+![alt text](image-49.png)
+
+**Congratulations** :-) the application is working and accessible.
+![alt text](image-50.png)
+
+### <span style="color: orange;"> Setup Monitoring using Prometheus/Grafana  </span>
+- Will run the following command to get a URL of Grafana
+```bash
+ubuntu@bootstrap-svr:~$ tail -n 200 /var/log/cloud-init-output.log | grep "You can access Grafana at: "
+You can access Grafana at: http://ab1f9e98b0d4b40dc84beed46f7c20ad-854431452.us-east-1.elb.amazonaws.com
+```
+![alt text](image-51.png)
+
+- Get Grafana 'admin' user password by running:
+```bash
+  kubectl --namespace prometheus get secrets stable-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
+```
+![alt text](image-52.png)
+
+- Access Prometheus/Grafana and create a custom dashboard in Prometheus/Grafana.
+  
+![image-32](https://github.com/user-attachments/assets/452104dd-c859-46cd-909a-c53345055cab)
+![image-33](https://github.com/user-attachments/assets/5f96e4af-4b06-49f8-9eae-a22b1c60ba04)
+![image-34](https://github.com/user-attachments/assets/b54fcf5d-98fe-4196-8c6d-d66b154af843)
+![image-35](https://github.com/user-attachments/assets/c0b83f08-4fdc-4f9b-b1cf-8d562918b806)
+
+Dashboard in Grafana
+![image-36](https://github.com/user-attachments/assets/ec873ad5-ed0c-43b4-9d85-2a08e16a5839)
+
 ---
 
 ## <span style="color: Yellow;"> Environment Cleanup:
-- Following resouces are created as pert of this project.   
-   ![alt text](All_ScreenShot/image-16.png)
+- Following resouces are created as part of this project.   
+   ![alt text](image-53.png)
 
 ### <span style="color: cyan;"> To delete deployment:
 - I've created a `Github Action` to destroy the Kubernetes `deployment` and `services`.
-   ![alt text](All_ScreenShot/image-32.png)
+   
 
   - __Delete all deployment/Service__: 
     - In github action, and click on the second pipeline to delete the deployment and service.
-   ![alt text](All_ScreenShot/image-33.png)
-   ![alt text](All_ScreenShot/image-34.png)
+    ![alt text](image-56.png)
+    ![alt text](image-57.png)
 
     - Here is the complete [CICD- Pipeline to destroy Deployment and Services](https://github.com/mrbalraj007/Github-Actions-Project/blob/main/.github/workflows/Destroy.yaml)
 
@@ -456,10 +759,10 @@ Select `Actions`.
    sudo chown -R ubuntu:ubuntu /home/ubuntu/k8s_setup_file/terraform*
    ```
 - Rerun the destroy command and this time it works :-)
-![alt text](All_ScreenShot/image-38.png)
+
 
 ###  <span style="color: cyan;"> To delete the ```Virtual machine```.
-Go to folder *<span style="color: cyan;">"01.Github_Action_DevOps-Project/Terraform_Code_Infra_setup"</span>* and run the terraform command.
+Go to folder *<span style="color: cyan;">"02.Github_Action_DevOps-Project/Terraform_Code_Infra_setup"</span>* and run the terraform command.
    - `00.Code_IAC-github-repo`
    - `01.Code_IAC_Selfhosted-Runner-and-Trivy`
    -` 02.Code_IAC_SonarQube`
@@ -470,7 +773,20 @@ Go to folder *<span style="color: cyan;">"01.Github_Action_DevOps-Project/Terraf
      ```
 > 💡 **Note:** 
 >> You must use this command from `each folder` in order to destroy the entire infrastructure.
+
+I am getting below error message
+![alt text](image-58.png)
+
+![alt text](image-59.png)
+![alt text](image-60.png)
+
+Again error:
+![alt text](image-61.png)
+![alt text](image-62.png)
+
 ---
+
+
 
 ### **Why Use This Project**
 - **Automation**: Reduces manual effort in building, testing, and deploying applications.
@@ -480,15 +796,26 @@ Go to folder *<span style="color: cyan;">"01.Github_Action_DevOps-Project/Terraf
 
 ---
 
-### **Conclusion**
-This project provides a comprehensive guide to setting up a CI/CD pipeline using GitHub Actions. By integrating tools like Docker, Trivy, SonarQube, and Terraform, it ensures a secure and efficient software delivery process. The use of AWS CLI and Kubernetes further demonstrates the deployment of applications to cloud-native environments. This project is a valuable resource for DevOps engineers looking to implement modern CI/CD pipelines.
+## Conclusion
+
+This project demonstrates a comprehensive DevOps implementation that bridges the gap between development and operations through automation, monitoring, and security best practices. The pipeline not only streamlines the deployment process but also ensures quality and security at every step.
+
+By implementing this solution, organizations can achieve:
+
+1. **Increased Deployment Frequency**: Automation reduces the friction in deploying new code
+2. **Improved Quality Assurance**: Integrated testing and scanning prevent defects
+3. **Enhanced Operational Visibility**: Comprehensive monitoring provides insights
+4. **Better Developer Experience**: Streamlined workflows with immediate feedback
+
+The modular nature of the implementation allows organizations to adapt specific components to their needs while maintaining the overall workflow integrity. As container orchestration and cloud-native technologies continue to evolve, this pipeline architecture provides a solid foundation that can be extended to incorporate emerging tools and practices.
+
 
 
 __Ref Link:__
 
-- [Youtube VideoLink](https://www.youtube.com/watch?v=icZUzgtz_d8)
+- [Youtube VideoLink](https://www.youtube.com/watch?v=FTrTFOLbdm4)
 - [Clearfile-content cache in visualstudio code](https://stackoverflow.com/questions/45216264/clear-file-content-cache-in-visual-studio-code)
-- [managing-GitHub-access-tokens](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+- [Managing-GitHub-access-tokens](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
 - [GitHub Actions Markget Place](https://github.com/marketplace)
-- [download-a-build-artifact](https://github.com/marketplace/actions/download-a-build-artifact)
-- [upload-a-build-artifact](https://github.com/marketplace/actions/upload-a-build-artifact)
+- [Download-a-build-artifact](https://github.com/marketplace/actions/download-a-build-artifact)
+- [Upload-a-build-artifact](https://github.com/marketplace/actions/upload-a-build-artifact)
