@@ -21,11 +21,12 @@ data "aws_ami" "ubuntu" {
 resource "aws_instance" "runner-svr" {
   # ami                    = "ami-0287a05f0ef0e9d9a"      #change ami id for different region
   ami                    = data.aws_ami.ubuntu.id
-  instance_type          = "t3.small" #"t2.large, t2.medium"
+  instance_type          = "t2.micro" #"t2.large, t2.medium"
   key_name               = "MYLABKEY" #change key name as per your setup
   vpc_security_group_ids = [aws_security_group.runner-VM-SG.id]
   user_data              = templatefile("./runner_install.sh", {})
-  count                  = 3
+  count                  = 1
+  iam_instance_profile   = aws_iam_instance_profile.runner_profile.name
 
   tags = {
     Name = "runner-Trivy"
@@ -37,9 +38,19 @@ resource "aws_instance" "runner-svr" {
 
   instance_market_options {
     market_type = "spot"
-    spot_options {
-      max_price = "0.0067" # Set your maximum price for the spot instance
-    }
+    # spot_options {
+    #   max_price = "0.0067" # Set your maximum price for the spot instance
+    # }
+  }
+}
+
+# Add this new resource to handle the provisioning with proper timing
+resource "null_resource" "runner_provisioner" {
+  depends_on = [aws_instance.runner-svr]
+  
+  # Only run this after the instance is created
+  triggers = {
+    instance_id = aws_instance.runner-svr[0].id
   }
 
   # Copy the actions-runner folder after the instance is created
@@ -51,30 +62,39 @@ resource "aws_instance" "runner-svr" {
       type        = "ssh"
       user        = "ubuntu"
       private_key = file("MYLABKEY.pem")
-      host        = self.public_ip
+      host        = aws_instance.runner-svr[0].public_ip
+      timeout     = "5m"
+      # Add these timeout settings to give the instance more time to respond
+      agent       = false
     }
   }
 
   # Set appropriate ownership for the copied folder
   provisioner "remote-exec" {
     inline = [
+      "echo 'Connected successfully'",
       "ls -la /home/ubuntu/actions-runner",
       "sudo chown -R ubuntu:ubuntu /home/ubuntu/actions-runner"
-      # "sudo mv /home/ubuntu/actions-runner/selfhost-runner.txt /home/ubuntu/actions-runner/selfhost-runner.sh"
-      # "ls -la /home/ubuntu/actions-runner/selfhost-runner.sh",
-      # "sudo chmod -x /home/ubuntu/actions-runner/selfhost-runner.sh",
-      # "sudo mv /home/ubuntu/actions-runner/selfhost-runner.sh /home/ubuntu/actions-runner/setup-runner.sh",
-      # "ls -la /home/ubuntu/actions-runner/setup-runner.sh"
     ]
 
     connection {
       type        = "ssh"
       user        = "ubuntu"
       private_key = file("MYLABKEY.pem")
-      host        = self.public_ip
+      host        = aws_instance.runner-svr[0].public_ip
+      timeout     = "5m"
+      agent       = false
     }
   }
+}
 
+# Add a local-exec provisioner to output the connection command for debugging
+resource "null_resource" "connection_info" {
+  depends_on = [aws_instance.runner-svr]
+  
+  provisioner "local-exec" {
+    command = "echo 'SSH to instance with: ssh -i MYLABKEY.pem ubuntu@${aws_instance.runner-svr[0].public_ip}'"
+  }
 }
 
 resource "aws_security_group" "runner-VM-SG" {
@@ -112,7 +132,63 @@ resource "aws_security_group" "runner-VM-SG" {
   }
 }
 
+# IAM Policy for Cost Explorer and IAM permissions
+resource "aws_iam_policy" "runner_cost_explorer_policy" {
+  name        = "runner-cost-explorer-policy"
+  description = "Policy allowing Cost Explorer and IAM account alias access"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid    = "VisualEditor0",
+        Effect = "Allow",
+        Action = [
+          "iam:ListAccountAliases",
+          "ce:GetCostAndUsage"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+# IAM Role for EC2 instance
+resource "aws_iam_role" "runner_role" {
+  name = "runner-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+
+  tags = {
+    Name = "runner-role"
+  }
+}
+
+# Attach the policy to the role
+resource "aws_iam_role_policy_attachment" "runner_policy_attachment" {
+  role       = aws_iam_role.runner_role.name
+  policy_arn = aws_iam_policy.runner_cost_explorer_policy.arn
+}
+
+# Create an instance profile for the role
+resource "aws_iam_instance_profile" "runner_profile" {
+  name = "runner-profile"
+  role = aws_iam_role.runner_role.name
+}
+
 output "instance_ips" {
-  value = aws_instance.runner-svr[*].public_ip
+  value       = aws_instance.runner-svr[*].public_ip
   description = "Public IP addresses of all runner instances"
 }
+
