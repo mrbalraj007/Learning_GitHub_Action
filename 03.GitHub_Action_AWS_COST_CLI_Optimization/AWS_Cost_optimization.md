@@ -105,38 +105,38 @@ As a last resort, use the system-wide script: aws-cost-run
 
 https://slack.com/intl/en-au/
 
-![alt text](image.png)
-![alt text](image-1.png)
-![alt text](image-2.png)
-![alt text](image-3.png)
-![alt text](image-4.png)
+![alt text](All_ScreenShot/image.png)
+![alt text](All_ScreenShot/image-1.png)
+![alt text](All_ScreenShot/image-2.png)
+![alt text](All_ScreenShot/image-3.png)
+![alt text](All_ScreenShot/image-4.png)
 
 
 https://api.slack.com/apps
 
-![alt text](image-5.png)
-![alt text](image-6.png)
-![alt text](image-7.png)
+![alt text](All_ScreenShot/image-5.png)
+![alt text](All_ScreenShot/image-6.png)
+![alt text](All_ScreenShot/image-7.png)
 
-![alt text](image-8.png)
-![alt text](image-9.png)
-![alt text](image-10.png)
-![alt text](image-11.png)
+![alt text](All_ScreenShot/image-8.png)
+![alt text](All_ScreenShot/image-9.png)
+![alt text](All_ScreenShot/image-10.png)
+![alt text](All_ScreenShot/image-11.png)
 
-![alt text](image-12.png)
-![alt text](image-13.png)
+![alt text](All_ScreenShot/image-12.png)
+![alt text](All_ScreenShot/image-13.png)
 
-![alt text](image-14.png)
-![alt text](image-15.png)
+![alt text](All_ScreenShot/image-14.png)
+![alt text](All_ScreenShot/image-15.png)
 
 
 Invite the Bot in Slack Channel
 /invite @AWS Cost Notifier and click on `send`
-![alt text](image-16.png)
+![alt text](All_ScreenShot/image-16.png)
 
-![alt text](image-17.png)
+![alt text](All_ScreenShot/image-17.png)
 
-![alt text](image-18.png)
+![alt text](All_ScreenShot/image-18.png)
 
 
 1️. Install Python & pip (if not already)
@@ -149,7 +149,7 @@ sudo apt install -y python3 python3-pip python3-venv
 python3 -m venv venv
 source venv/bin/activate
 ```
-![alt text](image-19.png)
+![alt text](All_ScreenShot/image-19.png)
 
 
 1.
@@ -157,12 +157,12 @@ Install Slack SDK:
 ```sh
 pip install slack-sdk
 ```
-![alt text](image-20.png)
+![alt text](All_ScreenShot/image-20.png)
 
 
 
 Create Python Script (upload_cost_report.py): from slack_sdk 
-```py upload_cost_report.py
+```py "upload_cost_report.py"
 from slack_sdk import WebClient 
 from slack_sdk.errors import SlackApiError
 slack_token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxx" 
@@ -190,10 +190,10 @@ aws-cost --text > cost-report.txt
 
 # Upload to Slack
 python3 upload_cost_report.py
-![alt text](image-21.png)
+![alt text](All_ScreenShot/image-21.png)
 
 
-![alt text](image-22.png)
+![alt text](All_ScreenShot/image-22.png)
 
 
 
