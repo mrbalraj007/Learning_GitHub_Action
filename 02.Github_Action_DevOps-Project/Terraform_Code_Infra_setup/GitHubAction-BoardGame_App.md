@@ -55,7 +55,6 @@ Prometheus/Grafana Monitoring
 - Provisioned dedicated EC2 instance (8GB RAM)
 - Registered with GitHub repository using authentication token
 - Configured with necessary tools (Maven, Docker, Trivy)
->>>>>>> fef5f647fdf244d4a875e6f2c0ca45a0f54ca0ff
 
 #### 1.3 SonarQube Server
 - Deployed as Docker container on Runner instance
@@ -325,7 +324,7 @@ terraform apply
 # Optional <terraform apply --auto-approve>
 ```
 -------
-![alt text](image.png)
+![alt text](All_ScreenShot/image.png)
 
 ![alt text](All_ScreenShot/image-4.png)
 
@@ -394,7 +393,7 @@ To see help text, you can run:
 - Will verify the cluster status from 
    - `sudo cat /var/log/cloud-init-output.log | more` or 
    - `cat /home/ubuntu/k8s_setup_file/apply.log`
-      ![alt text](image-1.png)
+      ![alt text](All_ScreenShot/image-1.png)
    ```sh
    ubuntu@ip-172-31-90-126:~/k8s_setup_file$ pwd
    /home/ubuntu/k8s_setup_file
@@ -403,7 +402,7 @@ To see help text, you can run:
   ```sh
   kubectl get nodes
   ``` 
-![alt text](image-2.png)
+![alt text](All_ScreenShot/image-2.png)
 
 - After Terraform deploys on the instance, now it's time to setup the cluster. If you logout the ssh session then reconnect the SSH and run to following command:
 
@@ -415,7 +414,7 @@ To see help text, you can run:
    ```sh
    eksctl utils write-kubeconfig --cluster="balraj-cluster" --region="us-east-1"
    ```
-   ![alt text](image-3.png)
+   ![alt text](All_ScreenShot/image-3.png)
 
 > > ⚠️ **Important:** <br>
 *The ```aws eks update-kubeconfig``` command is used to configure your local kubectl tool to interact with an Amazon EKS (Elastic Kubernetes Service) cluster. It updates or creates a kubeconfig file that contains the necessary authentication information to allow kubectl to communicate with your specified EKS cluster.*
@@ -430,18 +429,18 @@ After running this command, you will be able to interact with your EKS cluster u
    kubectl cluster-info
    kubectl config get-contexts
    ```
-   ![alt text](image-12.png)
+   ![alt text](All_ScreenShot/image-12.png)
 
 ![alt text](All_ScreenShot/image-17.png)
-![alt text](image-13.png)
+![alt text](All_ScreenShot/image-13.png)
 
 
 ---
 ### <span style="color: yellow;"> **Verify GitHub Repo and GitHub Actions**
    - Verify GitHub repository created and initialize it because we are using terraform.
-      ![alt text](image-16.png)
+      ![alt text](All_ScreenShot/image-16.png)
    - Verify a `.github/workflows` directory created along with two YAML file for the pipeline.
-      ![alt text](image-55.png)
+      ![alt text](All_ScreenShot/image-55.png)
 
 ### <span style="color: cyan;">**Adding a Virtual Machine as a Runner**
    - I'll be using self-hosted runner to execute all the pipeline.
@@ -515,7 +514,7 @@ It works :-) and I am able to execute the file.
 Go to Repo `GithubAction_DevOps_Projects`
             Click on `settings` > `Secrets and Variables` > Select `Actions`.
 ```
-![alt text](image-18.png)
+![alt text](All_ScreenShot/image-18.png)
 
 > 💡 **Note:** 
 > >*You have to update all the required tokens and secrets value here. Part of Terraform code, I have already created a dummy values, which needs to be replaced. Once you have replaced the dummy values with the actual tokens and secrets, ensure that you test the configuration thoroughly to confirm that everything functions as expected. This will help prevent any issues during deployment and maintain the integrity of your infrastructure.*
@@ -524,7 +523,7 @@ Go to Repo `GithubAction_DevOps_Projects`
   - Take putty session of `Terraform EC2` instnace
   - run the command `cat ~/.kube/config`
   - copy the whole content and paste into the secret.
-   ![alt text](image-25.png)
+   ![alt text](All_ScreenShot/image-25.png)
 
 ### **Attach Role to Runner EC2**
    - Select the EC2 VM and click on the `actions` > `security`>` Mofify IAM Roles on the runner`.
@@ -560,13 +559,13 @@ Go to Repo `GithubAction_DevOps_Projects`
    - Verify the deployment by checking the status of pods and services. -->
 
 ### Verify the Docker Image
-   ![alt text](image-26.png)
-   ![alt text](image-27.png)
+   ![alt text](All_ScreenShot/image-26.png)
+   ![alt text](All_ScreenShot/image-27.png)
 ### Verify code coverage in SonarQube
-   ![alt text](image-28.png)
-   ![alt text](image-29.png)
+   ![alt text](All_ScreenShot/image-28.png)
+   ![alt text](All_ScreenShot/image-29.png)
 ### Verify pipeline Status
-   ![alt text](image-30.png)
+   ![alt text](All_ScreenShot/image-30.png)
 
 
 ### Verify the pods status from `runner VM`
@@ -591,11 +590,11 @@ NAME                                             DESIRED   CURRENT   READY   AGE
 replicaset.apps/boardgame-deployment-99f486879   2         2         2       27m
 
 ```
-   ![alt text](image-31.png)
+   ![alt text](All_ScreenShot/image-31.png)
    
 ### Verify Application Status
    - Notedown the cluster IP address from above command and run it in browser.
-   ![alt text](image-32.png)
+   ![alt text](All_ScreenShot/image-32.png)
 
 ### <span style="color: orange;"> Setup ArgoCD </span>
 
@@ -604,22 +603,22 @@ replicaset.apps/boardgame-deployment-99f486879   2         2         2       27m
 ```sh
 kubectl get pods -n argocd
 ```
-![alt text](image-33.png)
+![alt text](All_ScreenShot/image-33.png)
 
 ```sh
 kubectl get svc -n argocd
 ```
-![alt text](image-34.png)
+![alt text](All_ScreenShot/image-34.png)
 
 ```sh
 kubectl get pods -n prometheus
 ```
-![alt text](image-38.png)
+![alt text](All_ScreenShot/image-38.png)
 
 ```sh
 kubectl get service -n prometheus
 ```
-![alt text](image-39.png)
+![alt text](All_ScreenShot/image-39.png)
 
 <!-- - Run these commands to change the service type from ```ClusterIP``` to ```LoadBalancer```.
 ```sh
@@ -646,15 +645,15 @@ argocd-repo-server                        ClusterIP      172.20.162.115   <none>
 argocd-server                             LoadBalancer   172.20.184.179   a05d8113a21ea47e0ad6499f45767594-1028681490.us-east-1.elb.amazonaws.com   80:32509/TCP,443:32733/TCP   66m
 argocd-server-metrics                     ClusterIP      172.20.152.24    <none>                                                                    8083/TCP                     66m
 ```
-![alt text](image-40.png)
-![alt text](image-41.png)
-![alt text](image-42.png)
+![alt text](All_ScreenShot/image-40.png)
+![alt text](All_ScreenShot/image-41.png)
+![alt text](All_ScreenShot/image-42.png)
 
 - To get the login credential for argocd.
 ```sh
 tail -n 200 /var/log/cloud-init-output.log | grep "ArgoCD Initial Password"
 ```
-![alt text](image-43.png)
+![alt text](All_ScreenShot/image-43.png)
 
 - 
 #### <span style="color: orange;"> Configure Application in ArgoCD </span>
@@ -668,28 +667,28 @@ Once you access the ArgoCD URL and create an application
  - **cluster URL**: Select default cluster
  - **Namespace**: default
 
-![alt text](image-44.png)
-![alt text](image-45.png)
+![alt text](All_ScreenShot/image-44.png)
+![alt text](All_ScreenShot/image-45.png)
 
 - Try to change something in ```deployment.yml``` (i.e Replica to `2` from 5))
 
-![alt text](image-47.png)
+![alt text](All_ScreenShot/image-47.png)
 
 - **Verify the apps Status**
-![alt text](image-46.png)
+![alt text](All_ScreenShot/image-46.png)
 
 - **Verify Pods & service status**
-![alt text](image-48.png)
-![alt text](image-54.png)
+![alt text](All_ScreenShot/image-48.png)
+![alt text](All_ScreenShot/image-54.png)
 
 Click on the hostnames (URL details) from the service and access it in the browser.
 ```
 ab89f017a0d0c415a8d64e42810e63a4-389987165.us-east-1.elb.amazonaws.com
 ```
-![alt text](image-49.png)
+![alt text](All_ScreenShot/image-49.png)
 
 **Congratulations** :-) the application is working and accessible.
-![alt text](image-50.png)
+![alt text](All_ScreenShot/image-50.png)
 
 ### <span style="color: orange;"> Setup Monitoring using Prometheus/Grafana  </span>
 - Will run the following command to get a URL of Grafana
@@ -697,13 +696,13 @@ ab89f017a0d0c415a8d64e42810e63a4-389987165.us-east-1.elb.amazonaws.com
 ubuntu@bootstrap-svr:~$ tail -n 200 /var/log/cloud-init-output.log | grep "You can access Grafana at: "
 You can access Grafana at: http://ab1f9e98b0d4b40dc84beed46f7c20ad-854431452.us-east-1.elb.amazonaws.com
 ```
-![alt text](image-51.png)
+![alt text](All_ScreenShot/image-51.png)
 
 - Get Grafana 'admin' user password by running:
 ```bash
   kubectl --namespace prometheus get secrets stable-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
 ```
-![alt text](image-52.png)
+![alt text](All_ScreenShot/image-52.png)
 
 - Access Prometheus/Grafana and create a custom dashboard in Prometheus/Grafana.
   
@@ -719,7 +718,7 @@ Dashboard in Grafana
 
 ## <span style="color: Yellow;"> Environment Cleanup:
 - Following resouces are created as part of this project.   
-   ![alt text](image-53.png)
+   ![alt text](All_ScreenShot/image-53.png)
 
 ### <span style="color: cyan;"> To delete deployment:
 - I've created a `Github Action` to destroy the Kubernetes `deployment` and `services`.
@@ -727,8 +726,8 @@ Dashboard in Grafana
 
   - __Delete all deployment/Service__: 
     - In github action, and click on the second pipeline to delete the deployment and service.
-    ![alt text](image-56.png)
-    ![alt text](image-57.png)
+    ![alt text](All_ScreenShot/image-56.png)
+    ![alt text](All_ScreenShot/image-57.png)
 
     - Here is the complete [CICD- Pipeline to destroy Deployment and Services](https://github.com/mrbalraj007/Github-Actions-Project/blob/main/.github/workflows/Destroy.yaml)
 
@@ -774,19 +773,21 @@ Go to folder *<span style="color: cyan;">"02.Github_Action_DevOps-Project/Terraf
 > 💡 **Note:** 
 >> You must use this command from `each folder` in order to destroy the entire infrastructure.
 
-I am getting below error message
-![alt text](image-58.png)
+#### **Troubleshooting:** 
+- I am getting below error message while running the `Terraform destroy`.
+   ![alt text](All_ScreenShot/image-58.png)
 
-![alt text](image-59.png)
-![alt text](image-60.png)
+##### **Fix/Solution:**
+- I need to delete the all `Load balancer`
+![alt text](All_ScreenShot/image-59.png)
+![alt text](All_ScreenShot/image-60.png)
 
-Again error:
-![alt text](image-61.png)
-![alt text](image-62.png)
+- Again, I am getting the below error message and noticed that the security group is stopping me from deleting it. So, when I delete the `VPC` and try to run the destroy command again. This time it works.
+
+   ![alt text](All_ScreenShot/image-61.png)
+   ![alt text](All_ScreenShot/image-62.png)
 
 ---
-
-
 
 ### **Why Use This Project**
 - **Automation**: Reduces manual effort in building, testing, and deploying applications.

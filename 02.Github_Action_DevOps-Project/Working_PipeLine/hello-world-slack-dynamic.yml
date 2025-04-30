@@ -1,0 +1,92 @@
+name: Hello World with Dynamic Slack Notification
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Run a Hello World script
+      run: echo "Hello, World!"
+    
+    - name: Get current time
+      id: timestamp
+      run: |
+        echo "time=$(date +%s)" >> $GITHUB_OUTPUT
+        echo "formatted_time=$(date +'%Y-%m-%d %H:%M:%S %Z')" >> $GITHUB_OUTPUT
+    
+    - name: Set dynamic notification variables
+      id: notify_vars
+      run: |
+        # Set status based on job outcome
+        if [ "${{ job.status }}" == "success" ]; then
+          echo "color=#36a64f" >> $GITHUB_OUTPUT
+          echo "pretext=✅ Pipeline Completed Successfully 🎉" >> $GITHUB_OUTPUT
+          echo "text=*The pipeline has completed successfully!* :rocket: :white_check_mark:" >> $GITHUB_OUTPUT
+          echo "status_value=Success ✅" >> $GITHUB_OUTPUT
+        else
+          echo "color=#FF0000" >> $GITHUB_OUTPUT
+          echo "pretext=❌ Pipeline Failed ⚠️" >> $GITHUB_OUTPUT
+          echo "text=The pipeline has failed! Please check the logs for more details. :warning:" >> $GITHUB_OUTPUT
+          echo "status_value=Failed ❌" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Send dynamic Slack notification
+      if: always() # Will run regardless of job status
+      uses: 8398a7/action-slack@v3
+      with:
+        status: custom
+        fields: workflow,job,commit,repo,ref,author,took
+        custom_payload: |
+          {
+            "attachments": [
+              {
+                "color": "${{ steps.notify_vars.outputs.color }}",
+                "pretext": "${{ steps.notify_vars.outputs.pretext }}",
+                "author_name": "${{ github.actor }}",
+                "title": "${{ github.repository }}",
+                "title_link": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                "text": "${{ steps.notify_vars.outputs.text }}",
+                "fields": [
+                  {
+                    "title": "Repository",
+                    "value": "${{ github.repository }}",
+                    "short": true
+                  },
+                  {
+                    "title": "Branch",
+                    "value": "${{ github.ref_name }}",
+                    "short": true
+                  },
+                  {
+                    "title": "Executed by",
+                    "value": "${{ github.actor }}",
+                    "short": true
+                  },
+                  {
+                    "title": "Execution time",
+                    "value": "${{ steps.timestamp.outputs.formatted_time }}",
+                    "short": true
+                  },
+                  {
+                    "title": "Status",
+                    "value": "${{ steps.notify_vars.outputs.status_value }}",
+                    "short": true
+                  }
+                ],
+                "footer": "GitHub Actions",
+                "footer_icon": "https://github.githubassets.com/favicon.ico",
+                "ts": "${{ steps.timestamp.outputs.time }}"
+              }
+            ]
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
