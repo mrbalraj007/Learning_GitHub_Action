@@ -165,7 +165,7 @@ Create Python Script (upload_cost_report.py): from slack_sdk
 ```py upload_cost_report.py
 from slack_sdk import WebClient 
 from slack_sdk.errors import SlackApiError
-slack_token = "xxxxxxxxxxxxxxxxxxxxxxxxxx" 
+slack_token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxx" 
 client = WebClient(token=slack_token)
 
 try: 
