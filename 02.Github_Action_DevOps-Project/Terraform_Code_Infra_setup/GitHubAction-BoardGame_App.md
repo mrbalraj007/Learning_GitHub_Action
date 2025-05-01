@@ -789,6 +789,11 @@ Go to folder *<span style="color: cyan;">"02.Github_Action_DevOps-Project/Terraf
 
 ---
 
+![alt text](image.png)
+![alt text](image-1.png)
+
+
+
 ### **Why Use This Project**
 - **Automation**: Reduces manual effort in building, testing, and deploying applications.
 - **Security**: Ensures code and container security through automated scans.

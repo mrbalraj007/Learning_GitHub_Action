@@ -162,26 +162,50 @@ jobs:
     name: Deploy to Kubernetes
     needs: update-manifests-stage
     runs-on: self-hosted
-
+  
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-
+  
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
         with:
           version: latest
-
+  
       - name: Configure kubeconfig
         run: |
           mkdir -p $HOME/.kube
           echo "${{ secrets.EKS_KUBECONFIG }}" > $HOME/.kube/config
-
+  
       - name: Verify the context
         run: kubectl config view
-
+  
       - name: To get the full role ARN
         run: aws sts get-caller-identity
-
+  
       - name: Deploy to EKS
         run: kubectl apply -f deployment-service.yaml
+  
+      - name: Trigger Slack notification
+        if: success()
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.MY_GITHUB_PAT_TOKEN }}
+          event-type: maven-workflow-completed
+          client-payload: '{"status": "success", "workflow_name": "Java CI with Maven", "repo": "${{ github.repository }}", "actor": "${{ github.actor }}", "ref_name": "${{ github.ref_name }}", "run_id": "${{ github.run_id }}"}'
+
+  notify:
+    name: Send Slack Notification
+    needs: deploy-stage
+    runs-on: ubuntu-latest
+    if: ${{ success() }}
+    steps:
+      - name: Wait a moment for deployment to complete
+        run: sleep 5
+        
+      - name: Trigger repository dispatch for Slack notification
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.MY_GITHUB_PAT_TOKEN }}
+          event-type: maven-workflow-completed
+          client-payload: '{"status": "success", "workflow_name": "Java CI with Maven", "repo": "${{ github.repository }}", "actor": "${{ github.actor }}", "ref_name": "${{ github.ref_name }}", "run_id": "${{ github.run_id }}"}'

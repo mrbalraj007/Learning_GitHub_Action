@@ -1,11 +1,42 @@
-name: Hello World with Dynamic Slack Notification
+name: Dynamic Slack Notification
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  # Remove these triggers to avoid duplicate notifications
+  # push:
+  #   branches: [ main ]
+  # pull_request:
+  #   branches: [ main ]
   workflow_dispatch:
+  repository_dispatch:
+    types: [maven-workflow-completed]
+  workflow_call:
+    inputs:
+      status:
+        description: 'Status of the calling workflow'
+        required: true
+        type: string
+        default: 'success'
+      workflow_name:
+        description: 'Name of the calling workflow'
+        required: false
+        type: string
+      repo:
+        description: 'Repository of the calling workflow'
+        required: false
+        type: string
+      actor:
+        description: 'Actor who triggered the calling workflow'
+        required: false
+        type: string
+        default: ${{ github.actor }}
+      ref_name:
+        description: 'Branch name of the calling workflow'
+        required: false
+        type: string
+      run_id:
+        description: 'Run ID of the calling workflow'
+        required: false
+        type: string
 
 jobs:
   build:
@@ -14,8 +45,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     
-    - name: Run a Hello World script
-      run: echo "Hello, World!"
+    # - name: Run a Hello World script
+    #   run: echo "Hello, World!"
     
     - name: Get current time
       id: timestamp
@@ -26,8 +57,8 @@ jobs:
     - name: Set dynamic notification variables
       id: notify_vars
       run: |
-        # Set status based on job outcome
-        if [ "${{ job.status }}" == "success" ]; then
+        # Set status based on repository_dispatch payload or job outcome
+        if [[ "${{ github.event.client_payload.status }}" == "success" || "${{ inputs.status || job.status }}" == "success" ]]; then
           echo "color=#36a64f" >> $GITHUB_OUTPUT
           echo "pretext=✅ Pipeline Completed Successfully 🎉" >> $GITHUB_OUTPUT
           echo "text=*The pipeline has completed successfully!* :rocket: :white_check_mark:" >> $GITHUB_OUTPUT
@@ -51,24 +82,24 @@ jobs:
               {
                 "color": "${{ steps.notify_vars.outputs.color }}",
                 "pretext": "${{ steps.notify_vars.outputs.pretext }}",
-                "author_name": "${{ github.actor }}",
-                "title": "${{ github.repository }}",
-                "title_link": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                "author_name": "${{ github.event.client_payload.actor || inputs.actor || github.actor }}",
+                "title": "${{ github.event.client_payload.workflow_name || inputs.workflow_name || github.workflow }}",
+                "title_link": "https://github.com/${{ github.event.client_payload.repo || inputs.repo || github.repository }}/actions/runs/${{ github.event.client_payload.run_id || inputs.run_id || github.run_id }}",
                 "text": "${{ steps.notify_vars.outputs.text }}",
                 "fields": [
                   {
                     "title": "Repository",
-                    "value": "${{ github.repository }}",
+                    "value": "${{ github.event.client_payload.repo || inputs.repo || github.repository }}",
                     "short": true
                   },
                   {
                     "title": "Branch",
-                    "value": "${{ github.ref_name }}",
+                    "value": "${{ github.event.client_payload.ref_name || inputs.ref_name || github.ref_name }}",
                     "short": true
                   },
                   {
                     "title": "Executed by",
-                    "value": "${{ github.actor }}",
+                    "value": "${{ github.event.client_payload.actor || inputs.actor || github.actor }}",
                     "short": true
                   },
                   {

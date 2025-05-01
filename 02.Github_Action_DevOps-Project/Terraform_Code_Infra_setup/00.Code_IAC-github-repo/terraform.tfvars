@@ -14,6 +14,7 @@ actions_secrets = {
   EKS_KUBECONFIG = "yet_another_value"
   SONAR_HOST_URL     = "some_value"
   DOCKERHUB_USERNAME = "another_value"
+  SLACK_WEBHOOK_URL = "another_value2"
 }
 
 actions_variables = {
