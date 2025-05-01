@@ -1,6 +1,7 @@
 =======
-# Corporate DevOps Pipeline Implementation: GitHub Actions to Kubernetes
-
+# Mega Project Spotlight: Full-Stack DevSecOps Pipeline for EKS with GitHub Actions & Terraform
+![Image](https://github.com/user-attachments/assets/b6384c05-f779-41a7-851e-4136273fa2b0)
+![Image](https://github.com/user-attachments/assets/666bc33a-aabd-4794-b282-7a169d79c4e5)
 ## Executive Summary
 
 This project outlines a comprehensive end-to-end DevOps pipeline implementation reflecting real-world corporate workflows. The project demonstrates how to build a complete CI/CD pipeline using GitHub Actions, integrating code quality checks, container management, Kubernetes deployment, and monitoring solutions. The implementation follows industry best practices and provides a blueprint for modern application delivery workflows.
