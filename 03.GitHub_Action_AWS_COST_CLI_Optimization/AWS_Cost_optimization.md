@@ -1,4 +1,4 @@
-# AWS Cost Optimization with Automated Monitoring and Reporting
+# AWS cost optimization through automated monitoring and reporting with Slack integration
 
 ## Executive Summary
 This document outlines a solution for AWS cost optimization through automated monitoring and reporting. By implementing this solution, organizations can gain regular insights into their AWS spending patterns, identify cost spikes, and take appropriate actions to optimize cloud expenses.
@@ -31,7 +31,7 @@ Before diving into this project, here are some skills and tools you should be fa
 - A GitHub personal access token with the necessary permissions to create repositories.
 
 
-[Clone repository for terraform code](https://github.com/mrbalraj007/Learning_GitHub_Action/tree/main/02.Github_Action_DevOps-Project/Terraform_Code_Infra_setup)<br>
+[Clone repository for terraform code](https://github.com/mrbalraj007/Learning_GitHub_Action/tree/main/03.GitHub_Action_AWS_COST_CLI_Optimization)<br>
 
   > 💡 **Note:** Replace resource names and variables as per your requirement in terraform code
     > - **For EC2 VM**:  change in terraform.tfvars` (i.e keyname- `MYLABKEY`*)
@@ -143,7 +143,8 @@ Invite the Bot in Slack Channel
    ![alt text](All_ScreenShot/image-20.png)
 
 
-- Create Python Script (upload_cost_report.py): from slack_sdk 
+- Create Python Script (upload_cost_report.py): from slack_sdk
+ 
    ```py title="upload_cost_report.py" linenums="1" hl_lines="2-4"""
    from slack_sdk import WebClient 
    from slack_sdk.errors import SlackApiError
@@ -163,6 +164,7 @@ Invite the Bot in Slack Channel
    print(f"Error uploading file: {e.response['error']}")
    ```
 -  Run the AWS Cost CLI + Python Script:
+
 #### 5.  Generate cost report
        run the following command- 
        aws-cost --text > cost-report.txt
