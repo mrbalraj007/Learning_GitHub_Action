@@ -22,20 +22,56 @@ This document outlines a solution for AWS cost optimization through automated mo
 | Python | For creating the script to upload reports to Slack |
 | Cron Jobs | For scheduling automated daily reporting |
 
+---
+## <span style="color: Yellow;"> Prerequisites </span>
+Before diving into this project, here are some skills and tools you should be familiar with:
+
+- Terraform installed on your machine.
+- A GitHub account.
+- A GitHub personal access token with the necessary permissions to create repositories.
+
+
+[Clone repository for terraform code](https://github.com/mrbalraj007/Learning_GitHub_Action/tree/main/02.Github_Action_DevOps-Project/Terraform_Code_Infra_setup)<br>
+
+  > 💡 **Note:** Replace resource names and variables as per your requirement in terraform code
+    > - **For EC2 VM**:  change in terraform.tfvars` (i.e keyname- `MYLABKEY`*)
+      
 ## Implementation Steps
 
-### 1. Setup Environment
+### <span style="color: Yellow;">Setting Up the Infrastructure </span>
+
+I have created a Terraform code to set up the entire infrastructure, including the installation of required `tools` and `EC2` automatically created.
+
+#### 1. Setup Environment
 - Create a virtual machine (or use existing server)
 - Update system packages
 - Install NodeJS using NVM
 - Install AWS CLI
 
-### 2. Install and Configure AWS Cost CLA
+#### 2. Install and Configure AWS Cost CLA
 - Install AWS Cost CLA using npm
 - Configure AWS credentials using `aws configure`
 - Test basic cost reporting with command `aws-cost`
 
-### 3. Create Slack Integration
+> 💡 **Note:**  &rArr;<span style="color: Green;"> Part of creating EC2 virtual machine it will installed all the packages and AWS CLI set up automatically.
+
+
+```sh
+The script has been updated with several improvements to ensure the aws-cost command is available to the ubuntu user when you SSH in:
+
+Added a symbolic link to make aws-cost available in the system path (/usr/local/bin/aws-cost)
+Properly set up both .bashrc and .profile to include NVM configuration
+Created a robust run-aws-cost.sh script in the ubuntu home directory
+Added a system-wide aws-cost-run script in /usr/local/bin
+With these changes, after the EC2 instance is provisioned, you should be able to:
+```
+
+- SSH into the instance and run aws-cost directly (thanks to the symbolic link)
+  - If that doesn't work, you can run `source ~/.bashrc && aws-cost`
+  Or simply use the helper script: ~/run-aws-cost.sh
+  - As a last resort, use the system-wide script: aws-cost-run
+
+#### 3. Create Slack Integration
 - Create a dedicated Slack channel for cost reporting
 - Create a new Slack application
 - Configure the following permissions:
@@ -45,14 +81,101 @@ This document outlines a solution for AWS cost optimization through automated mo
 - Install the app to your workspace and save the Bot token
 - Copy the Slack channel ID
 
-### 4. Create Python Script for Report Uploads
+- Login on **https://slack.com/intl/en-au/**
+
+![alt text](All_ScreenShot/image.png)
+![alt text](All_ScreenShot/image-1.png)
+![alt text](All_ScreenShot/image-2.png)
+![alt text](All_ScreenShot/image-3.png)
+![alt text](All_ScreenShot/image-4.png)
+
+- For creating a apps `https://api.slack.com/apps`
+
+![alt text](All_ScreenShot/image-5.png)
+![alt text](All_ScreenShot/image-6.png)
+![alt text](All_ScreenShot/image-7.png)
+
+![alt text](All_ScreenShot/image-8.png)
+![alt text](All_ScreenShot/image-9.png)
+![alt text](All_ScreenShot/image-10.png)
+![alt text](All_ScreenShot/image-11.png)
+
+![alt text](All_ScreenShot/image-12.png)
+![alt text](All_ScreenShot/image-13.png)
+
+![alt text](All_ScreenShot/image-14.png)
+![alt text](All_ScreenShot/image-15.png)
+
+
+Invite the Bot in Slack Channel
+/invite @AWS Cost Notifier and click on `send`
+![alt text](All_ScreenShot/image-16.png)
+
+![alt text](All_ScreenShot/image-17.png)
+
+![alt text](All_ScreenShot/image-18.png)
+
+#### 4. Create Python Script for Report Uploads
 - Install Python and the Slack SDK
 - Create a script (`upload_cost_report.py`) that:
   - Reads cost report data
   - Uploads it as a file to the Slack channel
   - Confirms successful upload
 
-### 5. Set Up Automation
+
+- . Install Python & pip (if not already)
+   ```bash
+   sudo apt update
+   sudo apt install -y python3 python3-pip python3-venv
+   ```
+-  Create a Virtual Environment (Optional but Recommended)
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+   ![alt text](All_ScreenShot/image-19.png)
+
+
+- Install Slack SDK:
+   ```sh
+   pip install slack-sdk
+   ```
+   ![alt text](All_ScreenShot/image-20.png)
+
+
+- Create Python Script (upload_cost_report.py): from slack_sdk 
+   ```py title="upload_cost_report.py" linenums="1" hl_lines="2-4"""
+   from slack_sdk import WebClient 
+   from slack_sdk.errors import SlackApiError
+   slack_token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxx" 
+   client = WebClient(token=slack_token)
+
+   try: 
+      # Use files_upload_v2 (latest method) 
+      response = client.files_upload_v2( 
+         channel="xxxxxxxxxxxxxxxxxxxxxxx", 
+         initial_comment="AWS Cost Report",
+         file="cost-report.txt" 
+      ) 
+      print("File uploaded successfully:", response)
+
+   except SlackApiError as e: 
+   print(f"Error uploading file: {e.response['error']}")
+   ```
+-  Run the AWS Cost CLI + Python Script:
+#### 5.  Generate cost report
+       run the following command- 
+       aws-cost --text > cost-report.txt
+      
+#### 6. Upload to Slack
+      run the following command- 
+      python3 upload_cost_report.py
+
+![alt text](All_ScreenShot/image-21.png)
+![alt text](All_ScreenShot/image-22.png)
+
+
+#### 5. Set Up Automation
 - Generate cost report files using AWS Cost CLA
 - Execute the Python script to upload the report
 - Configure cron job to run this process daily
@@ -87,124 +210,9 @@ The combination of AWS Cost CLA, Slack integration, and scheduled reporting crea
 
 
 
+**Ref Link:**
+- [YouTube Link](https://www.youtube.com/watch?v=kBs59NlNxys&t=783s)
+- [Download NodeJs](https://nodejs.org/en/download)
+- [Repo Link](https://github.com/kamranahmedse/aws-cost-cli?tab=readme-ov-file)
+- [My Repo](https://github.com/mrbalraj007/aws-cost-cli)
 
-```sh
-The script has been updated with several improvements to ensure the aws-cost command is available to the ubuntu user when you SSH in:
-
-Added a symbolic link to make aws-cost available in the system path (/usr/local/bin/aws-cost)
-Properly set up both .bashrc and .profile to include NVM configuration
-Created a robust run-aws-cost.sh script in the ubuntu home directory
-Added a system-wide aws-cost-run script in /usr/local/bin
-With these changes, after the EC2 instance is provisioned, you should be able to:
-
-SSH into the instance and run aws-cost directly (thanks to the symbolic link)
-If that doesn't work, you can run `source ~/.bashrc && aws-cost`
-Or simply use the helper script: ~/run-aws-cost.sh
-As a last resort, use the system-wide script: aws-cost-run
-````
-
-https://slack.com/intl/en-au/
-
-![alt text](All_ScreenShot/image.png)
-![alt text](All_ScreenShot/image-1.png)
-![alt text](All_ScreenShot/image-2.png)
-![alt text](All_ScreenShot/image-3.png)
-![alt text](All_ScreenShot/image-4.png)
-
-
-https://api.slack.com/apps
-
-![alt text](All_ScreenShot/image-5.png)
-![alt text](All_ScreenShot/image-6.png)
-![alt text](All_ScreenShot/image-7.png)
-
-![alt text](All_ScreenShot/image-8.png)
-![alt text](All_ScreenShot/image-9.png)
-![alt text](All_ScreenShot/image-10.png)
-![alt text](All_ScreenShot/image-11.png)
-
-![alt text](All_ScreenShot/image-12.png)
-![alt text](All_ScreenShot/image-13.png)
-
-![alt text](All_ScreenShot/image-14.png)
-![alt text](All_ScreenShot/image-15.png)
-
-
-Invite the Bot in Slack Channel
-/invite @AWS Cost Notifier and click on `send`
-![alt text](All_ScreenShot/image-16.png)
-
-![alt text](All_ScreenShot/image-17.png)
-
-![alt text](All_ScreenShot/image-18.png)
-
-
-1️. Install Python & pip (if not already)
-```bash
-sudo apt update
-sudo apt install -y python3 python3-pip python3-venv
-```
-2️. Create a Virtual Environment (Optional but Recommended)
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-![alt text](All_ScreenShot/image-19.png)
-
-
-1.
-Install Slack SDK:
-```sh
-pip install slack-sdk
-```
-![alt text](All_ScreenShot/image-20.png)
-
-
-
-Create Python Script (upload_cost_report.py): from slack_sdk 
-```py "upload_cost_report.py"
-from slack_sdk import WebClient 
-from slack_sdk.errors import SlackApiError
-slack_token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxx" 
-client = WebClient(token=slack_token)
-
-try: 
-	# Use files_upload_v2 (latest method) 
-	response = client.files_upload_v2( 
-		channel="xxxxxxxxxxxxxxxxxxxxxxx", 
-		initial_comment="AWS Cost Report",
-		file="cost-report.txt" 
-	) 
-	print("File uploaded successfully:", response)
-
-except SlackApiError as e: 
- print(f"Error uploading file: {e.response['error']}")
-```
-3. Run the AWS Cost CLI + Python Script:
-# Generate cost report
-```sh
-aws-cost --text > cost-report.txt
-```
-
-
-
-# Upload to Slack
-python3 upload_cost_report.py
-![alt text](All_ScreenShot/image-21.png)
-
-
-![alt text](All_ScreenShot/image-22.png)
-
-
-
-
-
-Ref Link: 
-
-https://www.youtube.com/watch?v=kBs59NlNxys&t=783s
-
-
-https://nodejs.org/en/download
-
-https://github.com/kamranahmedse/aws-cost-cli?tab=readme-ov-file
-https://github.com/mrbalraj007/aws-cost-cli
