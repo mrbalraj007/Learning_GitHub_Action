@@ -42,7 +42,7 @@ Kubernetes Cluster (Master/Worker) → Application Deployment
 Prometheus/Grafana Monitoring
 ```
 
-## Implementation Steps
+<!-- ## Implementation Steps
 
 ### 1. Infrastructure Setup
 
@@ -122,56 +122,7 @@ The Node Exporter implementation provides critical system-level metrics for the 
 
 This system-level monitoring complements the application monitoring provided by Blackbox Exporter, giving complete visibility across the infrastructure and application stack.
 
-## Project Challenges
-
-### Technical Complexity
-```
-
-## Project Challenges
-
-### Technical Complexity
-   - Coordinating multiple tools and technologies in a cohesive pipeline
-   - Ensuring proper authentication between services (GitHub, Docker Hub, Kubernetes)
-   - Managing Kubernetes RBAC for secure but sufficient permissions
-   - Configuring Prometheus targets with proper scraping intervals
-
-### Integration Points
-   - Bridging self-hosted runner with GitHub Actions ecosystem
-   - Connecting pipeline stages with appropriate artifact handoffs
-   - Ensuring monitoring tools receive metrics from all components
-   - Managing secrets securely across multiple services
-
-### Infrastructure Management
-   - Provisioning right-sized VMs for each component
-   - Configuring network security for appropriate access
-   - Ensuring high availability for critical components
-   - Managing resource consumption across the stack
-
-## Project Benefits
-
-### Development Workflow
-   - Automated quality gates prevent problematic code from reaching production
-   - Developers receive immediate feedback on code quality and security
-   - Clear visibility of deployment status and application health
-   - Reduced manual intervention in deployment processes
-
-### Operational Excellence
-   - Real-time monitoring of application and infrastructure
-   - Early detection of performance degradation or failures
-   - Ability to correlate infrastructure metrics with application behavior
-   - Historical metrics for capacity planning and optimization
-
-### Security Enhancements
-   - Vulnerability scanning at multiple levels (code, container)
-   - Principle of least privilege through RBAC implementation
-   - Secure secret management across the pipeline
-   - Audit trail of deployments and changes
-
-### Business Value
-   - Faster time-to-market for new features and bug fixes
-   - Improved application reliability and performance
-   - Reduced operational overhead through automation
-   - Better resource utilization through monitoring insights
+ -->
 
 ---
 ## <span style="color: Yellow;"> Prerequisites </span>
@@ -188,7 +139,7 @@ Before diving into this project, here are some skills and tools you should be fa
 > 03. [Generate the Github Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
 ```sh
 ls 
-\Learning_GitHub_Action\01.Github_Action_DevOps-Project\Terraform_Code_Infra_setup
+\Learning_GitHub_Action\02.Github_Action_DevOps-Project\Terraform_Code_Infra_setup
 
 
 Mode                 LastWriteTime         Length Name                                                                                                                                                                                              
@@ -240,7 +191,7 @@ dar--l          21/04/25  12:34 PM                03.Code_IAC_Terraform_box
    ```
    - You should see your GitHub user info in JSON, **not** "Bad credentials".
 ---
-
+<!-- 
 ## **Key Points**
 1. **GitHub Actions Overview**:
    - GitHub Actions is used as the CI/CD tool for this project.
@@ -253,8 +204,6 @@ dar--l          21/04/25  12:34 PM                03.Code_IAC_Terraform_box
    - **Build and Publish Docker Image**: Builds a Docker image and uploads it as an artifact.
    - **Deploy to Kubernetes**: Deploys the application to an EKS cluster using Terraform.
 
-3. **Tools and Technologies Used**:
-  
 
 4. **Why Use This Project**:
    - Automates the software delivery process.
@@ -266,7 +215,7 @@ dar--l          21/04/25  12:34 PM                03.Code_IAC_Terraform_box
    - Understanding of GitHub Actions and its capabilities.
    - Hands-on experience with integrating security tools like Trivy and GitLeaks.
    - Knowledge of deploying applications to Kubernetes using Terraform.
-   - Insights into managing AWS resources with AWS CLI.
+   - Insights into managing AWS resources with AWS CLI. -->
 
 ---
 
@@ -655,7 +604,6 @@ tail -n 200 /var/log/cloud-init-output.log | grep "ArgoCD Initial Password"
 ```
 ![alt text](All_ScreenShot/image-43.png)
 
-- 
 #### <span style="color: orange;"> Configure Application in ArgoCD </span>
 Once you access the ArgoCD URL and create an application
  - **Application Name**: boardgame-app
@@ -711,10 +659,119 @@ You can access Grafana at: http://ab1f9e98b0d4b40dc84beed46f7c20ad-854431452.us-
 ![image-34](https://github.com/user-attachments/assets/b54fcf5d-98fe-4196-8c6d-d66b154af843)
 ![image-35](https://github.com/user-attachments/assets/c0b83f08-4fdc-4f9b-b1cf-8d562918b806)
 
-Dashboard in Grafana
+#### Dashboard in Grafana
 ![image-36](https://github.com/user-attachments/assets/ec873ad5-ed0c-43b4-9d85-2a08e16a5839)
 
+## Pipeline status
+![alt text](All_ScreenShot/image-63.png)
+![alt text](All_ScreenShot/image-64.png)
+
+
 ---
+
+## Setup Notification Instructions
+
+### 1. Create a channel for Slack
+
+1. Go to your Slack workspace and create a new channel
+   - Visit: https://api.slack.com/apps
+   - Click "Create New channel" > "From scratch"
+   ![alt text](All_ScreenShot/image-67.png)
+   ![alt text](All_ScreenShot/image-68.png)
+   - Click on `Blank Channel` and next
+   ![alt text](All_ScreenShot/image-69.png)
+   - Name your channel (e.g., "GitHub Actions Notifier") and select private and create it.
+   ![alt text](All_ScreenShot/image-70.png)
+   - It will ask for adding email address and skip for now.   
+   ![alt text](All_ScreenShot/image-71.png)
+
+### 2. Create a app for Slack
+
+1. Go to your Slack workspace and create a new app (or use an existing one):
+   - Visit: https://api.slack.com/apps
+   - Click "Create New App" > "From scratch"
+   ![alt text](All_ScreenShot/image-72.png)
+   ![alt text](All_ScreenShot/image-73.png)
+   - Name your app (e.g., "GitHub Actions Notifier")
+   - Select your workspace i.e ("Jenkins_Notification")
+   ![alt text](All_ScreenShot/image-74.png)
+   
+### 3. Set Slack App Permissions
+   - In your app dashboard:
+   - Go to OAuth & Permissions.
+      ![alt text](All_ScreenShot/image-75.png)
+   - Scroll to Scopes:
+      - Under Bot Token Scopes, add:
+         - chat:write → Allows the bot to post messages.
+         - chat:write.public → (Optional) Allows posting in public channels without being invited.
+         - Files:write → To be able to write to the slack channel
+         ![alt text](All_ScreenShot/image-76.png)
+        
+     
+### 4. Configure Slack Incoming Webhook
+
+1. Set up Incoming Webhooks:
+   - Under "Add features and functionality", select "Incoming Webhooks"
+   - Toggle "Activate Incoming Webhooks" to On
+   - Click "Add New Webhook to Workspace"
+   - Choose the "aws-cost-notification" channel
+   - Copy the Webhook URL that is generated
+   - Go to `https://api.slack.com/apps`
+    ![alt text](All_ScreenShot/image-77.png)
+    ![alt text](All_ScreenShot/image-78.png)
+    ![alt text](All_ScreenShot/image-79.png)
+    ![alt text](All_ScreenShot/image-80.png)
+    ![alt text](All_ScreenShot/image-66.png)
+    ![alt text](All_ScreenShot/image-81.png)
+    ![alt text](All_ScreenShot/image-82.png)
+   - Invite the Bot in Slack Channel
+   /invite @AWS Cost Notifier and click on `send`
+   ![alt text](All_ScreenShot/image-83.png)
+
+
+### 5. Add Webhook URL to GitHub Repository Secrets
+
+1. In your GitHub repository, go to "Settings" > "Secrets" > "Actions"
+2. Click "New repository secret"
+3. Name: `SLACK_WEBHOOK_URL`
+4. Value: Paste the webhook URL from the previous step
+5. Click "Add secret"
+
+### 6. Workflow Execution
+
+The workflow will run:
+- When code is pushed to the main branch
+- When a pull request is made to the main branch
+- Manually via the "Actions" tab in GitHub
+
+### Customization in Slack webhook
+
+You can customize the notification message by modifying the `custom_payload` in the `.github/workflows/hello-world-slack.yml` file.
+
+
+The `SLACK_WEBHOOK_URL` in your workflow file refers to a webhook URL that needs to be stored as a GitHub Actions secret. This is not an actual URL in the file, but a reference to a secret value.
+
+To set up a Slack webhook URL:
+
+1. Go to your Slack workspace and create an incoming webhook:
+   - Visit https://api.slack.com/apps
+   - Create a new app or use an existing one
+   - Enable "Incoming Webhooks"
+   - Add a new webhook to a specific channel
+   - Copy the webhook URL provided (looks like: https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX)
+
+2. Add this webhook URL as a GitHub repository secret:
+   - Go to your GitHub repository
+   - Navigate to Settings > Secrets and variables > Actions
+   - Click "New repository secret"
+   - Name: `SLACK_WEBHOOK_URL`
+   - Value: paste the webhook URL from Slack
+   - Click "Add secret"
+
+Your workflow will then use this secret value when sending notifications to Slack. The actual URL is kept secure and not visible in your workflow file.
+
+- Once the pipeline is executed successfully, then get the below notification in Slack. This notification will provide details about the execution status, including any errors or warnings that may have occurred during the process. Additionally, it will outline the next steps to take if further action is required.
+   ![alt text](All_ScreenShot/image-65.png)
 
 ## <span style="color: Yellow;"> Environment Cleanup:
 - Following resouces are created as part of this project.   
@@ -789,8 +846,6 @@ Go to folder *<span style="color: cyan;">"02.Github_Action_DevOps-Project/Terraf
 
 ---
 
-![alt text](image.png)
-![alt text](image-1.png)
 
 
 
@@ -799,8 +854,53 @@ Go to folder *<span style="color: cyan;">"02.Github_Action_DevOps-Project/Terraf
 - **Security**: Ensures code and container security through automated scans.
 - **Scalability**: Deploys applications to scalable Kubernetes clusters.
 - **Best Practices**: Demonstrates industry-standard CI/CD practices.
-
 ---
+
+## Project Challenges
+
+#### Technical Complexity
+   - Coordinating multiple tools and technologies in a cohesive pipeline
+   - Ensuring proper authentication between services (GitHub, Docker Hub, Kubernetes)
+   - Managing Kubernetes RBAC for secure but sufficient permissions
+   - Configuring Prometheus targets with proper scraping intervals
+
+#### Integration Points
+   - Bridging self-hosted runner with GitHub Actions ecosystem
+   - Connecting pipeline stages with appropriate artifact handoffs
+   - Ensuring monitoring tools receive metrics from all components
+   - Managing secrets securely across multiple services
+
+#### Infrastructure Management
+   - Provisioning right-sized VMs for each component
+   - Configuring network security for appropriate access
+   - Ensuring high availability for critical components
+   - Managing resource consumption across the stack
+
+## Project Benefits
+
+#### Development Workflow
+   - Automated quality gates prevent problematic code from reaching production
+   - Developers receive immediate feedback on code quality and security
+   - Clear visibility of deployment status and application health
+   - Reduced manual intervention in deployment processes
+
+#### Operational Excellence
+   - Real-time monitoring of application and infrastructure
+   - Early detection of performance degradation or failures
+   - Ability to correlate infrastructure metrics with application behavior
+   - Historical metrics for capacity planning and optimization
+
+#### Security Enhancements
+   - Vulnerability scanning at multiple levels (code, container)
+   - Principle of least privilege through RBAC implementation
+   - Secure secret management across the pipeline
+   - Audit trail of deployments and changes
+
+#### Business Value
+   - Faster time-to-market for new features and bug fixes
+   - Improved application reliability and performance
+   - Reduced operational overhead through automation
+   - Better resource utilization through monitoring insights
 
 ## Conclusion
 
