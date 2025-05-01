@@ -501,7 +501,7 @@ Go to Repo `GithubAction_DevOps_Projects`
 ![alt text](All_ScreenShot/image-23.png)
 ![alt text](All_ScreenShot/image-24.png)
 
-- Here is the complete [CICD- Pipeline details](https://github.com/mrbalraj007/Github-Actions-Project/blob/main/.github/workflows/cicd.yml)
+- Here is the complete [CICD- Pipeline details](https://github.com/mrbalraj007/Learning_GitHub_Action/tree/main/02.Github_Action_DevOps-Project/Working_PipeLine)
 
 <!-- **6. Deploying to Kubernetes**
    - Use `kubectl` to apply Kubernetes manifests.
@@ -662,14 +662,9 @@ You can access Grafana at: http://ab1f9e98b0d4b40dc84beed46f7c20ad-854431452.us-
 #### Dashboard in Grafana
 ![image-36](https://github.com/user-attachments/assets/ec873ad5-ed0c-43b4-9d85-2a08e16a5839)
 
-## Pipeline status
-![alt text](All_ScreenShot/image-63.png)
-![alt text](All_ScreenShot/image-64.png)
-
-
 ---
 
-## Setup Notification Instructions
+## Setup Notification in Slack
 
 ### 1. Create a channel for Slack
 
@@ -732,10 +727,9 @@ You can access Grafana at: http://ab1f9e98b0d4b40dc84beed46f7c20ad-854431452.us-
 ### 5. Add Webhook URL to GitHub Repository Secrets
 
 1. In your GitHub repository, go to "Settings" > "Secrets" > "Actions"
-2. Click "New repository secret"
-3. Name: `SLACK_WEBHOOK_URL`
-4. Value: Paste the webhook URL from the previous step
-5. Click "Add secret"
+2. Select "secret" ,Name: `SLACK_WEBHOOK_URL`
+3. Value: Paste the webhook URL from the previous step
+4. Click "Add secret"
 
 ### 6. Workflow Execution
 
@@ -768,10 +762,15 @@ To set up a Slack webhook URL:
    - Value: paste the webhook URL from Slack
    - Click "Add secret"
 
-Your workflow will then use this secret value when sending notifications to Slack. The actual URL is kept secure and not visible in your workflow file.
+- Your workflow will then use this secret value when sending notifications to Slack. The actual URL is kept secure and not visible in your workflow file. 
 
 - Once the pipeline is executed successfully, then get the below notification in Slack. This notification will provide details about the execution status, including any errors or warnings that may have occurred during the process. Additionally, it will outline the next steps to take if further action is required.
    ![alt text](All_ScreenShot/image-65.png)
+
+## Final Status of Pipeline
+![alt text](All_ScreenShot/image-63.png)
+![alt text](All_ScreenShot/image-64.png)
+
 
 ## <span style="color: Yellow;"> Environment Cleanup:
 - Following resouces are created as part of this project.   
@@ -786,7 +785,7 @@ Your workflow will then use this secret value when sending notifications to Slac
     ![alt text](All_ScreenShot/image-56.png)
     ![alt text](All_ScreenShot/image-57.png)
 
-    - Here is the complete [CICD- Pipeline to destroy Deployment and Services](https://github.com/mrbalraj007/Github-Actions-Project/blob/main/.github/workflows/Destroy.yaml)
+    - Here is the complete [CICD- Pipeline to destroy Deployment and Services](https://github.com/mrbalraj007/Learning_GitHub_Action/tree/main/02.Github_Action_DevOps-Project/Working_PipeLine)
 
 ### <span style="color: cyan;"> To delete ```AWS EKS cluster```
    -   Login into the `Terraform EC2 `instance and change the directory to /`k8s_setup_file`, and run the following command to delete the cluster.
@@ -845,9 +844,6 @@ Go to folder *<span style="color: cyan;">"02.Github_Action_DevOps-Project/Terraf
    ![alt text](All_ScreenShot/image-62.png)
 
 ---
-
-
-
 
 ### **Why Use This Project**
 - **Automation**: Reduces manual effort in building, testing, and deploying applications.

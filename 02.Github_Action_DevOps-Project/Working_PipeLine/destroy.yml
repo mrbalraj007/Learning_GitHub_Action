@@ -1,0 +1,53 @@
+name: Delete Kubernetes Deployment and Service
+
+on: workflow_dispatch
+
+jobs:
+  delete_k8s_resources:
+    runs-on: self-hosted
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: latest
+        
+    - name: Configure kubeconfig
+      run: |
+        mkdir -p $HOME/.kube
+        echo "${{ secrets.EKS_KUBECONFIG }}" > $HOME/.kube/config
+
+    - name: Verify the context
+      run: |
+        kubectl config view
+
+    - name: Get Deployment Names
+      id: get_deployment_names
+      run: |
+        DEPLOYMENTS=$(kubectl get deployments -o=jsonpath='{.items[*].metadata.name}')
+        echo "Deployments: $DEPLOYMENTS"
+        echo "deployments=$DEPLOYMENTS" >> $GITHUB_ENV
+
+    - name: Get Service Names
+      id: get_service_names
+      run: |
+        SERVICES=$(kubectl get services -o=jsonpath='{.items[*].metadata.name}')
+        echo "Services: $SERVICES"
+        echo "services=$SERVICES" >> $GITHUB_ENV
+
+    - name: Delete Kubernetes Deployments
+      run: |
+        for deployment in ${{ env.deployments }}
+        do
+          kubectl delete deployment $deployment
+        done
+
+    - name: Delete Kubernetes Services
+      run: |
+        for service in ${{ env.services }}
+        do
+          kubectl delete service $service
+        done
